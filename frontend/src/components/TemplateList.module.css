@@ -1,0 +1,55 @@
+.templateList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.templateCard {
+  background-color: var(--background-color); /* Beyaz arka plan */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.templateCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cardTitle {
+  margin-bottom: 0.5rem;
+  color: var(--gray-800); /* Koyu gri başlık */
+  font-size: 1.1rem; /* Biraz daha belirgin */
+}
+
+.cardDescription {
+  color: var(--text-color); /* Orta gri açıklama metni */
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.cardLink {
+  display: inline-block;
+  padding: 0.6rem 1.2rem; /* Biraz daha dolgun */
+  background-color: var(--primary-color); /* Yeşil ana renk */
+  color: var(--background-color); /* Beyaz metin */
+  border-radius: 4px;
+  font-weight: 500;
+  text-decoration: none; /* Alt çizgiyi kaldır */
+  transition: background-color 0.2s;
+}
+
+.cardLink:hover {
+  background-color: darken(#28a745, 10%); /* Daha koyu yeşil */
+  text-decoration: none; /* Hoverda da alt çizgi yok */
+}
+
+/* Mobil cihazlar için (767px ve altı) */
+@media (max-width: 767px) {
+  .templateList {
+    grid-template-columns: 1fr; /* Tek sütun */
+  }
+}

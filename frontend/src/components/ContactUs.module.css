@@ -1,0 +1,122 @@
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
+  line-height: 1.7;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--gray-800);
+  text-align: center;
+  font-weight: 600;
+}
+
+.paragraph {
+  margin-bottom: 1.5rem;
+  text-align: center; /* Açıklama metnini ortala */
+}
+
+.subHeading {
+  font-size: 1.4rem; /* Alt başlıkları biraz büyütelim */
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--gray-700);
+  font-weight: 500;
+  border-bottom: 1px solid var(--gray-200); /* Altına hafif çizgi */
+  padding-bottom: 0.5rem;
+}
+
+.infoBox {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  background-color: var(--gray-100);
+}
+
+.contactChannels,
+.otherInfo {
+  margin-top: 1.5rem;
+}
+
+.infoItem {
+  margin-bottom: 0.8rem; /* Bilgi satırları arası boşluk */
+  font-size: 1rem;
+}
+
+/* Info item içindeki etiket (strong) stili */
+.label {
+  font-weight: 600; /* Kalın */
+  color: var(--gray-800); /* Koyu Gri */
+  min-width: 180px; /* Etiketler için minimum genişlik (isteğe bağlı) */
+  display: inline-block; /* Gerekirse hizalama için */
+  margin-right: 5px;
+}
+
+.infoItem a {
+  color: var(--primary-color);
+}
+.infoItem a:hover {
+  color: darken(#28a745, 10%);
+  text-decoration: underline;
+}
+
+/* --- İletişim Formu Stilleri (İsteğe bağlı, yorumlu) --- */
+.contactForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--gray-300); /* Formu ayırmak için çizgi */
+}
+
+/* Form label'ı için ayrı stil */
+.formLabel {
+  font-weight: 500;
+  color: var(--gray-700);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem; /* Input ile arasına küçük boşluk */
+}
+
+.input, /* input type="text", input type="email" */
+.textarea { /* textarea */
+  padding: 0.75rem;
+  border: 1px solid var(--gray-400); /* Sınır biraz daha belirgin */
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  width: 100%; /* Form elemanları tam genişlik */
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary-color); /* Focus rengi ana renk */
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); /* Yeşil focus shadow */
+}
+
+.submitButton {
+  padding: 1rem 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+  align-self: flex-start; /* Butonu sola yasla */
+}
+
+.submitButton:hover {
+  background-color: #218838; /* darken fonksiyonu CSS'te yok, manuel koyu renk */
+}

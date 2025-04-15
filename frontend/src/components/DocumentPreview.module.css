@@ -1,0 +1,28 @@
+.container {
+  border: 1px solid var(--gray-300); /* Açık gri border */
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: var(--gray-100); /* Çok açık gri arka plan */
+  height: 100%; /* Ana konteynerin yüksekliğine göre ayarlanabilir */
+  overflow-y: auto; /* Uzun içerikler için kaydırma */
+}
+
+.previewTitle {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem; /* Biraz daha küçük */
+  color: var(--gray-700); /* Orta koyu gri başlık */
+}
+
+.previewArea {
+  white-space: pre-wrap; /* Satır sonlarını ve boşlukları korur */
+  font-family: monospace; /* Daha gerçekçi bir çıktı görünümü için */
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-color); /* Orta gri metin */
+}
+
+.emptyPlaceholder {
+  color: var(--secondary-color); /* Açık mavi vurgu */
+  font-weight: 500; /* Biraz daha az kalın */
+}
