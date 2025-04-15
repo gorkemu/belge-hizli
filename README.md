@@ -29,31 +29,33 @@ A web application that allows users to generate contracts and documents in PDF f
     *   Handlebars.js (for server-side template processing)
     *   dotenv (for environment variables)
 
-## 📁 Project Structure
+📁 Project Structure
+
+.
 ├── backend/
-│ ├── models/ # Mongoose schemas (template.js)
-│ ├── routes/ # API endpoint definitions (templates.js)
-│ ├── pdf-generator/ # PDF generation module (pdfGenerator.js)
-│ ├── temp-pdfs/ # (May be created) Folder for temporary PDFs
-│ ├── node_modules/
-│ ├── .env # Environment variables (ATLAS_URI etc. - SECRET)
-│ ├── server.js # Main server file
-│ └── package.json
+│   ├── models/         # Mongoose schemas (template.js)
+│   ├── routes/         # API endpoint definitions (templates.js)
+│   ├── pdf-generator/  # PDF generation module (pdfGenerator.js)
+│   ├── temp-pdfs/      # (May be created) Folder for temporary PDFs
+│   ├── node_modules/
+│   ├── .env            # Environment variables (ATLAS_URI etc. - SECRET)
+│   ├── server.js       # Main server file
+│   └── package.json
 └── frontend/
-├── public/ # Static assets
-├── src/
-│ ├── assets/
-│ ├── components/ # React components (TemplateList, TemplateDetail, DocumentForm, DocumentPreview etc.)
-│ ├── hooks/ # Custom hooks (usePdfGeneration etc.)
-│ ├── App.jsx # Main application component and routing
-│ ├── main.jsx # Application entry point
-│ └── index.css # Global styles
-├── node_modules/
-├── index.html # Main HTML file
-├── vite.config.js # Vite configuration
-└── package.json
-└── README.md # This file
-└── .gitignore # Files ignored by Git
+    ├── public/         # Static assets
+    ├── src/
+    │   ├── assets/
+    │   ├── components/   # React components (TemplateList, TemplateDetail, DocumentForm, DocumentPreview etc.)
+    │   ├── hooks/        # Custom hooks (usePdfGeneration etc.)
+    │   ├── App.jsx       # Main application component and routing
+    │   ├── main.jsx      # Application entry point
+    │   └── index.css     # Global styles
+    ├── node_modules/
+    ├── index.html      # Main HTML file
+    ├── vite.config.js  # Vite configuration
+    └── package.json
+└── README.md           # This file
+└── .gitignore          # Files ignored by Git
 
 ## 🚀 Getting Started
 
