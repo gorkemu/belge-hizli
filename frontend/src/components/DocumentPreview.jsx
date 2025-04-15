@@ -1,46 +1,102 @@
-import React from 'react';
+import React, { useEffect } from 'react'; // useEffect eklendi
 import styles from './DocumentPreview.module.css';
 import Handlebars from 'handlebars';
 
-// "eq" helper'ını kaydet (güncellenmiş tanım)
-Handlebars.registerHelper('eq', function (a, b) {
-    return a === b;
-});
+// Handlebars helper'ları (Backend ile aynı olmalı)
+try {
+    Handlebars.registerHelper('math', function (lvalue, operator, rvalue) {
+        lvalue = parseFloat(lvalue);
+        rvalue = parseFloat(rvalue);
+        return {
+            '+': lvalue + rvalue, '-': lvalue - rvalue,
+            '*': lvalue * rvalue, '/': lvalue / rvalue,
+            '%': lvalue % rvalue
+        }[operator];
+    });
+
+    Handlebars.registerHelper('eq', function (a, b) {
+        // console.log(`Frontend eq: a=${a}, b=${b}, result=${String(a) == String(b)}`); // Debugging
+        return String(a) == String(b);
+    });
+
+     // --- YENİ: each_with_index (backend'e de eklenebilir) ---
+     // #each yerine index'e daha kolay erişim için (0'dan başlar)
+     Handlebars.registerHelper('each_with_index', function(context, options) {
+        let ret = "";
+        if (context && context.length > 0) {
+            for(let i=0; i<context.length; i++) {
+                 // options.fn'e geçerken mevcut context'e index ekle
+                 ret = ret + options.fn({...context[i], '@index': i});
+            }
+        } else {
+            ret = options.inverse(this); // Eğer dizi boşsa {{else}} bloğunu çalıştır
+        }
+        return ret;
+    });
+
+
+     // --- YENİ: gt (greater than) helper ---
+     Handlebars.registerHelper('gt', function (a, b) {
+        return parseFloat(a) > parseFloat(b);
+     });
+
+     // --- YENİ: default value helper ---
+     Handlebars.registerHelper('default', function (value, defaultValue) {
+        return value !== undefined && value !== null && value !== '' ? value : defaultValue;
+     });
+
+
+} catch (e) {
+    console.error("Handlebars helper kaydedilirken hata:", e);
+    // Helper'lar zaten kayıtlıysa hata verebilir, bu genellikle sorun teşkil etmez.
+}
+
+
+// --- KALDIRILDI: transformFormDataForPreview fonksiyonu ---
 
 function DocumentPreview({ templateContent, formData }) {
+
+     // formData her değiştiğinde yeniden render etmeyi tetikle
+     // Bu genellikle zaten olur ama karmaşık durumlarda yardımcı olabilir.
+     useEffect(() => {
+         // console.log("Preview formData güncellendi:", formData); // Debugging
+     }, [formData]);
+
+
     if (!templateContent) {
-        return <div className={styles.container}>Önizleme yükleniyor...</div>;
+        return <div className={styles.container}>Önizleme için şablon içeriği yükleniyor...</div>;
+    }
+    if (!formData) {
+        return <div className={styles.container}>Önizleme için form verisi bekleniyor...</div>;
     }
 
+
     try {
-        const kiralayanSayisi = formData['kiralayan_sayisi'] ? parseInt(formData['kiralayan_sayisi']) : 0;
-        let kiralayanBilgileri = '';
-        for (let i = 0; i < kiralayanSayisi; i++) {
-            kiralayanBilgileri += `Kiralayan Adı Soyadı ${i + 1}: ${formData[`kiralayan_adi_soyadi_${i}`] || ''}\n`;
-            kiralayanBilgileri += `Kiralayan Adresi ${i + 1}: ${formData[`kiralayan_adres_${i}`] || ''}\n`;
-        }
-        formData.kiralayanBilgileri = kiralayanBilgileri.trim();
-
-        const kiraciSayisi = formData['kiraci_sayisi'] ? parseInt(formData['kiraci_sayisi']) : 0;
-        let kiraciBilgileri = '';
-        for (let i = 0; i < kiraciSayisi; i++) {
-            kiraciBilgileri += `Kiracı Adı Soyadı ${i + 1}: ${formData[`kiraci_adi_soyadi_${i}`] || ''}\n`;
-            kiraciBilgileri += `Kiracı Adresi ${i + 1}: ${formData[`kiraci_adres_${i}`] || ''}\n`;
-        }
-        formData.kiraciBilgileri = kiraciBilgileri.trim();
-
+        // --- DEĞİŞTİ: Dönüşüm kaldırıldı ---
+        // console.log("Preview'a gelen Ham formData:", formData); // Debugging
         const template = Handlebars.compile(templateContent);
-        const previewHtml = template(formData);
+        const previewHtml = template(formData); // Ham formData doğrudan kullanılıyor
+        // console.log("Frontend Oluşturulan HTML:", previewHtml.substring(0, 500)); // Debugging
 
         return (
             <div className={styles.container}>
                 <h3 className={styles.previewTitle}>Önizleme</h3>
+                {/* whiteSpace: 'pre-wrap' metin formatını korumak için önemli */}
                 <div className={styles.previewArea} style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: previewHtml }} />
             </div>
         );
     } catch (error) {
-        console.error("Handlebars şablonunu derlerken hata oluştu:", error);
-        return <div className={styles.container}>Önizleme oluşturulurken bir hata oluştu.</div>;
+        console.error("Handlebars şablonunu derlerken/işlerken hata oluştu (Frontend):", error);
+        return (
+            <div className={styles.container}>
+                 <h3 className={styles.previewTitle}>Önizleme Hatası</h3>
+                 <div className={styles.previewError}>
+                    <p>Önizleme oluşturulurken bir hata oluştu.</p>
+                     <p>Hata Mesajı: {error.message}</p>
+                     <p><i>Lütfen şablon içeriğini (`content`) ve form verilerini kontrol edin. Handlebars sözdizimi hatalı olabilir.</i></p>
+                </div>
+             </div>
+        );
     }
 }
 
