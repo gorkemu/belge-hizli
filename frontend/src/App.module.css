@@ -1,0 +1,131 @@
+.appContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Tüm ekran yüksekliğini kapla */
+}
+
+.appHeader {
+  background-color: var(--gray-100);
+  padding: 1rem; /* Daha az genel padding */
+  display: flex;
+  justify-content: space-between; /* Logo ve nav arası boşluk */
+  align-items: center;
+  border-bottom: 1px solid var(--gray-300);
+}
+
+.logo {
+  font-size: 1.5rem; /* Boyut */
+  color: var(--primary-color); /* Ana renginiz */
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 0.5px; /* Harfler arası hafif boşluk */
+}
+
+.appNav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1rem; /* Linkler arası boşluk */
+  align-items: center;
+}
+
+.appNav ul li a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 0.9rem; /* Daha küçük linkler */
+}
+
+.appNav ul li a:hover {
+  color: var(--primary-color);
+}
+
+.appMain {
+  flex-grow: 1;
+  padding: 1.5rem; /* Daha az genel padding */
+}
+
+.appFooter {
+  background-color: var(--gray-200);
+  padding: 1rem; /* Daha az genel padding */
+  text-align: center;
+  border-top: 1px solid var(--gray-300);
+  display: flex;
+  flex-direction: column; /* Mobil için alt alta */
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem; /* Daha küçük font */
+}
+
+.appFooter nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.appFooter nav ul li a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.appFooter nav ul li a:hover {
+  color: var(--primary-color);
+}
+
+/* Tablet ve üzeri ekranlar için (768px ve üstü) */
+@media (min-width: 768px) {
+  .appHeader {
+      padding: 1rem 2rem; /* Biraz daha yatay padding */
+  }
+
+  .logo {
+      font-size: 1.5rem;
+  }
+
+  .appNav ul {
+      gap: 1.5rem;
+  }
+
+  .appNav ul li a {
+      font-size: 1rem;
+  }
+
+  .appFooter {
+      padding: 1rem 2rem;
+      flex-direction: row; /* Yan yana */
+      justify-content: space-between; /* Öğeler arası boşluk */
+      align-items: center;
+  }
+
+  .appFooter p {
+      margin-bottom: 0; /* Yan yana düzende boşluğa gerek yok */
+      text-align: left;
+  }
+
+  .appFooter nav ul {
+      gap: 1.5rem;
+  }
+
+  .appFooter nav ul li a {
+      font-size: 0.9rem;
+  }
+}
+
+
+/* Daha geniş masaüstü ekranlar için (1200px ve üstü - isteğe bağlı) */
+@media (min-width: 1200px) {
+  .appHeader {
+      padding: 1rem 4rem;
+  }
+
+  .appMain {
+      padding: 1.5rem 4rem;
+  }
+
+  .appFooter {
+      padding: 1rem 4rem;
+  }
+}

@@ -1,0 +1,88 @@
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--background-color); /* Beyaz arka plan */
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--gray-200); /* Açık gri */
+  color: var(--text-color); /* Orta gri metin */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-bottom: 1rem;
+}
+
+.backButton:hover {
+  background-color: var(--gray-300); /* Biraz daha koyu açık gri */
+}
+
+.title {
+  font-size: 1.8rem;
+  margin: 1rem 0;
+  color: var(--gray-800); /* Koyu gri başlık */
+}
+
+.description {
+  color: var(--text-color); /* Orta gri açıklama metni */
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.editorContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Varsayılan olarak iki sütun */
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.formColumn {
+  /* Formun stilini burada ayarlayabilirsiniz */
+}
+
+.previewColumn {
+  /* Önizlemenin stilini burada ayarlayabilirsiniz */
+}
+
+.content {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: var(--gray-100); /* Çok açık gri içerik arka planı */
+  border-radius: 4px;
+  border-left: 3px solid var(--secondary-color); /* Açık mavi vurgu */
+}
+
+.useButton {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--primary-color); /* Yeşil ana renk */
+  color: var(--background-color); /* Beyaz metin */
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 2rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.useButton:hover {
+  background-color: darken(#28a745, 10%); /* Daha koyu yeşil */
+}
+
+/* Mobil cihazlar için (767px ve altı) */
+@media (max-width: 767px) {
+  .editorContainer {
+    grid-template-columns: 1fr; /* Tek sütun */
+    gap: 1rem; /* Daha az boşluk */
+  }
+}

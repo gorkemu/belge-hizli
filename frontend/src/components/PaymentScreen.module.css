@@ -1,0 +1,88 @@
+.container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--background-color); /* Beyaz arka plan */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--gray-800); /* Koyu gri başlık */
+    text-align: center;
+  }
+  
+  .paymentForm {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  .label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--gray-700); /* Orta koyu gri etiket */
+    font-size: 0.9rem;
+  }
+  
+  .input[type="text"],
+  .input[type="email"],
+  .input[type="number"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--gray-300); /* Açık gri border */
+    border-radius: 4px;
+    font-size: 1rem;
+    color: var(--text-color); /* Orta gri metin */
+    background-color: var(--background-color); /* Beyaz arka plan */
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: var(--secondary-color); /* Açık mavi focus border */
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25); /* Açık mavi focus shadow */
+  }
+  
+  .payButton {
+    padding: 1rem 1.5rem;
+    background-color: var(--primary-color); /* Yeşil ana renk */
+    color: var(--background-color); /* Beyaz metin */
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+  }
+  
+  .payButton:hover {
+    background-color: darken(#28a745, 10%); /* Daha koyu yeşil */
+  }
+  
+  .cancelButton {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--gray-200); /* Açık gri */
+    color: var(--text-color); /* Orta gri metin */
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 0.5rem;
+  }
+  
+  .cancelButton:hover {
+    background-color: var(--gray-300); /* Biraz daha koyu açık gri */
+  }
+  
+  .error {
+    color: red;
+    margin-top: 0.5rem;
+  }
