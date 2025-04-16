@@ -8,9 +8,9 @@ const templateSchema = new mongoose.Schema({
     name: String,
     label: String,
     fieldType: String,
-    placeholder: String, // Placeholder alanı eklendi
+    placeholder: String, 
     options: [String],
-    required: Boolean // Gerekirse required alanı da ekleyebilirsiniz
+    required: Boolean 
   }],
   createdAt: { type: Date, default: () => new Date() }
 });
