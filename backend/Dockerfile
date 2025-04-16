@@ -8,7 +8,8 @@ FROM ghcr.io/puppeteer/puppeteer:24.6.1
 # Ortamı ayarla (WORKDIR, imaj içinde komutların çalışacağı varsayılan dizindir)
 # PUPPETEER_EXECUTABLE_PATH, imajdaki Chrome yolunu gösterir
 # PUPPETEER_CACHE_DIR, cache dizinini ayarlar
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
     PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
     NODE_ENV=production
 
