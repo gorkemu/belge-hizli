@@ -28,7 +28,8 @@ const corsOptions = {
   optionsSuccessStatus: 200 // Bazı eski tarayıcılar için
 };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));// Eski ayarları yorum satırı yapın
+app.use(cors()); // Herkese izin ver
 // --- CORS Ayarları Sonu ---
 
 // JSON body parser middleware'i
