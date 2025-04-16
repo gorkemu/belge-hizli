@@ -3,12 +3,10 @@
 # Kullanılan Puppeteer versiyonuyla uyumlu imajı kullan
 FROM ghcr.io/puppeteer/puppeteer:24.6.1
 
-# Ortamı ayarla
+# Ortamı ayarla (Cache dizinlerini tanımlamıyoruz)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
-    PUPPETEER_CACHE_DIR=/root/.cache/puppeteer \
-    NODE_ENV=production \
-    NPM_CONFIG_CACHE=/root/.cache/npm
+    NODE_ENV=production
 
 # Çalışma dizinini oluştur
 WORKDIR /app
@@ -16,8 +14,10 @@ WORKDIR /app
 # package.json ve package-lock.json dosyalarını kopyala
 COPY backend/package*.json ./
 
-# Bağımlılıkları kur (root olarak)
-RUN npm install --only=production --unsafe-perm --loglevel verbose
+# Bağımlılıkları kur (root olarak, cache kullanmadan)
+# --no-cache bayrağı npm'in disk cache'ini kullanmasını engeller
+# --prefer-offline yerine --no-package-lock kullanmak da denenebilir ama önce --no-cache
+RUN npm install --only=production --unsafe-perm --no-cache --loglevel verbose
 
 # Uygulama kodunu kopyala
 COPY backend/ .
