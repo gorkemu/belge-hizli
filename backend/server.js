@@ -63,8 +63,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }) // No
 app.get('/api/test', (req, res) => {
   res.status(200).json({ message: 'API Test OK' });
 });
-// ----
-app.use('/api', templateRoutes);
+
 
 // API rotalarını kullan
 app.use('/api', templateRoutes);
