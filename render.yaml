@@ -1,0 +1,18 @@
+# render.yaml (ana dizinde)
+services:
+  - type: web
+    name: belgehizli-api # Veya Render'daki servis adınız
+    runtime: docker
+    repo: https://github.com/gorkemu/belge-hizli.git # DEĞİŞTİRİN!
+    # branch: main # Gerekirse aktif edin
+    dockerfilePath: ./backend/Dockerfile # Dockerfile yolunu kontrol edin
+    envVars:
+      - key: ATLAS_URI
+        fromSecret: true # Önerilen - Render UI'dan Secret olarak ekleyin
+        # Alternatif (daha az güvenli):
+        # sync: false
+        # value: "mongodb+srv://..."
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://belgehizli.vercel.app # Doğru Vercel URL'niz
