@@ -20,21 +20,22 @@ RUN mkdir -p /home/pptruser/.cache && chown -R pptruser:pptruser /home/pptruser
 # Çalışma dizinini ayarla
 WORKDIR /home/pptruser/app
 
-# package.json ve package-lock.json (veya yarn.lock) dosyalarını kopyala
-# Sadece backend'in bağımlılıklarını kuracağız
+# package.json ve package-lock.json dosyalarını kopyala
 COPY backend/package*.json ./
 
-# Bağımlılıkları kur
-# Sadece production bağımlılıklarını kurmak için --only=production
-RUN npm install --only=production
+# Çalışma dizininin sahipliğini pptruser'a ver (tekrar, kopyalamadan sonra emin olmak için)
+# ve npm cache'ini temizle
+RUN chown -R pptruser:pptruser /home/pptruser/app && \
+    npm cache clean --force
 
-# Tüm backend kodunu kopyala
+# Bağımlılıkları kur (pptruser olarak)
+USER pptruser
+RUN npm install --only=production --loglevel verbose # <-- verbose loglama ekledik
+
+# Uygulama kodunu kopyala
+# Bağımlılıklar kurulduktan SONRA kodu kopyalamak build cache'ini daha iyi kullanır
 COPY backend/ .
 
-# Uygulama pptruser olarak çalışacak
-USER pptruser
+# USER pptruser satırı zaten yukarıda, tekrar gerekmez.
 
-# Uygulamayı başlatma komutu (package.json'daki start script'ini kullanır)
 CMD [ "npm", "start" ]
-
-# Not: Render'ın atadığı portu dinlemek için kodunuzun process.env.PORT'u kullanması gerekir (bunu zaten yapmıştık).
