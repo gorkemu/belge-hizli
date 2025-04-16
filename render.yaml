@@ -1,4 +1,4 @@
-# render.yaml
+# render.yaml (SADELEŞTİRİLMİŞ)
 
 services:
   - type: web
@@ -6,11 +6,4 @@ services:
     runtime: docker
     repo: https://github.com/gorkemu/belge-hizli.git
     dockerfilePath: ./backend/Dockerfile
-    envVarGroups: # <-- YENİ: Environment Group'u referans göster
-      - name: belgehizli-secrets # Render UI'da oluşturduğunuz grubun adı
-    envVars:
-      # ATLAS_URI artık yukarıdaki gruptan gelecek, buraya yazmayın.
-      - key: NODE_ENV
-        value: production
-      - key: FRONTEND_URL
-        value: https://belgehizli.vercel.app
+    # branch: main # Gerekirse aktif edin
