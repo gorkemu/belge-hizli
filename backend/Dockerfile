@@ -1,6 +1,6 @@
 # backend/Dockerfile
 
-# Kullandığın Puppeteer versiyonuyla uyumlu imajı kullan
+# Kullanılan Puppeteer versiyonuyla uyumlu imajı kullan
 FROM ghcr.io/puppeteer/puppeteer:24.6.1
 
 # Ortamı ayarla
@@ -15,20 +15,24 @@ RUN mkdir -p /home/pptruser/.cache/puppeteer && \
     mkdir -p /home/pptruser/.cache/npm && \
     chown -R pptruser:pptruser /home/pptruser/.cache
 
-# Çalışma dizinini pptruser ana dizini altında oluştur
+# Çalışma dizinini oluştur ve sahipliğini pptruser'a ver
 WORKDIR /home/pptruser/app
+RUN chown -R pptruser:pptruser /home/pptruser/app # <-- Çalışma dizininin sahipliğini ayarla
+
+# ÖNEMLİ: Kullanıcıyı npm install'dan ÖNCE değiştir
+USER pptruser
 
 # package.json ve package-lock.json dosyalarını kopyala
+# Artık pptruser olarak kopyalanacak
 COPY backend/package*.json ./
 
-# ÖNEMLİ: Bağımlılıkları pptruser olarak kur
-USER pptruser
-# npm cache dizinini ayarla (ENV'de zaten yapıldı ama burada da belirtmek garanti olabilir)
+# Bağımlılıkları pptruser olarak kur (önbelleği kullanarak)
 RUN npm install --only=production --loglevel verbose --cache /home/pptruser/.cache/npm
 
 # Uygulama kodunu kopyala
+# Yine pptruser olarak kopyalanacak
 COPY backend/ .
 
-# USER pptruser zaten yukarıda ayarlandı
+# USER pptruser zaten ayarlandı
 
 CMD [ "npm", "start" ]
