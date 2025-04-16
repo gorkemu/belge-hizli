@@ -1,7 +1,9 @@
 # backend/Dockerfile
 
+# Kullanılan Puppeteer versiyonuyla uyumlu imajı kullan
 FROM ghcr.io/puppeteer/puppeteer:24.6.1
 
+# Ortamı ayarla
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
     NODE_ENV=production
@@ -12,8 +14,9 @@ WORKDIR /app
 # ÖNCE SADECE package*.json kopyala
 COPY backend/package*.json ./
 
-# Sonra bağımlılıkları kur
-RUN npm install --only=production --unsafe-perm --no-cache --loglevel verbose
+# Bağımlılıkları 'npm ci' ile kur (root olarak)
+# Bu komut package-lock.json'a yazmaya çalışmaz
+RUN npm ci --only=production --loglevel verbose
 
 # SONRA GERİ KALAN TÜM backend KODUNU kopyala
 COPY backend/ .
