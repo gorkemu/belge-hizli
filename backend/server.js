@@ -28,8 +28,7 @@ const corsOptions = {
   optionsSuccessStatus: 200 // Bazı eski tarayıcılar için
 };
 
-// app.use(cors(corsOptions));// Eski ayarları yorum satırı yapın
-app.use(cors()); // Herkese izin ver
+app.use(cors(corsOptions));
 // --- CORS Ayarları Sonu ---
 
 // JSON body parser middleware'i
@@ -58,6 +57,14 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }) // No
       console.error('MongoDB bağlantı hatası:', error);
       process.exit(1); // Bağlantı hatasında uygulamayı durdur
   });
+
+
+// server.js içinde, app.use('/api', templateRoutes); satırından HEMEN ÖNCE ekleyin:
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ message: 'API Test OK' });
+});
+// ----
+app.use('/api', templateRoutes);
 
 // API rotalarını kullan
 app.use('/api', templateRoutes);
