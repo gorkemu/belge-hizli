@@ -3,13 +3,15 @@
   import { Link } from 'react-router-dom';
   import styles from './TemplateList.module.css';
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+
   function TemplateList() {
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-      axios.get('/api/templates')
+      axios.get(`${API_BASE_URL}/templates`)
         .then(response => {
           setTemplates(response.data);
           setLoading(false);

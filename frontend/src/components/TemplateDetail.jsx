@@ -21,11 +21,13 @@ function TemplateDetail() {
     const [loadingPayment, setLoadingPayment] = useState(false); // Ödeme/İndirme işlemi yükleme durumu
     const [paymentError, setPaymentError] = useState(null); // Ödeme/İndirme hatası
 
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+
     // Şablon verisini backend'den çek
     useEffect(() => {
         setLoading(true);
         setError(null);
-        axios.get(`/api/templates/${id}`)
+        axios.get(`${API_BASE_URL}/templates/${id}`)
             .then(response => {
                 console.log('Template data fetched:', response.data); // Debugging
                 setTemplate(response.data);
@@ -76,7 +78,7 @@ function TemplateDetail() {
 
         try {
             // 5. Backend'e veriyi gönder (formData olduğu gibi gönderiliyor)
-            const response = await axios.post(`/api/templates/${id}/process-payment`, {
+            const response = await axios.post(`${API_BASE_URL}/templates/${id}/process-payment`, {
                 formData, // Dinamik formdan gelen tüm veri
                 amount: template?.price || 0, // Şablondan fiyatı al
                 currency: 'TRY', // Para birimi (gerekirse dinamikleştirilebilir)
