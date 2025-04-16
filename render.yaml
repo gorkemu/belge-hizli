@@ -6,11 +6,10 @@ services:
     runtime: docker
     repo: https://github.com/gorkemu/belge-hizli.git
     dockerfilePath: ./backend/Dockerfile
+    envVarGroups: # <-- YENİ: Environment Group'u referans göster
+      - name: belgehizli-secrets # Render UI'da oluşturduğunuz grubun adı
     envVars:
-      - key: ATLAS_URI        # Ortam değişkeninin adı (kodunuzun kullandığı)
-        secretKeyRef:
-          name: ATLAS_URI     # Render UI'da oluşturduğunuz Secret'ın adı
-          key: ATLAS_URI      # Secret içindeki spesifik anahtar (genellikle Secret adıyla aynı olur)
+      # ATLAS_URI artık yukarıdaki gruptan gelecek, buraya yazmayın.
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
