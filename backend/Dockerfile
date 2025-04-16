@@ -3,36 +3,29 @@
 # Kullanılan Puppeteer versiyonuyla uyumlu imajı kullan
 FROM ghcr.io/puppeteer/puppeteer:24.6.1
 
-# Ortamı ayarla
+# Ortamı ayarla (Cache dizinlerini root'un erişebileceği bir yere koyalım)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
-    PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
+    PUPPETEER_CACHE_DIR=/root/.cache/puppeteer \ # <-- root'un cache dizini
     NODE_ENV=production \
-    NPM_CONFIG_CACHE=/home/pptruser/.cache/npm
+    NPM_CONFIG_CACHE=/root/.cache/npm # <-- root'un cache dizini
 
-# /home/pptruser dizinini ve cache dizinlerini oluştur ve sahipliğini değiştir
-RUN mkdir -p /home/pptruser/.cache/puppeteer && \
-    mkdir -p /home/pptruser/.cache/npm && \
-    chown -R pptruser:pptruser /home/pptruser/.cache
-
-# Çalışma dizinini oluştur ve sahipliğini pptruser'a ver
-WORKDIR /home/pptruser/app
-RUN chown -R pptruser:pptruser /home/pptruser/app # <-- Çalışma dizininin sahipliğini ayarla
-
-# ÖNEMLİ: Kullanıcıyı npm install'dan ÖNCE değiştir
-USER pptruser
+# Çalışma dizinini oluştur
+WORKDIR /app
 
 # package.json ve package-lock.json dosyalarını kopyala
-# Artık pptruser olarak kopyalanacak
 COPY backend/package*.json ./
 
-# Bağımlılıkları pptruser olarak kur (önbelleği kullanarak)
-RUN npm install --only=production --loglevel verbose --cache /home/pptruser/.cache/npm
+# Bağımlılıkları kur (root olarak)
+# --unsafe-perm bayrağı bazı izin sorunlarını çözebilir
+RUN npm install --only=production --unsafe-perm --loglevel verbose
 
 # Uygulama kodunu kopyala
-# Yine pptruser olarak kopyalanacak
 COPY backend/ .
 
-# USER pptruser zaten ayarlandı
+# USER pptruser SATIRINI TAMAMEN KALDIRDIK
+
+# Portu expose et (Render bunu otomatik yapar ama belirtmek iyi olabilir)
+EXPOSE 10000 # Render genellikle 10000 portunu kullanır, kodumuz process.env.PORT'u dinler
 
 CMD [ "npm", "start" ]
