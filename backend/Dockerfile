@@ -1,41 +1,38 @@
 # backend/Dockerfile
 
-# Puppeteer için gerekli bağımlılıkları içeren Node imajını kullan
-# Farklı Node versiyonları için imajları Docker Hub'da arayabilirsiniz (örn: node:18-slim, node:20-bookworm-slim)
-# Bu imaj puppeteer bağımlılıklarının çoğunu içerir.
-FROM ghcr.io/puppeteer/puppeteer:24.6.1
+# Kullandığın Puppeteer versiyonuyla uyumlu imajı kullan
+FROM ghcr.io/puppeteer/puppeteer:24.6.1 # Bu imajın versiyonu 24.6.1 olarak güncellenmiş, bu iyi.
 
-# Ortamı ayarla (WORKDIR, imaj içinde komutların çalışacağı varsayılan dizindir)
-# PUPPETEER_EXECUTABLE_PATH, imajdaki Chrome yolunu gösterir
-# PUPPETEER_CACHE_DIR, cache dizinini ayarlar
+# Ortamı ayarla
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
     PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer \
-    NODE_ENV=production
+    NODE_ENV=production \
+    NPM_CONFIG_CACHE=/home/pptruser/.cache/npm # <-- npm cache dizinini ayarla
 
-# /home/pptruser dizinini oluştur ve sahipliğini değiştir (imajdaki varsayılan kullanıcı)
-# Bu dizin, cache ve uygulama dosyaları için kullanılacak
-RUN mkdir -p /home/pptruser/.cache && chown -R pptruser:pptruser /home/pptruser
+# /home/pptruser dizinini ve cache dizinlerini oluştur ve sahipliğini değiştir
+# Bu sefer /home/pptruser/app'ı burada oluşturmuyoruz
+RUN mkdir -p /home/pptruser/.cache/puppeteer && \
+    mkdir -p /home/pptruser/.cache/npm && \
+    chown -R pptruser:pptruser /home/pptruser/.cache
 
-# Çalışma dizinini ayarla
+# Çalışma dizinini pptruser ana dizini altında oluştur
 WORKDIR /home/pptruser/app
 
 # package.json ve package-lock.json dosyalarını kopyala
+# Bu dosyalar WORKDIR'a (yani /home/pptruser/app) kopyalanacak
 COPY backend/package*.json ./
 
-# Çalışma dizininin sahipliğini pptruser'a ver (tekrar, kopyalamadan sonra emin olmak için)
-# ve npm cache'ini temizle
-RUN chown -R pptruser:pptruser /home/pptruser/app && \
-    npm cache clean --force
-
-# Bağımlılıkları kur (pptruser olarak)
+# ÖNEMLİ: Bağımlılıkları pptruser olarak kur
 USER pptruser
-RUN npm install --only=production --loglevel verbose # <-- verbose loglama ekledik
+RUN npm install --only=production --loglevel verbose --cache /home/pptruser/.cache/npm # <-- Cache dizinini belirt
 
 # Uygulama kodunu kopyala
-# Bağımlılıklar kurulduktan SONRA kodu kopyalamak build cache'ini daha iyi kullanır
+# Kodu WORKDIR'a kopyala
 COPY backend/ .
 
-# USER pptruser satırı zaten yukarıda, tekrar gerekmez.
+# Sahipliği kontrol etmeye gerek yok, kod zaten pptruser tarafından kopyalanmalı veya erişilebilir olmalı
+
+# USER pptruser zaten yukarıda ayarlandı
 
 CMD [ "npm", "start" ]
