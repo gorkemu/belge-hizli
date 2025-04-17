@@ -1,0 +1,29 @@
+# fly.toml (Ana Dizinde)
+app = 'belgehizli-api' # Fly.io'daki uygulama adınız
+primary_region = 'fra' # Seçtiğiniz bölge
+
+[build]
+  # Build context'inin ana dizin olduğunu varsayıyoruz
+  # Dockerfile'ın backend klasöründe olduğunu belirtiyoruz
+  dockerfile = 'backend/Dockerfile'
+
+# Servis ayarları (iç port 8080 veya kodunuzun dinlediği PORT)
+[[services]]
+  internal_port = 8080
+  protocol = 'tcp'
+  processes = ['app']
+
+  [services.ports]
+    handlers = ['http']
+    port = 80
+    force_https = true
+
+  [services.ports]
+    handlers = ['tls', 'http']
+    port = 443
+
+# [[vm]] bölümü genellikle otomatik ayarlanır, gerekirse ekleyebilirsiniz
+# [[vm]]
+#  memory = '1gb' # Veya ihtiyacınız olan miktar
+#  cpu_kind = 'shared'
+#  cpus = 1
