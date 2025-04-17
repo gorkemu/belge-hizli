@@ -1,29 +1,38 @@
-# fly.toml (Ana Dizinde)
-app = 'belgehizli-api' # Fly.io'daki uygulama adınız
-primary_region = 'fra' # Seçtiğiniz bölge
+# fly.toml (Ana Dizinde - DÜZELTİLMİŞ)
+app = 'belgehizli-api'
+primary_region = 'fra'
 
 [build]
-  # Build context'inin ana dizin olduğunu varsayıyoruz
-  # Dockerfile'ın backend klasöründe olduğunu belirtiyoruz
   dockerfile = 'backend/Dockerfile'
 
-# Servis ayarları (iç port 8080 veya kodunuzun dinlediği PORT)
+# HTTP ve HTTPS portlarını tek bir servis bloğunda tanımla
 [[services]]
-  internal_port = 8080
+  internal_port = 8080 # Kodunuzun process.env.PORT'tan alıp dinlediği port
   protocol = 'tcp'
   processes = ['app']
 
-  [services.ports]
-    handlers = ['http']
+  # HTTP (Port 80) ayarları
+  [[services.ports]]
     port = 80
-    force_https = true
+    handlers = ['http']
+    force_https = true # Gelen HTTP isteklerini HTTPS'e yönlendir
 
-  [services.ports]
-    handlers = ['tls', 'http']
+  # HTTPS (Port 443) ayarları
+  [[services.ports]]
     port = 443
+    handlers = ['tls', 'http'] # TLS sonlandırma ve HTTP işleme
 
-# [[vm]] bölümü genellikle otomatik ayarlanır, gerekirse ekleyebilirsiniz
-# [[vm]]
-#  memory = '1gb' # Veya ihtiyacınız olan miktar
-#  cpu_kind = 'shared'
-#  cpus = 1
+  # Opsiyonel: Sağlık kontrolü
+  # [[services.http_checks]]
+  #  interval = "10s"
+  #  timeout = "2s"
+  #  grace_period = "5s"
+  #  method = "get"
+  #  path = "/api/test" # Test endpoint'iniz
+  #  protocol = "http" # İç port HTTP olduğu için
+
+  # VM ayarları
+  [[vm]]
+    memory = '1gb' # Veya Fly.io'nun desteklediği daha küçük bir boyut (örn: '256mb')
+    cpu_kind = 'shared'
+    cpus = 1
