@@ -81,7 +81,7 @@ app.use((err, req, res, next) => {
 
 // --- Port Ayarı (Güncellendi) ---
 // Koyeb'in sağladığı PORT'u veya lokal geliştirme için 5001'i kullan (5000 de kalabilir)
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 8080;
 // --- Port Ayarı Sonu ---
 
 app.listen(port, '0.0.0.0', () => { // <-- ÖNEMLİ: '0.0.0.0' eklendi
