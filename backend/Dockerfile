@@ -22,7 +22,8 @@ RUN npm ci --only=production --loglevel verbose
 COPY backend/ .
 
 # Portu expose et
-EXPOSE 8080 # Koyeb'in beklediği iç port
+EXPOSE 8080 
+# Koyeb'in beklediği iç port
 
 # Çalıştır
 CMD [ "npm", "start" ]
