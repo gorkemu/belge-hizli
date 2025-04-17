@@ -58,13 +58,6 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }) // No
       process.exit(1); // Bağlantı hatasında uygulamayı durdur
   });
 
-
-// server.js içinde, app.use('/api', templateRoutes); satırından HEMEN ÖNCE ekleyin:
-app.get('/api/test', (req, res) => {
-  res.status(200).json({ message: 'API Test OK' });
-});
-
-
 // API rotalarını kullan
 app.use('/api', templateRoutes);
 
@@ -87,7 +80,7 @@ app.use((err, req, res, next) => {
 
 
 // --- Port Ayarı (Güncellendi) ---
-// Render'ın sağladığı PORT'u veya lokal geliştirme için 5001'i kullan (5000 de kalabilir)
+// Koyeb'in sağladığı PORT'u veya lokal geliştirme için 5001'i kullan (5000 de kalabilir)
 const port = process.env.PORT || 5001;
 // --- Port Ayarı Sonu ---
 

@@ -15,14 +15,14 @@ WORKDIR /app
 COPY backend/package*.json ./
 
 # Bağımlılıkları 'npm ci' ile kur (root olarak)
-# Bu komut package-lock.json'a yazmaya çalışmaz
 RUN npm ci --only=production --loglevel verbose
 
 # SONRA GERİ KALAN TÜM backend KODUNU kopyala
 COPY backend/ .
 
 # Portu expose et
-EXPOSE 10000
+EXPOSE 8080 
+# Koyeb genellikle 8080 portunu bekler, kodumuz process.env.PORT'u dinler
 
 # Çalıştır
 CMD [ "npm", "start" ]
