@@ -1,29 +1,23 @@
-# backend/Dockerfile
+# backend/Dockerfile (SADELEŞTİRİLMİŞ - Puppeteer YOK)
 
-# Kullanılan Puppeteer versiyonuyla uyumlu imajı kullan
-FROM ghcr.io/puppeteer/puppeteer:24.6.1
+# Standart Node.js imajı (LTS - Long Term Support versiyonu genellikle iyidir)
+FROM node:18-slim
+# Veya projenizin uyumlu olduğu başka bir Node versiyonu (node:20-slim vb.)
 
-# Ortamı ayarla
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
-    NODE_ENV=production
+ENV NODE_ENV=production
 
-# Çalışma dizinini oluştur
 WORKDIR /app
 
-# ÖNCE SADECE package*.json kopyala
-# Artık 'backend/' öneki yok, çünkü build context'i zaten backend klasörü
-COPY package*.json ./
+COPY backend/package*.json ./
 
-# Bağımlılıkları 'npm ci' ile kur (root olarak)
+# Sadece production bağımlılıklarını kur
+# Artık puppeteer olmadığı için daha hızlı olmalı
 RUN npm ci --only=production --loglevel verbose
 
-# SONRA GERİ KALAN TÜM KODU kopyala (mevcut dizinden)
-# Artık 'backend/' öneki yok
-COPY . .
+COPY backend/ .
 
-# Portu expose et
 EXPOSE 8080
 
-# Çalıştır
-CMD [ "npm", "start" ]
+CMD [ "node", "server.js" ] 
+# Direkt node ile başlatmak da mümkün
+# VEYA CMD [ "npm", "start" ] # package.json'daki start script'ini kullanır
