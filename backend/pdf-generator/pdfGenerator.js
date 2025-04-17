@@ -2,32 +2,42 @@
 const puppeteer = require('puppeteer');
 
 async function generatePdf(htmlContent, options = {}) {
-    console.log("Launching Puppeteer..."); // Başlatma öncesi log
-    let browser = null; // browser değişkenini try dışında tanımla
+    console.log("Launching Puppeteer...");
+    let browser = null;
     try {
         browser = await puppeteer.launch({
             headless: true,
+            protocolTimeout: 60000, // <-- Timeout süresini 60 saniyeye çıkar (60000 ms)
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--disable-gpu', // Bazı ortamlarda GPU sorunlarını önler
-                '--no-zygote', // Bazen yardımcı olabilir
-                // '--single-process' // Bunu şimdilik çıkaralım, bazen sorun yaratabilir
+                '--disable-gpu',
+                '--no-zygote',
+                // Render'daki kaynak kısıtlamaları için ek argümanlar (denenebilir):
+                '--disable-features=site-per-process', // İşlem sayısını azaltabilir
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-default-browser-check',
+                '--disable-extensions'
             ]
-            // executablePath BELİRTMİYORUZ
         });
         console.log("Browser launched successfully.");
 
         const page = await browser.newPage();
         console.log("New page created.");
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        // Sayfa işlemleri için de timeout ayarlayabiliriz (opsiyonel)
+        // page.setDefaultNavigationTimeout(60000);
+        // page.setDefaultTimeout(60000);
+
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0', timeout: 60000 }); // setContent için de timeout
         console.log("Content set on page.");
 
         const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
             margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
+            timeout: 60000, // PDF oluşturma için de timeout
             ...options,
         });
         console.log("PDF buffer generated.");
@@ -37,12 +47,12 @@ async function generatePdf(htmlContent, options = {}) {
         return pdfBuffer;
 
     } catch (error) {
-        console.error("Error during PDF generation:", error); // Hatayı detaylı logla
+        console.error("Error during PDF generation:", error);
         if (browser) {
             console.log("Closing browser due to error...");
-            await browser.close(); // Hata durumunda tarayıcıyı kapatmayı dene
+            await browser.close();
         }
-        throw error; // Hatayı tekrar fırlat ki routes yakalayabilsin
+        throw error;
     }
 }
 
