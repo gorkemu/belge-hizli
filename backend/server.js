@@ -84,7 +84,6 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 5001;
 // --- Port Ayarı Sonu ---
 
-app.listen(port, () => {
-  // Log mesajını İngilizce yapmak daha standart olabilir
+app.listen(port, '0.0.0.0', () => { // <-- ÖNEMLİ: '0.0.0.0' eklendi
   console.log(`Server is running on port: ${port}`);
 });
