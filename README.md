@@ -83,10 +83,10 @@ New templates can be added directly to the MongoDB `templates` collection withou
 *   Detailed error handling and user feedback.
 *   Increased test coverage (Unit & Integration tests).
 
-## 🤝 Contributing (Optional)
+## 🤝 Contributing 
 
 Contributions are welcome. Please open an issue first to discuss proposed changes.
 
-## 📄 License (Optional)
+## 📄 License 
 
-MIT License
+[MIT License](https://github.com/gorkemu/belge-hizli/blob/main/LICENCE)
