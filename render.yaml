@@ -1,9 +1,0 @@
-# render.yaml (SADELEŞTİRİLMİŞ)
-
-services:
-  - type: web
-    name: belgehizli-api
-    runtime: docker
-    repo: https://github.com/gorkemu/belge-hizli.git
-    dockerfilePath: ./backend/Dockerfile
-    # branch: main # Gerekirse aktif edin
