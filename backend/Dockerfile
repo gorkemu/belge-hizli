@@ -6,7 +6,7 @@ COPY backend/package*.json ./
 RUN npm ci --only=production --loglevel verbose
 COPY backend/ .
 EXPOSE 8080
-CMD [ "node", "server.js" ]
 # Dockerfile sonu
+# CMD [ "node", "server.js" ] # Bunu silin veya yorum yapın
 CMD [ "sh", "-c", "sleep 2 && npm start" ] 
-# Başlamadan önce 2 saniye bekle
+# Bu kalsın (npm start "node server.js" çalıştırır)

@@ -31,20 +31,23 @@ const app = express();
 // --- CORS Ayarları (Güncellendi) ---
 const allowedOrigins = [
   'http://localhost:5173', // Lokal frontend
-  process.env.FRONTEND_URL // Vercel'deki canlı frontend URL'si (environment variable'dan)
-].filter(Boolean); // Eğer FRONTEND_URL tanımlı değilse, filtreleyerek undefined olmasını engelle
+  process.env.FRONTEND_URL // Fly.io'daki Secret'tan gelecek canlı frontend URL'si
+].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Eğer istek origin'i izin verilenler listesinde varsa veya origin yoksa (örn: sunucu içi istekler, Postman gibi araçlar) izin ver
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.error(`CORS Error: Origin ${origin} not allowed.`); // <-- Hangi origin'in reddedildiğini loglayalım
       callback(new Error('Not allowed by CORS'));
     }
   },
-  optionsSuccessStatus: 200 // Bazı eski tarayıcılar için
+  optionsSuccessStatus: 200
 };
+
+app.use(cors(corsOptions));
+// --- CORS Ayarları Sonu ---
 
 app.use(cors(corsOptions));
 // --- CORS Ayarları Sonu ---
