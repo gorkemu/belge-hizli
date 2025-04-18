@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Template = require('../models/template');
 const { generatePdf } = require('../pdf-generator/pdfGenerator');
+const { sendPdfEmail } = require('../utils/mailer'); // <-- YENİ IMPORT
 const path = require('path'); // <<< DÜZELTİLDİ: path modülünü doğru şekilde import et
 const fs = require('fs').promises;
 const crypto = require('crypto');
@@ -109,44 +110,83 @@ router.post('/templates/:id/process-payment', async (req, res) => {
             return res.status(404).json({ message: 'Şablon bulunamadı' });
         }
 
-        const { formData, amount, currency, email } = req.body;
+        // Gelen veriyi al (email'i de alıyoruz)
+        const { formData, amount, currency } = req.body;
+        const userEmail = formData?.belge_email || null; // Formdan e-posta adresini al
+
+        if (!userEmail) {
+            console.warn("PDF e-posta ile gönderilemedi: Formda 'belge_email' alanı bulunamadı veya boş.");
+            // E-posta yoksa bile PDF indirmeye devam edebiliriz.
+        }
 
         const compiledTemplate = Handlebars.compile(template.content || '');
         const htmlContent = compiledTemplate(formData);
 
-        const pdfBuffer = await generatePdf(`
-            <!DOCTYPE html><html><head><meta charset="utf-8" /><title>${template.name || 'Document'}</title>
-            <style>body { font-family: sans-serif; font-size: 12px; white-space: pre-wrap; }</style></head>
-            <body><div>${htmlContent}</div></body></html>
-        `);
+        // PDF Oluştur
+        console.log("Generating PDF buffer..."); // Log eklendi
+        const pdfBuffer = await generatePdf(htmlContent);
+        console.log("PDF buffer generated successfully."); // Log eklendi
 
+        // --- Ödeme Simülasyonu ---
         const paymentSuccessful = true; // Simülasyon
 
         if (paymentSuccessful) {
+            const safeFilename = turkceToLatin(template.name) + '.pdf';
+
+            // ---- YENİ: E-posta Gönderme ----
+            // E-posta adresi varsa ve PDF buffer'ı oluştuysa e-postayı gönder
+            if (userEmail && pdfBuffer) {
+                 // Basit HTML e-posta içeriği
+                 const emailSubject = `Belge Hızlı - ${template.name} Belgeniz`;
+                 const emailHtml = `
+                    <p>Merhaba,</p>
+                    <p>Belge Hızlı platformunu kullanarak oluşturduğunuz <strong>${template.name}</strong> belgesi ektedir.</p>
+                    <p>İyi günlerde kullanın!</p>
+                    <br>
+                    <p>Saygılarımızla,<br>Belge Hızlı Ekibi</p>
+                 `;
+                 const emailText = `Merhaba,\n\nBelge Hızlı platformunu kullanarak oluşturduğunuz ${template.name} belgesi ektedir.\n\nİyi günlerde kullanın!\n\nSaygılarımızla,\nBelge Hızlı Ekibi`;
+
+                 // E-posta gönderme fonksiyonunu çağır (asenkron ama await kullanmayalım ki yanıtı geciktirmesin)
+                 sendPdfEmail(userEmail, emailSubject, emailText, emailHtml, pdfBuffer, safeFilename)
+                    .catch(err => {
+                        // Fonksiyon içindeki hata yakalamaya ek olarak burada da loglayabiliriz.
+                        console.error("E-posta gönderme fonksiyonu rotada hata yakaladı (ama işlem devam ediyor):", err);
+                    });
+                 console.log(`E-posta gönderme işlemi ${userEmail} adresine başlatıldı.`); // Log eklendi
+            }
+            // ---- YENİ: E-posta Gönderme Sonu ----
+
+
+            // (İsteğe bağlı) Geçici dosyaya kaydetme
             try {
-                 const tempDir = path.join(__dirname, '..', 'temp-pdfs'); // path modülünü kullan
+                 const tempDir = path.join(__dirname, '..', 'temp-pdfs');
                  await fs.mkdir(tempDir, { recursive: true });
-                 const tempFilePath = path.join(tempDir, `${crypto.randomBytes(16).toString('hex')}.pdf`); // path modülünü kullan
+                 const tempFilePath = path.join(tempDir, `${crypto.randomBytes(16).toString('hex')}.pdf`);
                  await fs.writeFile(tempFilePath, pdfBuffer);
             } catch (writeError) {
                 console.error("Geçici PDF dosyası kaydedilirken hata oluştu:", writeError);
             }
 
-            const safeFilename = turkceToLatin(template.name) + '.pdf';
+            // Ödeme başarılıysa PDF'i response olarak gönder (KULLANICI İNDİRMESİ İÇİN)
+            console.log("Sending PDF response to client..."); // Log eklendi
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
             res.send(pdfBuffer);
+            console.log("PDF response sent."); // Log eklendi
+
         } else {
              console.error('Ödeme işlemi başarısız (simülasyon).');
              res.status(402).json({ message: 'Ödeme işlemi başarısız oldu.' });
         }
+        // --- Ödeme Simülasyonu Sonu ---
 
     } catch (error) {
-        console.error('Ödeme işleme hatası:', error);
-        if (error.message.includes("Handlebars")) {
-             res.status(500).json({ message: 'Şablon içeriği işlenirken bir hata oluştu. Şablonu kontrol edin.' });
-        } else {
-             res.status(500).json({ message: 'Ödeme işlemi sırasında bir sunucu hatası oluştu.' });
+        // Hata yönetimi (pdfGenerator veya başka yerden gelen)
+        console.error('Ödeme işleme rotasında ana hata:', error);
+        // Genel hata middleware'ine gitmeden önce spesifik mesaj gönderebiliriz
+        if (!res.headersSent) { // Yanıt daha önce gönderilmediyse
+             res.status(500).json({ message: error.message || 'PDF oluşturma veya ödeme işlemi sırasında bir sunucu hatası oluştu.' });
         }
     }
 });
