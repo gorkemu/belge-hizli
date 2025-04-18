@@ -2,8 +2,8 @@ import React from 'react';
 import styles from './DeliveryReturn.module.css'; // Stil dosyasını import et
 
 function DeliveryReturn() {
-  const siteName = "[Web Sitesi Adı]";
-  const email = "[E-posta Adresiniz]";
+  const siteName = "Belge Hızlı";
+  const email = "info@belgehizli.com";
 
   return (
     <div className={styles.container}>
@@ -22,8 +22,6 @@ function DeliveryReturn() {
         <li>Gerekli bilgileri girdikten sonra ödeme adımına geçin.</li>
         <li>Ödemeniz iyzico gibi güvenli ödeme altyapıları üzerinden başarıyla tamamlandıktan sonra,
           girdiğiniz bilgilerle oluşturulan kişiselleştirilmiş PDF belgeniz indirilmeye hazır hale gelecektir.</li>
-        <li>Belgenizi doğrudan tarayıcınız üzerinden indirebilirsiniz. Ayrıca, belirttiğiniz e-posta adresine
-          de bir indirme bağlantısı veya belgenin kendisi gönderilebilir (bu özellik varsa belirtin).</li>
       </ol>
       <p className={styles.paragraph}>
         Teslimat, ödemenin başarıyla tamamlanmasının hemen ardından elektronik ortamda anında gerçekleşir.

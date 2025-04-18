@@ -2,14 +2,14 @@ import React from 'react';
 import styles from './TermsOfService.module.css'; // Stil dosyasını import et
 
 function TermsOfService() {
-  const siteName = "[Web Sitesi Adı]";
-  const siteUrl = "[Web Sitesi Adresi (URL)]";
+  const siteName = "Belge Hızlı";
+  const siteUrl = "https://www.belgehizli.com/";
   const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
   const ownerName = "[Şirket Sahibi Adı Soyadı]";
   const address = "[Merkez Adresiniz]";
   const email = "[E-posta Adresiniz]";
   const phone = "[Telefon Numaranız]";
-  const lastUpdateDate = "[Güncel Tarih, örn: 14.04.2025]";
+  const lastUpdateDate = "[Güncel Tarih, örn: 18.04.2025]";
   const taxOffice = "[Vergi Dairesi]";
   const taxIdNumber = "[Vergi Kimlik Numarası (VKN)]";
   // const mersisNo = "[MERSİS Numarası (varsa)]"; // Varsa ekleyin

@@ -2,13 +2,13 @@ import React from 'react';
 import styles from './PrivacyPolicy.module.css'; // Stil dosyasını import et
 
 function PrivacyPolicy() {
-  const siteName = "[Web Sitesi Adı]";
+  const siteName = "Belge Hızlı";
   const ownerName = "[Şirket Sahibi Adı Soyadı]";
   const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
   const address = "[Merkez Adresiniz]";
-  const email = "[E-posta Adresiniz]";
-  const lastUpdateDate = "[Güncel Tarih, örn: 14.04.2025]";
-  const siteUrl = "[Web Sitesi Adresi (URL)]";
+  const email = "info@belgehizli.com";
+  const lastUpdateDate = "[Güncel Tarih, örn: 18.04.2025]";
+  const siteUrl = "https://www.belgehizli.com/";
 
   return (
     <div className={styles.container}>
@@ -103,11 +103,12 @@ function PrivacyPolicy() {
         ziyaret edebilirsiniz:
       </p>
       <ul className={styles.linkList}>
-          <li><a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Google Analytics Kapsamı Dışında Kalma</a></li>
-          <li><a href="http://www.google.com/support/chrome/bin/answer.py?hl=en&answer=95647" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
-          <li><a href="https://support.microsoft.com/en-us/help/17442/windows-internet-explorer-delete-manage-cookies" target="_blank" rel="noopener noreferrer">Internet Explorer</a></li>
-          <li><a href="http://support.mozilla.com/en-US/kb/Cookies" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
+          <li><a href="https://tools.google.com/dlpage/gaoptout?hl=tr" target="_blank" rel="noopener noreferrer">Google Analytics Kapsamı Dışında Kalma</a></li>
+          <li><a href="https://support.google.com/chrome/answer/95647?hl=tr" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
+          <li><a href="https://support.microsoft.com/tr-tr/windows/microsoft-edge-de-tan%C4%B1mlama-bilgilerini-y%C3%B6netme-g%C3%B6r%C3%BCnt%C3%BCleme-izin-verme-engelleme-silme-ve-kullanma-168dab11-0753-043d-7c16-ede5947fc64d" target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
+          <li><a href="https://support.mozilla.org/tr/kb/cerezler-web-sitelerinin-bilgisayarinizda-depoladi?redirectslug=Cookies&redirectlocale=en-US" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
           <li><a href="https://support.apple.com/kb/ph19214?locale=tr_TR" target="_blank" rel="noopener noreferrer">Safari</a></li>
+          <li><a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noopener noreferrer">Opera</a></li>
       </ul>
 
       <h3 className={styles.sectionTitle}>7. İlgili Kişi Olarak Haklarınız (KVKK Madde 11)</h3>
