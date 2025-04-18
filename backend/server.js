@@ -30,16 +30,19 @@ const app = express();
 
 // --- CORS Ayarları (Güncellendi) ---
 const allowedOrigins = [
-  'http://localhost:5173', // Lokal frontend
-  process.env.FRONTEND_URL // Fly.io'daki Secret'tan gelecek canlı frontend URL'si
+  'http://localhost:5173',
+  'https://www.belgehizli.com', // WWW ile
+  'https://belgehizli.com',   // WWW olmadan
+  process.env.FRONTEND_URL   // Fly.io secret'ından gelen (bu biraz gereksiz hale gelebilir)
 ].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
+    // Allowed listesinde varsa veya origin yoksa izin ver
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      console.error(`CORS Error: Origin ${origin} not allowed.`); // <-- Hangi origin'in reddedildiğini loglayalım
+      console.error(`CORS Error: Origin ${origin} not allowed.`);
       callback(new Error('Not allowed by CORS'));
     }
   },
