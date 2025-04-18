@@ -1,5 +1,7 @@
 // backend/pdf-generator/pdfGenerator.js
 const axios = require('axios');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY;
 const BROWSERLESS_API_URL = `https://chrome.browserless.io/pdf?token=${BROWSERLESS_API_KEY}`;
