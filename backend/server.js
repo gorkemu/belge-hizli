@@ -1,3 +1,21 @@
+// server.js (EN ÜSTE YAKIN BİR YERE EKLEYİN)
+
+process.on('uncaughtException', (error) => {
+  console.error('UNCAUGHT EXCEPTION! Shutting down...');
+  console.error(error.stack || error);
+  process.exit(1); // Hata sonrası çıkış yap
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('UNHANDLED REJECTION! Reason:', reason);
+  console.error(promise);
+  // İsteğe bağlı: Uygulamayı burada da durdurabilirsiniz ama genellikle sadece loglamak yeterli olabilir.
+  // process.exit(1);
+});
+
+// --- Diğer require'lar ve kodunuz buradan devam eder ---
+
+
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -80,10 +98,9 @@ app.use((err, req, res, next) => {
 
 
 // --- Port Ayarı (Güncellendi) ---
-// Koyeb'in sağladığı PORT'u veya lokal geliştirme için 5001'i kullan (5000 de kalabilir)
+// server.js (app.listen'den önce)
 const port = process.env.PORT || 8080;
-// --- Port Ayarı Sonu ---
-
-app.listen(port, '0.0.0.0', () => { // <-- ÖNEMLİ: '0.0.0.0' eklendi
+console.log(`Attempting to listen on port: ${port} (from process.env.PORT: ${process.env.PORT})`); // <-- Ekstra log
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port: ${port}`);
 });
