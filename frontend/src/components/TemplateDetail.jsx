@@ -29,7 +29,7 @@ function TemplateDetail() {
         setError(null);
         axios.get(`${API_BASE_URL}/templates/${id}`)
             .then(response => {
-                console.log('Template data fetched:', response.data); // Debugging
+                // console.log('Template data fetched:', response.data); // Debugging
                 setTemplate(response.data);
                 // Form state'ini sıfırla (yeni şablon için)
                 setFormData({});
