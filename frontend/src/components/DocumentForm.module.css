@@ -344,3 +344,11 @@ select:-ms-input-placeholder {
       flex-grow: 1;
   }
 }
+
+.emailInfoText {
+  display: block; /* Inputtan sonra yeni satırda başlasın */
+  margin-top: 0.4rem; /* Üstündeki elemandan boşluk */
+  font-size: 0.8rem; /* Küçük font */
+  color: var(--gray-600); /* Biraz soluk renk */
+  font-style: italic;
+}

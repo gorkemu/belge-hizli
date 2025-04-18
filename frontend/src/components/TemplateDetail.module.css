@@ -86,3 +86,32 @@
     gap: 1rem; /* Daha az boşluk */
   }
 }
+
+.paymentSection {
+  /* ... (mevcut paymentSection stilleri) ... */
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--gray-200);
+  text-align: center; /* İçeriği ortala */
+}
+
+.payDownloadButton {
+  /* ... (mevcut buton stilleri) ... */
+   margin-bottom: 1rem; /* Altındaki mesajlardan boşluk */
+}
+
+.successMessage {
+color: var(--primary-color); /* Yeşil renk */
+background-color: #eaf6ec; /* Çok açık yeşil arka plan */
+border: 1px solid var(--primary-color-dark);
+padding: 0.8rem 1rem;
+border-radius: 5px;
+margin-top: 1rem;
+display: inline-block; /* Sadece kendi genişliği kadar yer kaplasın */
+}
+
+.paymentError {
+  color: #dc3545; /* Kırmızı */
+  font-weight: bold;
+  margin-top: 1rem;
+}

@@ -225,16 +225,11 @@ const DocumentForm = forwardRef(({ templateFields, onChange }, ref) => {
             <h3>Formu Doldurun</h3>
             <form onSubmit={(e) => e.preventDefault()} className={styles.dynamicForm}>
                 {templateFields.map((field) => {
-                    // --- YENİ: Alanın görünür olup olmadığını kontrol et ---
                     const visible = isFieldVisible(field, formValues);
-
-                    // Eğer görünür değilse, bu alanı render etme
                     if (!visible) {
                         return null;
                     }
-                    // --- YENİ SON ---
 
-                    // --- Mevcut Render Mantığı (Sadece görünür alanlar için çalışacak) ---
                     return (
                         <div key={field.name} className={styles.formGroup}>
                             {field.fieldType !== 'checkbox' && (
@@ -245,9 +240,16 @@ const DocumentForm = forwardRef(({ templateFields, onChange }, ref) => {
                             )}
                             {renderInputField(field)}
                             {errors[field.name] && <p className={styles.errorMessage}>{errors[field.name]}</p>}
+
+                            {/* ---- YENİ BİLGİ NOTU ---- */}
+                            {field.name === 'belge_email' && (
+                                <small className={styles.emailInfoText}>
+                                    (Oluşturulan PDF belgenizin bir kopyası bu e-posta adresine de gönderilecektir.)
+                                </small>
+                            )}
+                            {/* ---- YENİ BİLGİ NOTU SONU ---- */}
                         </div>
                     );
-                    // --- Mevcut Render Mantığı Sonu ---
                 })}
             </form>
         </div>

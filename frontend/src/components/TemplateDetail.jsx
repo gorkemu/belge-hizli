@@ -21,6 +21,8 @@ function TemplateDetail() {
     const [loadingPayment, setLoadingPayment] = useState(false); // Ödeme/İndirme işlemi yükleme durumu
     const [paymentError, setPaymentError] = useState(null); // Ödeme/İndirme hatası
 
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false); 
+
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
     // Şablon verisini backend'den çek
@@ -71,11 +73,14 @@ function TemplateDetail() {
         }
 
         // 4. Doğrulama başarılıysa, ödeme/indirme işlemini başlat
-        console.log("Form geçerli, ödeme/indirme işlemi başlıyor..."); // Debugging
-        console.log("Gönderilecek FormData:", formData); // Debugging
-        setLoadingPayment(true);
-        setPaymentError(null);
+        // console.log("Form geçerli, ödeme/indirme işlemi başlıyor..."); // Debugging
+        // console.log("Gönderilecek FormData:", formData); // Debugging
 
+        // Önceki mesajları temizle
+        setShowSuccessMessage(false);
+        setPaymentError(null); // Hata mesajını da temizle
+
+        setLoadingPayment(true);
         try {
             // 5. Backend'e veriyi gönder (formData olduğu gibi gönderiliyor)
             const response = await axios.post(`${API_BASE_URL}/templates/${id}/process-payment`, {
@@ -102,11 +107,20 @@ function TemplateDetail() {
 
             // 7. İndirme sonrası temizlik
             document.body.removeChild(link);
+
             window.URL.revokeObjectURL(url);
             console.log("PDF indirme işlemi başarılı."); // Debugging
 
             // İsteğe bağlı: Başarı mesajı gösterilebilir veya başka bir sayfaya yönlendirilebilir
             // alert('PDF dosyanız başarıyla indirildi!');
+
+            // ---- YENİ: Başarı Mesajını Göster ----
+            setShowSuccessMessage(true);
+            // Mesajı birkaç saniye sonra otomatik gizle (opsiyonel)
+            setTimeout(() => {
+                setShowSuccessMessage(false);
+            }, 5000); // 5 saniye sonra gizle
+            // ---- YENİ SON ----
 
         } catch (error) {
             console.error('Ödeme/İndirme hatası:', error.response || error.message || error);
@@ -127,6 +141,7 @@ function TemplateDetail() {
             }
             setPaymentError(errorMessage);
             alert(`Hata: ${errorMessage}`); // Kullanıcıya hata mesajını göster
+            setShowSuccessMessage(false); // Hata durumunda başarı mesajını gizle
 
         } finally {
             setLoadingPayment(false); // Yükleme durumunu kapat
@@ -200,11 +215,17 @@ function TemplateDetail() {
                 >
                     {loadingPayment ? 'İşleniyor...' : `Öde (${template.price || 0} TRY) ve İndir`}
                 </button>
-                {paymentError && <p className={styles.paymentError}>{paymentError}</p>}
-             </div>
 
-            {/* Ayrı bir PaymentScreen modalı kullanılacaksa buraya eklenebilir */}
-            {/* {showPaymentScreen && <PaymentScreen ... />} */}
+                {/* ---- YENİ: Başarı Mesajı Alanı ---- */}
+                {showSuccessMessage && (
+                    <p className={styles.successMessage}>
+                        ✅ PDF başarıyla oluşturuldu ve indiriliyor. Bir kopya da e-posta adresinize gönderiliyor...
+                    </p>
+                )}
+                {/* ---- YENİ SON ---- */}
+
+                {paymentError && <p className={styles.paymentError}>{paymentError}</p>}
+            </div>
         </div>
     );
 }
