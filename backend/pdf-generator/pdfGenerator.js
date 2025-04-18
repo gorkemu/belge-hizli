@@ -9,28 +9,31 @@ async function generatePdf(htmlContent, options = {}) {
         console.error("Hata: BROWSERLESS_API_KEY ortam değişkeni tanımlanmamış!");
         throw new Error("PDF oluşturma servisi yapılandırılamadı.");
     }
-    console.log("Sending request to Browserless API..."); // BU LOG GÖRÜNMELİ
+    console.log("Sending request to Browserless API...");
+
     try {
         const response = await axios.post(
             BROWSERLESS_API_URL,
             {
                 html: htmlContent,
-                options: {
+                options: { // PDF oluşturma seçenekleri
                     format: 'A4',
                     printBackground: true,
                     margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
-                    waitUntil: 'networkidle0',
-                    timeout: 60000,
-                    ...options
+                    // waitUntil: 'networkidle0', // <-- BU SATIRI KALDIRDIK/YORUM YAPTIK
+                    timeout: 60000, // PDF oluşturma için timeout (Browserless bunu destekliyor olabilir)
+                    ...options // Dışarıdan gelen ek opsiyonlar
                 }
             },
             {
                 responseType: 'arraybuffer',
-                timeout: 70000
+                timeout: 70000 // Axios isteği için genel timeout
             }
         );
-        console.log("Received response from Browserless API. Status:", response.status); // BU LOG GÖRÜNMELİ
+
+        console.log("Received response from Browserless API. Status:", response.status);
         return response.data;
+
     } catch (error) {
         console.error("Error calling Browserless API:", error.response?.data?.toString() || error.message);
         throw new Error(`PDF oluşturulurken harici serviste hata oluştu: ${error.message}`);
