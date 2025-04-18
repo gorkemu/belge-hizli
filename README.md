@@ -1,16 +1,18 @@
 # Contract-Generator
 
-A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system dynamically creates forms and previews based on the template structure stored in MongoDB.
+A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system dynamically creates forms and previews based on the template structure stored in MongoDB, and utilizes an external service for PDF generation.
 
 ## ✨ Core Features
 
 *   **Dynamic Templates:** New contract/document types can be added to the system simply by adding new template documents to MongoDB, without requiring code changes.
-*   **Dynamic Form Generation:** The form in the user interface for each template is automatically generated based on the template's `fields` array in MongoDB (text boxes, select lists, dates, etc.).
-*   **Live Preview:** As the user fills out the form, a preview representing the final document is updated in real-time according to the HTML/Handlebars structure in the template's `content` field.
-*   **Form Validation:** Basic validation is automatically performed for fields marked as `required` in the template.
-*   **PDF Generation:** Using the filled form data, a PDF document conforming to the template is generated on the backend (using Puppeteer).
+*   **Dynamic Form Generation:** The user interface form for each template is automatically generated based on the template's `fields` array in MongoDB (text boxes, select lists, dates, etc.).
+*   **Conditional Form Fields:** Forms can conditionally show or hide specific fields based on user selections in other fields, providing a more interactive experience.
+*   **Live Preview:** As the user fills out the form, a preview representing the final document is updated in real-time according to the template's `content` field (using Handlebars.js).
+*   **Form Validation:** Basic validation is automatically performed for fields marked as `required` in the template (only when visible).
+*   **PDF Generation (via External Service):** Uses the filled form data and template content to generate a PDF document via the Browserless.io API, offloading the resource-intensive task from the backend server.
 *   **Payment Simulation:** A simple payment flow is simulated before document download (ready for actual payment integration).
 *   **Static Pages:** Skeleton structure and routing for basic informational pages like Privacy Policy, Terms of Use, etc., are available.
+*   **Deployed:** Frontend hosted on Vercel, Backend API (Dockerized) hosted on Fly.io.
 
 ## 🛠️ Technology Stack
 
@@ -25,88 +27,20 @@ A web application that allows users to generate contracts and documents in PDF f
     *   Express.js
     *   MongoDB Atlas (Database)
     *   Mongoose (ODM)
-    *   Puppeteer (PDF Generation)
-    *   Handlebars.js (for server-side template processing)
+    *   Axios (for calling Browserless API)
+    *   Handlebars.js (for server-side template processing before sending to Browserless)
     *   dotenv (for environment variables)
+*   **Services:**
+    *   Browserless.io (External Headless Chrome API for PDF generation)
+    *   Vercel (Frontend Hosting)
+    *   Fly.io (Backend Docker Hosting)
 
-📁 Project Structure
+## 🚀 Deployment
 
-.
-├── backend/
-│   ├── models/         # Mongoose schemas (template.js)
-│   ├── routes/         # API endpoint definitions (templates.js)
-│   ├── pdf-generator/  # PDF generation module (pdfGenerator.js)
-│   ├── temp-pdfs/      # (May be created) Folder for temporary PDFs
-│   ├── node_modules/
-│   ├── .env            # Environment variables (ATLAS_URI etc. - SECRET)
-│   ├── server.js       # Main server file
-│   └── package.json
-└── frontend/
-    ├── public/         # Static assets
-    ├── src/
-    │   ├── assets/
-    │   ├── components/   # React components (TemplateList, TemplateDetail, DocumentForm, DocumentPreview etc.)
-    │   ├── hooks/        # Custom hooks (usePdfGeneration etc.)
-    │   ├── App.jsx       # Main application component and routing
-    │   ├── main.jsx      # Application entry point
-    │   └── index.css     # Global styles
-    ├── node_modules/
-    ├── index.html      # Main HTML file
-    ├── vite.config.js  # Vite configuration
-    └── package.json
-└── README.md           # This file
-└── .gitignore          # Files ignored by Git
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-*   Node.js (LTS version recommended)
-*   npm or yarn
-*   MongoDB Atlas account with a cluster created.
-
-### Installation
-
-1.  **Clone the Project:**
-    ```bash
-    git clone <repository-url>
-    cd contract-generator # Navigate to the project directory
-    ```
-
-2.  **Backend Setup:**
-    ```bash
-    cd backend
-    npm install
-    ```
-    *   Create a file named `.env` in the `backend` directory.
-    *   Add your MongoDB Atlas connection URI to this file:
-        ```dotenv
-        ATLAS_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority
-        PORT=5001 # Optional, defaults to 5001
-        ```
-        *Replace `<username>`, `<password>`, `<cluster-url>`, and `<database-name>` with your own credentials.*
-
-3.  **Frontend Setup:**
-    ```bash
-    cd ../frontend
-    npm install
-    ```
-
-### Running the Application
-
-1.  **Start the Backend Server:**
-    ```bash
-    cd ../backend
-    npm start
-    ```
-    *The server will run on port 5001 by default.*
-
-2.  **Start the Frontend Development Server:**
-    ```bash
-    cd ../frontend
-    npm run dev
-    ```
-    *The application will typically open at `http://localhost:5173` (check the console output).*
+*   **Frontend:** Deployed on [Vercel](https://vercel.com/) via Git integration. The live URL is: [https://belgehizli.vercel.app/](https://belgehizli.vercel.app/)
+*   **Backend:** Deployed as a Docker container on [Fly.io](https://fly.io/) via Git integration and `fly.toml` / `Dockerfile`. The live API URL is: [https://belgehizli-api.fly.dev/api](https://belgehizli-api.fly.dev/api)
+*   **Database:** Hosted on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+*   **PDF Generation:** Handled by making API calls to [Browserless.io](https://www.browserless.io/). Requires a `BROWSERLESS_API_KEY` environment variable set in the backend deployment environment (Fly.io Secrets).
 
 ## 📄 Adding New Templates (IMPORTANT!)
 
@@ -128,7 +62,9 @@ The core strength of this application is the ability to add new document templat
           "label": "User Name", // String (Required - Form label)
           "fieldType": "text", // String (Required - "text", "textarea", "number", "date", "select", "radio", "email", "checkbox")
           "placeholder": "Enter your full name", // String (Optional)
-          "required": true // Boolean (Required)
+          "required": true, // Boolean (Required)
+          // Optional condition for visibility:
+          // "condition": { "field": "controlling_field_name", "value": "required_value_for_visibility" }
         },
         {
           "name": "type",
@@ -145,12 +81,13 @@ The core strength of this application is the ability to add new document templat
 *   Every field object in the `fields` array **must** include `name`, `label`, `fieldType`, and `required`.
 *   The `options` array is **required** for `fieldType` values of `select` or `radio`.
 *   Handlebars expressions (`{{handlebars_expressions}}`) and helper usage (`eq`, `math`, etc.) within the `content` **must** be consistent with the `name`s defined in the `fields` array and the data structure coming from the form.
+*   To make a field conditional, add a `condition` object specifying the `field` to check and the `value` it must have for the current field to be displayed.
 
 ## 📜 Available Scripts
 
 *   **Backend:**
-    *   `npm start`: Runs the backend server with node.
-    *   `npm run dev`: Runs the backend server in development mode with nodemon (if configured).
+    *   `npm start`: Runs the backend server with node (used in production).
+    *   `npm run dev`: Runs the backend server in development mode with nodemon.
 *   **Frontend:**
     *   `npm run dev`: Starts the frontend development server (with HMR).
     *   `npm run build`: Compiles the frontend files for production (into the `dist` folder).
@@ -161,16 +98,15 @@ The core strength of this application is the ability to add new document templat
 *   Real payment system integration (Stripe, Iyzico, etc.).
 *   User accounts (registration, login, document management).
 *   Admin panel for template management.
-*   Advanced form features (conditional fields, repeatable blocks).
-*   User experience and UI improvements.
-*   Detailed error handling and logging.
+*   Advanced form feature: Repeatable blocks/sections.
+*   UI/UX improvements and enhanced styling.
+*   Detailed error handling and user feedback.
 *   Sending generated PDFs via email.
-*   Increased test coverage.
-*   Deployment.
+*   Increased test coverage (Unit & Integration tests).
 
 ## 🤝 Contributing (Optional)
 
-If you wish to contribute, please start by opening an issue or discussing an existing one. Pull requests are welcome.
+Contributions are welcome. Please open an issue first to discuss what you would like to change or add. Pull requests can then be submitted.
 
 ## 📄 License (Optional)
 
