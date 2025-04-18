@@ -20,14 +20,7 @@ function AboutUs() {
 
       {/* Paragraf stilini uygula */}
       <p className={styles.paragraph}>
-        [Misyonunuzu veya vizyonunuzu ekleyebilirsiniz. Örn: Misyonumuz, dijital araçlarla belge hazırlama
-        süreçlerini herkes için erişilebilir kılmaktır.]
-      </p>
-
-      {/* Paragraf stilini uygula */}
-      <p className={styles.paragraph}>
-        Sitemizde bulunan [örn: Konut Kira Sözleşmesi gibi] şablonlar, [nasıl hazırlandığını kısaca belirtin, örn: alanında
-        deneyimli profesyonellerin katkılarıyla genel ihtiyaçlar göz önünde bulundurularak] hazırlanmıştır.
+        Sitemizde bulunan şablonlar, alanında deneyimli profesyonellerin katkılarıyla genel ihtiyaçlar göz önünde bulundurularak hazırlanmıştır.
         Form alanlarını doldurarak bu şablonları kendi durumunuza göre kişiselleştirebilir ve anında
         PDF formatında indirebilirsiniz.
       </p>
@@ -37,11 +30,6 @@ function AboutUs() {
         <strong>Unutmayın:</strong> {siteName} bir hukuk bürosu değildir ve sunduğumuz hizmetler hukuki danışmanlık
         yerine geçmez. Oluşturduğunuz belgelerin özel durumunuza tam uygunluğu ve yasal geçerliliği konusunda
         emin olmak için her zaman bir hukuk profesyoneline danışmanızı öneririz.
-      </p>
-
-      {/* Paragraf stilini uygula */}
-      <p className={styles.paragraph}>
-        [Eklemek istediğiniz başka bilgiler varsa buraya yazabilirsiniz. Ekip hakkında, gelecek planları vb.]
       </p>
 
       {/* Paragraf stilini uygula */}
