@@ -37,7 +37,7 @@ A web application that allows users to generate contracts and documents in PDF f
 
 ## 🚀 Deployment
 
-*   **Frontend:** Deployed on [Vercel](https://vercel.com/) via Git integration. The live URL is: [https://belgehizli.vercel.app/](https://belgehizli.vercel.app/)
+*   **Frontend:** Deployed on [Vercel](https://vercel.com/) via Git integration. The live URL is: [https://belgehizli.com/](https://belgehizli.com/)
 *   **Backend:** Deployed as a Docker container on [Fly.io](https://fly.io/) via Git integration and `fly.toml` / `Dockerfile`. The live API URL is: [https://belgehizli-api.fly.dev/api](https://belgehizli-api.fly.dev/api)
 *   **Database:** Hosted on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 *   **PDF Generation:** Handled by making API calls to [Browserless.io](https://www.browserless.io/). Requires a `BROWSERLESS_API_KEY` environment variable set in the backend deployment environment (Fly.io Secrets).
