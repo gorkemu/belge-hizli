@@ -1,16 +1,100 @@
+/* frontend/src/components/TemplateList.module.css */
+
+.listPageContainer {
+  /* Sayfanın genel konteyneri için padding vb. ayarlanabilir */
+}
+
+/* --- YENİ STILLER --- */
+.listHeader {
+  display: flex;
+  flex-wrap: wrap; /* Küçük ekranlarda alt alta gelmesi için */
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--gray-100); /* Hafif arka plan */
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  margin-bottom: 2.5rem; /* Liste ile arasına boşluk */
+  gap: 1.5rem;
+}
+
+.headerText {
+  flex-basis: 60%; /* Metin alanı daha geniş olsun */
+  min-width: 300px; /* Çok daralmasın */
+}
+
+.headerText h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  color: var(--gray-800);
+}
+
+.headerText p {
+  font-size: 1rem;
+  color: var(--gray-700);
+  margin-bottom: 0.5rem;
+}
+
+.headerText .disclaimer {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+.headerIcons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-basis: 35%; /* İkon alanı */
+  justify-content: center; /* İkonları ortala */
+  min-width: 250px;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stepIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1; /* Dikey hizalama için */
+}
+
+.stepItem span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.stepSeparator {
+    font-size: 1.5rem;
+    color: var(--gray-400);
+    align-self: center; /* İkonlarla aynı hizada */
+    padding-bottom: 1rem; /* Span ile hizalamak için ayar */
+}
+
+
+/* --- YENİ STILLER SONU --- */
+
+/* --- MEVCUT STILLER --- */
 .templateList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
-  margin-top: 2rem;
+  /* margin-top kaldırıldı, header ile arası ayarlandı */
 }
 
 .templateCard {
-  background-color: var(--background-color); /* Beyaz arka plan */
+  background-color: var(--background-color);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 
 .templateCard:hover {
@@ -20,35 +104,78 @@
 
 .cardTitle {
   margin-bottom: 0.5rem;
-  color: var(--gray-800); /* Koyu gri başlık */
-  font-size: 1.1rem; /* Biraz daha belirgin */
+  color: var(--gray-800);
+  font-size: 1.1rem;
 }
 
 .cardDescription {
-  color: var(--text-color); /* Orta gri açıklama metni */
+  color: var(--text-color);
   margin-bottom: 1rem;
   font-size: 0.9rem;
   line-height: 1.4;
+  flex-grow: 1;
+}
+
+.cardPrice {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    margin-top: auto;
 }
 
 .cardLink {
   display: inline-block;
-  padding: 0.6rem 1.2rem; /* Biraz daha dolgun */
-  background-color: var(--primary-color); /* Yeşil ana renk */
-  color: var(--background-color); /* Beyaz metin */
+  padding: 0.6rem 1.2rem;
+  background-color: var(--primary-color);
+  color: white !important; /* CSS değişkeni yerine direkt white */
   border-radius: 4px;
   font-weight: 500;
-  text-decoration: none; /* Alt çizgiyi kaldır */
+  text-decoration: none !important;
   transition: background-color 0.2s;
+  align-self: flex-start;
+  margin-top: 1rem; /* Fiyattan veya açıklamadan sonra boşluk */
+  text-align: center; /* Buton içindeki metni ortala */
 }
 
 .cardLink:hover {
-  background-color: darken(#28a745, 10%); /* Daha koyu yeşil */
-  text-decoration: none; /* Hoverda da alt çizgi yok */
+  background-color: var(--primary-color-dark);
+  text-decoration: none !important;
 }
 
-/* Mobil cihazlar için (767px ve altı) */
+/* Hata ve Yükleme Mesajları */
+.loadingMessage, .errorMessage, .noTemplatesMessage {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.1rem;
+    color: var(--gray-600);
+}
+
+.errorMessage {
+    color: #dc3545; /* Kırmızı */
+    font-weight: bold;
+}
+
+
+/* Mobil cihazlar için */
 @media (max-width: 767px) {
+  .listHeader {
+    padding: 1.5rem;
+    flex-direction: column; /* Başlığı da alt alta getir */
+    text-align: center;
+  }
+  .headerText {
+    flex-basis: 100%;
+    margin-bottom: 1.5rem;
+  }
+  .headerIcons {
+     flex-basis: 100%;
+     gap: 0.5rem; /* İkonlar arası boşluğu azalt */
+  }
+   .stepSeparator {
+    padding-bottom: 0; /* Hizalama ayarını sıfırla */
+  }
+
   .templateList {
     grid-template-columns: 1fr; /* Tek sütun */
   }

@@ -1,0 +1,143 @@
+/* frontend/src/components/HomePage.module.css */
+
+.homeContainer {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    font-family: sans-serif;
+    color: #333;
+  }
+  
+  /* Hero Section */
+  .heroSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--gray-100);
+    padding: 4rem 3rem;
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    gap: 2rem;
+  }
+  
+  .heroContent {
+    flex: 1;
+    max-width: 600px;
+  }
+  
+  .heroTitle {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: var(--gray-900); /* Daha koyu başlık */
+  }
+  
+  .heroSubtitle {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--gray-700); /* Text color ile uyumlu */
+  }
+  
+  .heroImagePlaceholder {
+    flex-shrink: 0;
+    font-size: 5rem; /* İkonu büyüttük */
+    opacity: 0.5;
+  }
+  
+  /* Nasıl Çalışır Bölümü */
+  .howItWorksSection {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  
+  .sectionTitle {
+    font-size: 2rem;
+    margin-bottom: 2.5rem;
+    color: var(--gray-800);
+  }
+  
+  .stepsContainer {
+    display: flex;
+    justify-content: space-around;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .step {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    padding: 1.5rem;
+    border: 1px solid var(--gray-300); /* Kenarlık rengi */
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  
+  .step h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    color: var(--gray-800);
+  }
+  
+  .step p {
+    font-size: 0.95rem;
+    color: var(--gray-600); /* Biraz daha açık */
+  }
+  
+  /* İkon Yer Tutucuları */
+  .iconPlaceholder {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color); /* İkon rengi yeşil */
+  }
+  
+  /* Butonlar */
+  .ctaButton {
+    display: inline-block;
+    background-color: var(--primary-color); /* Ana renk */
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .ctaButton:hover {
+    background-color: var(--primary-color-dark); /* Koyu yeşil */
+    text-decoration: none; /* Alt çizgiyi kaldır */
+  }
+  
+  /* Alt CTA Bölümü */
+  .footerCtaSection {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--gray-200); /* Daha açık çizgi */
+  }
+  
+  /* Küçük Ekranlar */
+  @media (max-width: 768px) {
+    .heroSection {
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+  
+    .heroImagePlaceholder {
+      margin-top: 2rem;
+    }
+  
+    .heroTitle {
+      font-size: 2rem;
+    }
+  
+    .stepsContainer {
+      flex-direction: column;
+      align-items: center;
+    }
+  }

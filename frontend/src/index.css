@@ -1,5 +1,7 @@
+/* frontend/src/index.css */
 :root {
   --primary-color: #28a745; /* Yeşil */
+  --primary-color-dark: #218838; /* Hover için koyu yeşil */
   --secondary-color: #17a2b8; /* Açık Mavi */
   --background-color: #fff; /* Beyaz */
   --text-color: #495057; /* Orta Gri */
@@ -12,7 +14,7 @@
   --gray-700: #495057;
   --gray-800: #343a40;
   --gray-900: #212529;
-  --accent: #1473e6; /* Mevcut accent rengini şimdilik tutuyoruz, gerekirse --secondary-color ile değiştirebilirsiniz */
+  --accent: #1473e6;
 }
 
 * {
@@ -33,36 +35,55 @@ body {
 a {
   color: var(--primary-color);
   text-decoration: none;
+  transition: color 0.2s ease; /* Renk geçişi için */
 }
 
 a:hover {
-  text-decoration: underline;
+  /* text-decoration: underline;  <-- Kaldırıldı */
+  /* Genel hover rengini bir tık koyu yapabiliriz veya component bazlı bırakabiliriz */
+  /* color: var(--primary-color-dark); */
 }
 
 /* Buton stilleri (temel) */
 button {
   background-color: var(--primary-color);
-  color: var(--background-color);
+  color: var(--background-color); /* Veya #fff */
   border: none;
   padding: 0.75rem 1.5rem;
   cursor: pointer;
   border-radius: 0.25rem;
   font-size: 1rem;
+  transition: background-color 0.2s ease; /* Renk geçişi için */
 }
 
 button:hover {
-  background-color: darken(#28a745, 10%); /* Daha koyu bir yeşil */
+  background-color: var(--primary-color-dark); /* Koyu yeşil */
 }
 
-/* Diğer temel element stilleri (gerekirse ekleyebilirsiniz) */
+/* Diğer temel element stilleri */
 input[type="text"],
 input[type="email"],
 input[type="password"],
+input[type="date"], /* Date input eklendi */
+input[type="number"], /* Number input eklendi */
+select, /* Select eklendi */
 textarea {
   padding: 0.5rem;
   border: 1px solid var(--gray-300);
   border-radius: 0.25rem;
   font-size: 1rem;
+  width: 100%; /* Genellikle form elemanları tam genişlikte olur */
+  margin-top: 0.25rem; /* Etiketten sonra küçük boşluk */
+  color: var(--text-color); /* Input içi yazı rengi */
 }
 
-/* ... diğer genel stilleriniz buraya gelebilir ... */
+textarea {
+  min-height: 80px; /* Textarea için minimum yükseklik */
+}
+
+/* Inputlara odaklanıldığında hafif bir efekt */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25); /* Yeşil odaklanma halkası */
+}

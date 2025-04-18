@@ -1,63 +1,39 @@
+/* frontend/src/App.module.css */
+
+/* CSS Değişkenleri (index.css'den miras alınır, tekrar tanımlamaya gerek yok) */
+
 .appContainer {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Tüm ekran yüksekliğini kapla */
+  min-height: 100vh;
 }
 
 .appHeader {
   background-color: var(--gray-100);
-  padding: 1rem; /* Daha az genel padding */
+  padding: 1rem;
   display: flex;
-  justify-content: space-between; /* Logo ve nav arası boşluk */
+  justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--gray-300);
+  position: sticky; /* Header'ı yukarı sabitle */
+  top: 0;
+  z-index: 100; /* Diğer içeriklerin üzerinde kalması için */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Hafif gölge */
 }
 
 .logo {
-  font-size: 1.5rem; /* Boyut */
-  color: var(--primary-color); /* Ana renginiz */
   text-decoration: none;
-  font-weight: bold;
-  letter-spacing: 0.5px; /* Harfler arası hafif boşluk */
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  display: block;
+  max-height: 45px; /* Yüksekliği biraz azalttım */
+  /* width: auto; */ /* Genişlik otomatik ayarlansın */
 }
 
 .appNav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 1rem; /* Linkler arası boşluk */
-  align-items: center;
-}
-
-.appNav ul li a {
-  color: var(--text-color);
-  text-decoration: none;
-  font-size: 0.9rem; /* Daha küçük linkler */
-}
-
-.appNav ul li a:hover {
-  color: var(--primary-color);
-}
-
-.appMain {
-  flex-grow: 1;
-  padding: 1.5rem; /* Daha az genel padding */
-}
-
-.appFooter {
-  background-color: var(--gray-200);
-  padding: 1rem; /* Daha az genel padding */
-  text-align: center;
-  border-top: 1px solid var(--gray-300);
-  display: flex;
-  flex-direction: column; /* Mobil için alt alta */
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem; /* Daha küçük font */
-}
-
-.appFooter nav ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -66,23 +42,71 @@
   align-items: center;
 }
 
-.appFooter nav ul li a {
-  color: var(--text-color);
+.appNav ul li a {
+  color: var(--gray-700); /* Varsayılan renk daha koyu gri */
   text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+  font-weight: 500; /* Biraz daha kalın */
+  transition: color 0.2s ease; /* Geçiş efekti */
+}
+
+.appNav ul li a:hover,
+.appNav ul li a.active { /* Aktif link stili de eklenebilir (NavLink ile) */
+  color: var(--primary-color); /* Hover'da Yeşil */
+}
+
+.appMain {
+  flex-grow: 1;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.appFooter {
+  background-color: var(--gray-200);
+  padding: 1rem;
+  border-top: 1px solid var(--gray-300);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin-top: auto;
+}
+
+.appFooter p {
+    margin: 0.5rem 0;
+    color: var(--gray-600); /* Biraz daha açık gri */
+}
+
+.appFooter nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+}
+
+.appFooter nav ul li a {
+  color: var(--gray-700); /* Varsayılan renk */
+  text-decoration: none;
+  transition: color 0.2s ease; /* Geçiş efekti */
 }
 
 .appFooter nav ul li a:hover {
-  color: var(--primary-color);
+  color: var(--primary-color); /* Hover'da Yeşil */
 }
 
-/* Tablet ve üzeri ekranlar için (768px ve üstü) */
+/* Tablet ve üzeri ekranlar */
 @media (min-width: 768px) {
   .appHeader {
-      padding: 1rem 2rem; /* Biraz daha yatay padding */
-  }
-
-  .logo {
-      font-size: 1.5rem;
+      padding: 1rem 2rem;
   }
 
   .appNav ul {
@@ -93,20 +117,25 @@
       font-size: 1rem;
   }
 
+  .appMain {
+    padding: 1.5rem 2rem;
+  }
+
   .appFooter {
       padding: 1rem 2rem;
-      flex-direction: row; /* Yan yana */
-      justify-content: space-between; /* Öğeler arası boşluk */
+      flex-direction: row;
+      justify-content: space-between;
       align-items: center;
   }
 
   .appFooter p {
-      margin-bottom: 0; /* Yan yana düzende boşluğa gerek yok */
+      margin: 0;
       text-align: left;
   }
 
   .appFooter nav ul {
       gap: 1.5rem;
+      justify-content: flex-end;
   }
 
   .appFooter nav ul li a {
@@ -114,8 +143,7 @@
   }
 }
 
-
-/* Daha geniş masaüstü ekranlar için (1200px ve üstü - isteğe bağlı) */
+/* Geniş masaüstü */
 @media (min-width: 1200px) {
   .appHeader {
       padding: 1rem 4rem;
