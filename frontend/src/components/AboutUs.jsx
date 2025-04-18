@@ -12,7 +12,7 @@ function AboutUs() {
 
       {/* Paragraf stilini uygula */}
       <p className={styles.paragraph}>
-        <strong>{siteName}</strong> olarak amacımız, ıkça ihtiyaç duyulan yasal belgeleri
+        <strong>{siteName}</strong> olarak amacımız, sıkça ihtiyaç duyulan yasal belgeleri
         hazırlama sürecini kolaylaştırmak, hızlı ve pratik çözümler sunmaktır. Teknolojiyi kullanarak,
         belirli standartlardaki belge ihtiyaçlarınızı, uzmanlara danışma ihtiyacı duymadan (ancak bunun hukuki tavsiye olmadığını unutmayın!),
         kendi bilgilerinizle hızlıca oluşturmanıza olanak tanıyoruz.
