@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './AboutUs.module.css'; // Stil dosyasını import et
 
 function AboutUs() {
-  const siteName = "[Web Sitesi Adı]";
+  const siteName = "Belge Hızlı";
 
   return (
     // Ana container stilini uygula
