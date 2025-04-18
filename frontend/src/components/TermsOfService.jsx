@@ -9,7 +9,7 @@ function TermsOfService() {
   const address = "[Merkez Adresiniz]";
   const email = "[E-posta Adresiniz]";
   const phone = "[Telefon Numaranız]";
-  const lastUpdateDate = "[Güncel Tarih, örn: 18.04.2025]";
+  const lastUpdateDate = "18.04.2025";
   const taxOffice = "[Vergi Dairesi]";
   const taxIdNumber = "[Vergi Kimlik Numarası (VKN)]";
   // const mersisNo = "[MERSİS Numarası (varsa)]"; // Varsa ekleyin
