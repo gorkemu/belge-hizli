@@ -126,7 +126,6 @@
 .templateCard {
   background-color: var(--background-color);
   border-radius: 8px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */ /* Başlangıç gölgesini azalt */
   border: 1px solid var(--gray-300); /* Gölge yerine ince kenarlık */
   padding: 1.5rem;
   transition: transform 0.25s ease, box-shadow 0.25s ease; /* Yumuşak geçiş */
@@ -147,7 +146,6 @@
 /* Kartın üzerine gelince hover içeriğini göster */
 .templateCard:hover .cardHoverContent {
   opacity: 1;
-  transform: translateY(0);
 }
 
 /* Kartın üzerine gelince başlığı yukarı it (isteğe bağlı) */
@@ -171,29 +169,32 @@
   color: var(--gray-800);
   font-size: 1.1rem;
   text-align: center;
-  /* min-height: 3em; Kaldırıldı, flex ile ortalanacak */
   display: flex;
   align-items: center; /* Dikey ortala */
   justify-content: center; /* Yatay ortala */
-  flex-grow: 1; /* Başlığın kartın ortasını doldurmasını sağla */
+  flex-grow: 1; /* Başlığın kartın BOŞ ALANINI doldurmasını sağla */
   font-weight: 600;
   padding: 1rem 0; /* İç boşluk */
   transition: transform 0.25s ease; /* Hover için hazırlık */
 }
 
-/* Hover içeriği (Başlangıçta gizli) */
+/* Hover içeriği (Kartın alt kısmında) */
 .cardHoverContent {
-  position: absolute; /* Kartın altına pozisyonla */
-  bottom: 0;
-  left: 0;
-  right: 0;
   background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0.8)); /* Hafif geçişli arka plan */
-  padding: 1rem 1.5rem 1.5rem 1.5rem; /* İç boşluklar */
+  padding: 1rem 0 0 0; /* Üstte boşluk, diğerleri sıfır */ /* İç boşluklar */
   text-align: center;
   opacity: 0; /* Başlangıçta gizli */
-  transform: translateY(100%); /* Başlangıçta kartın altında */
-  transition: opacity 0.25s ease, transform 0.25s ease; /* Yumuşak geçiş */
-  border-top: 1px solid var(--gray-200); /* Üst çizgi */
+  height: 0; /* Başlangıçta yüksekliği sıfır */
+  overflow: hidden; /* İçeriğin taşmasını engelle */
+  transition: opacity 0.25s ease, height 0.25s ease; /* Yumuşak geçiş */
+  /* border-top: 1px solid var(--gray-200); Kaldırıldı, arka plan yeterli olabilir */
+}
+
+/* Hover durumunda içeriği göster */
+.templateCard:hover .cardHoverContent {
+  opacity: 1;
+  height: auto; /* İçeriğe göre yüksekliği ayarla */
+  padding: 1rem 0 0 0; /* Padding hover'da eklensin */
 }
 
 .cardPrice {
@@ -214,7 +215,6 @@
   text-align: center;
   width: auto; /* Tam genişlik yerine içeriğe göre ayarla */
   display: inline-block; /* inline-block gerekli */
-  /* box-sizing: border-box; */ /* Gerekli değil */
 }
 
 .cardLink:hover {
@@ -255,8 +255,10 @@
     padding-bottom: 0; /* Hizalama ayarını sıfırla */
   }
 
+  .templateList.modernGrid, /* Hem normal hem modern grid için */
   .templateList {
-    grid-template-columns: 1fr; /* Tek sütun */
+    grid-template-columns: 1fr; /* Mobil'de tek sütun */
+    gap: 1rem; /* Mobil'de boşluğu azalt */
   }
 }
 
@@ -266,15 +268,4 @@
   font-size: 1.1rem;
   color: var(--gray-600);
   grid-column: 1 / -1; /* Grid'de tüm sütunları kapla */
-}
-
-/* Media Query içinde grid ayarını güncelleyelim */
-@media (max-width: 767px) {
-  /* ... (listHeader stilleri) ... */
-
-  .templateList.modernGrid, /* Hem normal hem modern grid için */
-  .templateList {
-    grid-template-columns: 1fr; /* Mobil'de tek sütun */
-    gap: 1rem; /* Mobil'de boşluğu azalt */
-  }
 }
