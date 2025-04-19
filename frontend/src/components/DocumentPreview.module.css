@@ -16,7 +16,6 @@
 
 .previewArea {
   white-space: pre-wrap; /* Satır sonlarını ve boşlukları korur */
-  font-family: monospace; /* Daha gerçekçi bir çıktı görünümü için */
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--text-color); /* Orta gri metin */

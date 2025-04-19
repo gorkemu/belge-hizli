@@ -61,9 +61,7 @@ const sendPdfEmail = async (to, subject, text, html, pdfBuffer, pdfFilename) => 
   // Eğer transporter düzgün yapılandırılmadıysa işlem yapma
   if (!transporter) {
       console.error("E-posta gönderilemedi: Taşıyıcı yapılandırılamadı.");
-      // Hata fırlatmak yerine sadece loglayıp devam edebiliriz ki ana işlem (PDF indirme) etkilenmesin.
-      // throw new Error("E-posta gönderilemedi: Taşıyıcı yapılandırılamadı.");
-      return; // Fonksiyondan çık
+      return; 
   }
 
   const mailOptions = {
@@ -82,15 +80,14 @@ const sendPdfEmail = async (to, subject, text, html, pdfBuffer, pdfFilename) => 
   };
 
   try {
-      console.log(`Sending PDF email to ${to}...`);
-      let info = await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully: %s', info.messageId);
-      // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info)); // Sadece ethereal test hesapları için
-  } catch (error) {
-      console.error(`Error sending email to ${to}:`, error);
-      // E-posta gönderim hatası ana işlemi durdurmamalı
-      // throw error; // Hatayı tekrar fırlatma
-  }
+    // E-posta adresini loglamadan gönderim başlatıldığını belirtelim
+    console.log(`Sending PDF email to user...`); 
+    let info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully. Message ID: %s', info.messageId); 
+} catch (error) {
+    // E-posta adresini loglamadan hatayı belirtelim
+    console.error('Error sending email:', error); // 
+}
 };
 
 module.exports = { sendPdfEmail };

@@ -4,16 +4,16 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import styles from './TemplateList.module.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'; // Portu 8080 olarak güncelledim
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'; 
 
-// İkonlar için basit yer tutucu (HomePage'deki ile aynı olabilir veya özelleşebilir)
+// Basit ikon yer tutucusu (opsiyonel, kaldırılabilir)
 const IconPlaceholder = ({ label }) => <div className={styles.stepIcon}>{label}</div>;
 
 function TemplateList() {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(''); // <-- YENİ ARAMA STATE'İ
+  const [searchTerm, setSearchTerm] = useState(''); 
 
   useEffect(() => {
     axios.get(`${API_BASE_URL}/templates`)
@@ -35,15 +35,32 @@ function TemplateList() {
       });
   }, []);
 
-  // ---- YENİ: Arama terimine göre şablonları filtrele ----
+  // ---- Arama terimine göre şablonları filtrele ----
   const filteredTemplates = templates.filter(template =>
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     template.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  // ---- YENİ SON ----
+  // --------
 
   if (loading) return <div className={styles.loadingMessage}>Şablonlar Yükleniyor...</div>;
   if (error) return <div className={styles.errorMessage}>Hata: {error}</div>;
+
+  // --- GÖRSEL YOLU OLUŞTURMA (Örnek - Dosya adını slugify edilmiş isim varsayar) ---
+  // VEYA template._id + '.png' kullanabilirsiniz.
+  const getPreviewImageUrl = (templateName) => {
+    // Basit slugify fonksiyonu (Türkçe karakterleri ve özel karakterleri temizler)
+    const slug = templateName
+      .toLowerCase()
+      .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+      .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+      .replace(/[^a-z0-9]/g, '-') // Harf/rakam dışındakileri tire yap
+      .replace(/-+/g, '-') // Birden fazla tireyi tek tire yap
+      .replace(/^-|-$/g, ''); // Baştaki/sondaki tireyi kaldır
+    // return `/template-previews/${template._id}.png`; // ID kullanmak daha garantili olabilir
+    // Şimdilik sabit bir placeholder kullanalım:
+     return '/template-previews/placeholder.png'; // VEYA yukarıdaki gibi dinamik yapın
+  };
+  // ------------------------------------------------------------
 
   return (
     // Ana konteyner
@@ -81,7 +98,7 @@ function TemplateList() {
       </div>
       {/* ---- BİLGİLENDİRME BÖLÜMÜ SONU ---- */}
 
-      {/* ---- YENİ: Arama Çubuğu ---- */}
+      {/* ---- Arama Çubuğu ---- */}
       <div className={styles.searchContainer}>
         <input
           type="text"
@@ -91,41 +108,40 @@ function TemplateList() {
           onChange={(e) => setSearchTerm(e.target.value)} // State'i güncelle
         />
          {/* Arama ikonunu ekleyebiliriz */}
-         <span className={styles.searchIcon}>🔍</span>
+         {/* <span className={styles.searchIcon}>🔍</span> */}
       </div>
-      {/* ---- YENİ SON ---- */}
+      {/* ---- Arama Çubuğu SON ---- */}
 
-      {/* Filtrelenmiş listeyi map et */}
+      {/* Şablon Listesi (Yeni Kart Yapısı) */}
       {filteredTemplates.length > 0 ? (
-        // <div className={styles.templateList}> <-- Mevcut grid yapısı aynı
-        <div className={`${styles.templateList} ${styles.modernGrid}`}> {/* Modern grid için yeni class ekleyebiliriz */}
-          {filteredTemplates.map(template => ( // templates yerine filteredTemplates kullan
-            // ---- KART İÇERİĞİNİ SADELEŞTİR (Sonraki Adım İçin Hazırlık) ----
+        <div className={styles.templateGrid}> {/* Class ismini değiştirdim */}
+          {filteredTemplates.map(template => (
             <div key={template._id} className={styles.templateCard}>
-               {/* <IconPlaceholder label="📄" /> İkonu buraya alabiliriz */}
-              <h3 className={styles.cardTitle}>{template.name}</h3>
-              {/* Açıklama kaldırıldı/gizlendi (şimdilik yorumda kalsın) */}
-              {/* <p className={styles.cardDescription}>{template.description}</p> */}
-
-              {/* --- Hover'da görünecekler (şimdilik normal görünsün) --- */}
-              <div className={styles.cardHoverContent}>
-                {template.price > 0 && (
-                  <p className={styles.cardPrice}>{template.price} TL</p>
-                )}
-                {template.price === 0 && (
-                  <p className={styles.cardPrice}>Ücretsiz</p>
-                )}
+              {/* ---- GÖRSEL BÖLÜMÜ ---- */}
+              <div className={styles.cardImageContainer}>
+                {/* Statik veya Dinamik Görsel */}
+                <img
+                  src={getPreviewImageUrl(template.name)} // Görsel yolu
+                  alt={`${template.name} Önizleme`}
+                  className={styles.cardPreviewImage}
+                  loading="lazy" // Lazy loading
+                />
+              </div>
+              {/* ---- İÇERİK BÖLÜMÜ ---- */}
+              <div className={styles.cardContent}>
+                <h3 className={styles.cardTitle}>{template.name}</h3>
+                <p className={styles.cardDescription}>{template.description}</p>
+              </div>
+              {/* ---- FOOTER BÖLÜMÜ ---- */}
+              <div className={styles.cardFooter}>
                 <Link to={`/templates/${template._id}`} className={styles.cardLink}>
-                  Görüntüle ve Doldur
+                  Şablonu Kullan
                 </Link>
               </div>
-               {/* --- Hover Sonu --- */}
             </div>
-             // ---- KART İÇERİĞİ SONU ----
           ))}
         </div>
       ) : (
-        // Arama sonucu bulunamazsa farklı mesaj göster
         <div className={styles.noTemplatesMessage}>
           Aradığınız kriterlere uygun şablon bulunamadı.
         </div>

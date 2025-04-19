@@ -1,220 +1,152 @@
 /* frontend/src/components/TemplateList.module.css */
 
 .listPageContainer {
-  /* Sayfanın genel konteyneri için padding vb. ayarlanabilir */
+  max-width: 1200px; /* Sayfa genişliği */
+  margin: 1rem auto;
+  padding: 0 1rem; /* Sağdan soldan boşluk */
 }
 
-.listHeader {
+.listHeader { /* Başlık bölümünü biraz sadeleştirelim */
   display: flex;
-  flex-wrap: wrap; /* Küçük ekranlarda alt alta gelmesi için */
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  background-color: var(--gray-100); /* Hafif arka plan */
-  padding: 2rem 2.5rem;
-  border-radius: 8px;
-  margin-bottom: 2.5rem; /* Liste ile arasına boşluk */
-  gap: 1.5rem;
-}
-
-.headerText {
-  flex-basis: 60%; /* Metin alanı daha geniş olsun */
-  min-width: 300px; /* Çok daralmasın */
+  text-align: center;
+  background-color: transparent; /* Arka planı kaldır */
+  padding: 1rem 0 2rem 0; /* Alt boşluğu artır */
+  border-radius: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--gray-200); /* Altına çizgi */
 }
 
 .headerText h2 {
-  font-size: 1.8rem;
-  margin-bottom: 0.75rem;
-  color: var(--gray-800);
-}
-
-.headerText p {
-  font-size: 1rem;
-  color: var(--gray-700);
+  font-size: 1.6rem; /* Biraz küçült */
   margin-bottom: 0.5rem;
 }
+.headerText p { font-size: 0.95rem; }
+.headerIcons { display: none; } /* İkonları şimdilik kaldıralım */
+.disclaimer { font-size: 0.8rem; }
 
-.headerText .disclaimer {
-  font-size: 0.85rem;
-  color: var(--gray-600);
-  margin-top: 1rem;
-  font-style: italic;
+.searchContainer { /* Arama çubuğu */
+  margin-bottom: 2.5rem;
+  max-width: 500px;
 }
+.searchInput { border-radius: 8px; } /* Daha az yuvarlak */
+.searchIcon { right: 0.8rem; }
 
-.headerIcons {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-basis: 35%; /* İkon alanı */
-  justify-content: center; /* İkonları ortala */
-  min-width: 250px;
-}
 
-.stepItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.stepIcon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  line-height: 1; /* Dikey hizalama için */
-}
-
-.stepItem span {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--gray-700);
-}
-
-.stepSeparator {
-    font-size: 1.5rem;
-    color: var(--gray-400);
-    align-self: center; /* İkonlarla aynı hizada */
-    padding-bottom: 1rem; /* Span ile hizalamak için ayar */
-}
-
-/* --- ARAMA STILLERİ --- */
-.searchContainer {
-  margin-bottom: 2rem; /* Liste ile arasına boşluk */
-  position: relative; /* İkonu pozisyonlamak için */
-  max-width: 600px; /* Çok genişlemesin */
-  margin-left: auto;
-  margin-right: auto; /* Ortala */
-}
-
-.searchInput {
-  width: 100%;
-  padding: 0.8rem 1rem; /* Daha büyük padding */
-  padding-right: 3rem; /* İkon için sağda yer aç */
-  font-size: 1rem;
-  border: 1px solid var(--gray-400);
-  border-radius: 25px; /* Yuvarlak köşeler */
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.searchInput:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2); /* Yeşil odak halkası */
-}
-
-.searchIcon {
-  position: absolute;
-  right: 1rem; /* Sağdan boşluk */
-  top: 50%;
-  transform: translateY(-50%); /* Dikey ortala */
-  font-size: 1.2rem;
-  color: var(--gray-500);
-  pointer-events: none; /* İkonun tıklanmasını engelle */
-}
-/* --- ARAMA STILLERİ SONU --- */
-
-/* --- LİSTE VE KART STILLERİ (Modern Grid & Hover) --- */
-.templateList {
+/* --- YENİ GRID VE KART STILLERİ --- */
+.templateGrid {
   display: grid;
-  gap: 1.5rem;
-  margin-top: 0; /* Arama çubuğundan sonra boşluk yeterli */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Kart min genişliği */
+  gap: 2rem; /* Kartlar arası boşluk */
 }
-
-.modernGrid {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Kart genişliğini biraz azalttım */
-  gap: 2rem; /* Boşluğu artırdım */
- }
 
 .templateCard {
-  background-color: var(--background-color);
+  /* ... (background, border-radius, border, overflow, display, flex-direction, transition, cursor, position, min-height aynı) ... */
+  background-color: #fff;
   border-radius: 8px;
-  border: 1px solid var(--gray-300); /* Gölge yerine ince kenarlık */
-  padding: 1.5rem;
-  transition: transform 0.25s ease, box-shadow 0.25s ease; /* Yumuşak geçiş */
+  border: 1px solid var(--gray-300);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Hover içeriğinin taşmasını engelle */
-  cursor: pointer; /* Tıklanabilir hissi verir */
-  position: relative; /* Hover içeriğini pozisyonlamak için */
-  min-height: 150px; /* Kartlara minimum yükseklik verelim */
+  transition: box-shadow 0.25s ease; /* Sadece gölge geçişi */
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  min-height: 150px; /* Bu yüksekliği görsel ve içerikle dengelemek gerekebilir */
+  cursor: pointer;
 }
 
 .templateCard:hover {
-  transform: translateY(-4px); /* Daha belirgin hover */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Daha belirgin gölge */
-  border-color: transparent; /* Hover'da kenarlığı kaldır */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-color: transparent; /* Kenarlığı kaldırabiliriz */
 }
 
-/* Kartın üzerine gelince hover içeriğini göster */
-.templateCard:hover .cardHoverContent {
-  opacity: 1;
+/* Görsel Konteyneri */
+.cardImageContainer {
+  height: 200px; /* Konteyner yüksekliği SABİT olmalı */
+  overflow: hidden; /* Taşmayı gizle - ÇOK ÖNEMLİ */
+  position: relative;
+  background-color: var(--gray-100);
+  /* Flex ayarları kaldırıldı, artık gerekli değil */
 }
 
-/* Kartın üzerine gelince başlığı yukarı it (isteğe bağlı) */
-/* .templateCard:hover .cardTitle {
-  transform: translateY(-10px);
-  transition: transform 0.25s ease;
-} 
+/* Önizleme Görseli */
+.cardPreviewImage {
+  display: block;
+  width: 100%;
+  /* height: 100%; KALDIRILDI - Artık konteynerden daha yüksek olacak */
+  /* object-fit: cover; KALDIRILDI - Orijinal boyut lazım */
+  /* object-position: top center; KALDIRILDI - Transform ile yöneteceğiz */
 
-/* Kart ikonu için yer (isteğe bağlı) */
-.cardIcon {
-  font-size: 1.8rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: var(--primary-color);
-  /* display: none; */ /* Başlangıçta gizleyip hover'da gösterilebilir */
+  /* --- YENİ: Kaydırma için başlangıç pozisyonu ve geçiş --- */
+  position: absolute; /* Konteyner içinde pozisyonlamak için */
+  top: 0; /* Başlangıçta en üste hizalı */
+  left: 0;
+  transform: translateY(0); /* Başlangıç pozisyonu */
+  transition: transform 5s ease-in-out; /* YAVAŞ kayma efekti (süreyi ayarlayabilirsiniz) */
 }
-/* .templateCard:hover .cardIcon { display: block; } */
+
+/* Kart üzerine gelince görseli yukarı kaydır */
+.templateCard:hover .cardPreviewImage {
+  /* Görselin yüksekliği eksi konteyner yüksekliği kadar yukarı kaydır */
+  /* Bu, görselin en altına kadar kaymasını sağlar */
+  /* Dinamik yükseklik zorsa, sabit bir değerle başlayabiliriz, örn: -100px */
+  transform: translateY(calc(-100% + 200px)); /* 200px = .cardImageContainer yüksekliği */
+
+  /* VEYA daha basit bir başlangıç: Sadece biraz yukarı kaysın */
+  /* transform: translateY(-50px); */
+
+  /* Daha uzun süre için geçişi yavaşlatabiliriz */
+  /* transition-duration: 8s; */
+}
+
+
+
+.cardContent {
+  padding: 1rem 1.25rem; /* İçerik boşlukları */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Footer'ı aşağı iter */
+}
 
 .cardTitle {
-  margin-bottom: 0; /* Alt boşluğu kaldır */
-  color: var(--gray-800);
-  font-size: 1.1rem;
-  text-align: center;
-  display: flex;
-  align-items: center; /* Dikey ortala */
-  justify-content: center; /* Yatay ortala */
-  flex-grow: 1; /* Başlığın kartın BOŞ ALANINI doldurmasını sağla */
+  font-size: 1.05rem; /* Biraz daha küçük başlık */
   font-weight: 600;
-  padding: 1rem 0; /* İç boşluk */
-  transition: transform 0.25s ease; /* Hover için hazırlık */
+  color: var(--gray-800);
+  margin-bottom: 0.5rem;
 }
 
-/* Hover içeriği (Kartın alt kısmında) */
-.cardHoverContent {
-  background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0.8)); /* Hafif geçişli arka plan */
-  padding: 1rem 0 0 0; /* Üstte boşluk, diğerleri sıfır */ /* İç boşluklar */
-  text-align: center;
-  opacity: 0; /* Başlangıçta gizli */
-  height: 0; /* Başlangıçta yüksekliği sıfır */
-  overflow: hidden; /* İçeriğin taşmasını engelle */
-  transition: opacity 0.25s ease, height 0.25s ease; /* Yumuşak geçiş */
-  /* border-top: 1px solid var(--gray-200); Kaldırıldı, arka plan yeterli olabilir */
+.cardDescription {
+  font-size: 0.85rem; /* Daha küçük açıklama */
+  color: var(--gray-600);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  flex-grow: 1; /* Alanı doldur */
+  /* Çok uzun açıklamaları kesmek için (opsiyonel) */
+  /* display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; */
 }
 
-/* Hover durumunda içeriği göster */
-.templateCard:hover .cardHoverContent {
-  opacity: 1;
-  height: auto; /* İçeriğe göre yüksekliği ayarla */
-  padding: 1rem 0 0 0; /* Padding hover'da eklensin */
+.cardFooter {
+  padding: 0 1.25rem 1.25rem 1.25rem; /* Alt boşluk */
+  margin-top: auto; /* İçeriği yukarı iter */
+  text-align: right; /* Butonu sağa yasla */
 }
 
-.cardPrice {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--gray-700);
-  margin-bottom: 0.8rem;
-}
-
-.cardLink {
-  padding: 0.6rem 1.2rem;
+.cardLink { /* Buton */
+  display: inline-block;
+  padding: 0.5rem 1rem; /* Daha küçük buton */
+  font-size: 0.85rem;
   background-color: var(--primary-color);
   color: white !important;
   border-radius: 4px;
   font-weight: 500;
   text-decoration: none !important;
-  transition: background-color 0.2s;
-  text-align: center;
-  width: auto; /* Tam genişlik yerine içeriğe göre ayarla */
-  display: inline-block; /* inline-block gerekli */
+  transition: background-color 0.2s ease;
 }
 
 .cardLink:hover {
@@ -222,50 +154,21 @@
   text-decoration: none !important;
 }
 
-/* Hata ve Yükleme Mesajları */
+/* ... (Diğer stiller: loading, error, noTemplates, media query) ... */
 .loadingMessage, .errorMessage, .noTemplatesMessage {
     text-align: center;
-    padding: 2rem;
+    padding: 3rem;
     font-size: 1.1rem;
     color: var(--gray-600);
+    grid-column: 1 / -1;
 }
+.errorMessage { color: #dc3545; font-weight: bold; }
 
-.errorMessage {
-    color: #dc3545; /* Kırmızı */
-    font-weight: bold;
-}
-
-
-/* Mobil cihazlar için */
 @media (max-width: 767px) {
-  .listHeader {
-    padding: 1.5rem;
-    flex-direction: column; /* Başlığı da alt alta getir */
-    text-align: center;
+  .templateGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
-  .headerText {
-    flex-basis: 100%;
-    margin-bottom: 1.5rem;
-  }
-  .headerIcons {
-     flex-basis: 100%;
-     gap: 0.5rem; /* İkonlar arası boşluğu azalt */
-  }
-   .stepSeparator {
-    padding-bottom: 0; /* Hizalama ayarını sıfırla */
-  }
-
-  .templateList.modernGrid, /* Hem normal hem modern grid için */
-  .templateList {
-    grid-template-columns: 1fr; /* Mobil'de tek sütun */
-    gap: 1rem; /* Mobil'de boşluğu azalt */
-  }
-}
-
-.noTemplatesMessage {
-  text-align: center;
-  padding: 3rem; /* Daha fazla boşluk */
-  font-size: 1.1rem;
-  color: var(--gray-600);
-  grid-column: 1 / -1; /* Grid'de tüm sütunları kapla */
+  .listHeader { padding: 1.5rem 1rem; }
+  .cardContent, .cardFooter { padding-left: 1rem; padding-right: 1rem; }
 }

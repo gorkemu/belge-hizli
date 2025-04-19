@@ -1,18 +1,20 @@
 /* frontend/src/index.css */
 :root {
-  --primary-color: #28a745; /* Yeşil */
-  --primary-color-dark: #218838; /* Hover için koyu yeşil */
-  --secondary-color: #17a2b8; /* Açık Mavi */
-  --background-color: #fff; /* Beyaz */
-  --text-color: #495057; /* Orta Gri */
+  --primary-color: #218838; /* Biraz daha koyu, tok bir yeşil */
+  --primary-color-dark: #1a682b; /* Onun daha koyusu */
+  /* --primary-color: #0056b3; */ /* Veya profesyonel bir mavi */
+  /* --primary-color-dark: #004085; */
+  --secondary-color: #17a2b8;
+  --background-color: #fff;
+  --text-color: #343a40; /* Ana metin rengini biraz koyulaştır */
   --gray-100: #f8f9fa;
-  --gray-200: #e9ecef;
+  --gray-200: #f1f3f5; /* Biraz daha belirgin */
   --gray-300: #dee2e6;
   --gray-400: #ced4da;
   --gray-500: #adb5bd;
-  --gray-600: #6c757d;
+  --gray-600: #6c757d; /* Açıklamalar için */
   --gray-700: #495057;
-  --gray-800: #343a40;
+  --gray-800: #343a40; /* Başlıklar için */
   --gray-900: #212529;
   --accent: #1473e6;
 }
@@ -24,66 +26,47 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  /* Yeni font ailesi */
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.6;
   color: var(--text-color);
   background-color: var(--background-color);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased; /* Fontları daha pürüzsüz gösterir */
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Link stilleri (varsayılan) */
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: color 0.2s ease; /* Renk geçişi için */
-}
+/* ... (a, button, input stilleri önceki gibi kalabilir veya font-family'den etkilenir) ... */
 
-a:hover {
-  /* text-decoration: underline;  <-- Kaldırıldı */
-  /* Genel hover rengini bir tık koyu yapabiliriz veya component bazlı bırakabiliriz */
-  /* color: var(--primary-color-dark); */
-}
+a { color: var(--primary-color); text-decoration: none; transition: color 0.2s ease; }
+/* a:hover { color: var(--primary-color-dark); } */ /* Hover'ı component bazlı bırakalım */
 
-/* Buton stilleri (temel) */
-button {
+button { /* Butonlar index.css yerine component css'lerinde daha çok şekillenmeli */
   background-color: var(--primary-color);
-  color: var(--background-color); /* Veya #fff */
+  color: white;
   border: none;
   padding: 0.75rem 1.5rem;
   cursor: pointer;
   border-radius: 0.25rem;
   font-size: 1rem;
-  transition: background-color 0.2s ease; /* Renk geçişi için */
+  font-family: inherit; /* Body fontunu kullan */
+  transition: background-color 0.2s ease;
 }
+button:hover { background-color: var(--primary-color-dark); }
 
-button:hover {
-  background-color: var(--primary-color-dark); /* Koyu yeşil */
-}
-
-/* Diğer temel element stilleri */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"], /* Date input eklendi */
-input[type="number"], /* Number input eklendi */
-select, /* Select eklendi */
-textarea {
-  padding: 0.5rem;
+input, select, textarea {
+  padding: 0.6rem 0.8rem; /* Biraz daha fazla iç boşluk */
   border: 1px solid var(--gray-300);
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  width: 100%; /* Genellikle form elemanları tam genişlikte olur */
-  margin-top: 0.25rem; /* Etiketten sonra küçük boşluk */
-  color: var(--text-color); /* Input içi yazı rengi */
+  border-radius: 4px; /* Daha az yuvarlak */
+  font-size: 0.95rem; /* Biraz küçült */
+  width: 100%;
+  margin-top: 0.25rem;
+  color: var(--text-color);
+  font-family: inherit; /* Body fontunu kullan */
 }
-
-textarea {
-  min-height: 80px; /* Textarea için minimum yükseklik */
-}
-
-/* Inputlara odaklanıldığında hafif bir efekt */
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25); /* Yeşil odaklanma halkası */
+  box-shadow: 0 0 0 2px rgba(33, 136, 56, 0.25); /* Yeşil tonuna uygun halka */
 }
+textarea { min-height: 90px; }
