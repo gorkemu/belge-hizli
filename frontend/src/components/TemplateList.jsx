@@ -47,20 +47,26 @@ function TemplateList() {
 
   // --- GÖRSEL YOLU OLUŞTURMA (Örnek - Dosya adını slugify edilmiş isim varsayar) ---
   // VEYA template._id + '.png' kullanabilirsiniz.
-  const getPreviewImageUrl = (templateName) => {
-    // Basit slugify fonksiyonu (Türkçe karakterleri ve özel karakterleri temizler)
-    const slug = templateName
-      .toLowerCase()
-      .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
-      .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
-      .replace(/[^a-z0-9]/g, '-') // Harf/rakam dışındakileri tire yap
-      .replace(/-+/g, '-') // Birden fazla tireyi tek tire yap
-      .replace(/^-|-$/g, ''); // Baştaki/sondaki tireyi kaldır
-    // return `/template-previews/${template._id}.png`; // ID kullanmak daha garantili olabilir
-    // Şimdilik sabit bir placeholder kullanalım:
-     return '/template-previews/placeholder.png'; // VEYA yukarıdaki gibi dinamik yapın
+  const getPreviewImageUrl = (templateId) => {
+    // Varsayılan olarak placeholder göster, gerçek resim varsa onu kullan
+    const imageUrl = `/template-previews/${templateId}.webp`; // veya .png, .jpg
+    // İsteğe bağlı: Resmin var olup olmadığını kontrol etmek zor olabilir,
+    // bu yüzden genellikle tüm resimleri oluşturduğunuzu varsayarsınız.
+    // Eğer resim bulunamazsa tarayıcı kırık resim ikonu gösterir.
+    // Hata yönetimi için <img onError={...}> eklenebilir.
+    // Şimdilik basit tutalım:
+     return imageUrl;
+  
+     // Veya daha güvenli: Placeholdera geri dön
+     // const [imageExists, setImageExists] = useState(true); // Bu state yönetimi gerektirir
+     // return imageExists ? imageUrl : '/template-previews/placeholder.png';
+  
+     // En basit başlangıç: ID'yi kullan
+      // return `/template-previews/${templateId}.webp`;
   };
-  // ------------------------------------------------------------
+  
+  
+  
 
   return (
     // Ana konteyner
@@ -121,10 +127,12 @@ function TemplateList() {
               <div className={styles.cardImageContainer}>
                 {/* Statik veya Dinamik Görsel */}
                 <img
-                  src={getPreviewImageUrl(template.name)} // Görsel yolu
+                  src={getPreviewImageUrl(template._id)} // ID'yi fonksiyona gönder
                   alt={`${template.name} Önizleme`}
                   className={styles.cardPreviewImage}
                   loading="lazy" // Lazy loading
+                  // Hata durumunda placeholder gösterme:
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/template-previews/placeholder.png'; }}
                 />
               </div>
               {/* ---- İÇERİK BÖLÜMÜ ---- */}
