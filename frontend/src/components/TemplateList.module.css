@@ -75,7 +75,7 @@
     padding-bottom: 1rem; /* Span ile hizalamak için ayar */
 }
 
-/* --- YENİ ARAMA STILLERİ --- */
+/* --- ARAMA STILLERİ --- */
 .searchContainer {
   margin-bottom: 2rem; /* Liste ile arasına boşluk */
   position: relative; /* İkonu pozisyonlamak için */
@@ -109,77 +109,101 @@
   color: var(--gray-500);
   pointer-events: none; /* İkonun tıklanmasını engelle */
 }
-/* --- YENİ ARAMA STILLERİ SONU --- */
+/* --- ARAMA STILLERİ SONU --- */
 
-/* --- MEVCUT/GÜNCELLENMİŞ LİSTE VE KART STILLERİ --- */
+/* --- LİSTE VE KART STILLERİ (Modern Grid & Hover) --- */
 .templateList {
   display: grid;
-  /* grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); */ /* Eski */
   gap: 1.5rem;
   margin-top: 0; /* Arama çubuğundan sonra boşluk yeterli */
 }
 
-/* Yeni Modern Grid Stili (şimdilik 3 sütunlu) */
 .modernGrid {
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Biraz daha geniş kartlar */
-  gap: 2rem; /* Daha fazla boşluk */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Kart genişliğini biraz azalttım */
+  gap: 2rem; /* Boşluğu artırdım */
  }
 
 .templateCard {
   background-color: var(--background-color);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */ /* Başlangıç gölgesini azalt */
+  border: 1px solid var(--gray-300); /* Gölge yerine ince kenarlık */
   padding: 1.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  background-color: var(--background-color);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease; /* Yumuşak geçiş */
   display: flex;
   flex-direction: column;
-  /* Hover'da görünecek içeriği gizlemek için hazırlık (sonraki adımda aktifleşecek) */
-  /* overflow: hidden; */ /* Şimdilik kapalı */
+  overflow: hidden; /* Hover içeriğinin taşmasını engelle */
+  cursor: pointer; /* Tıklanabilir hissi verir */
+  position: relative; /* Hover içeriğini pozisyonlamak için */
+  min-height: 150px; /* Kartlara minimum yükseklik verelim */
 }
 
 .templateCard:hover {
-  transform: translateY(-3px); /* Biraz daha belirgin hover */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-   /* Hover'da içeriği gösterme (sonraki adımda) */
-  /* .cardHoverContent { opacity: 1; transform: translateY(0); } */
+  transform: translateY(-4px); /* Daha belirgin hover */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Daha belirgin gölge */
+  border-color: transparent; /* Hover'da kenarlığı kaldır */
 }
+
+/* Kartın üzerine gelince hover içeriğini göster */
+.templateCard:hover .cardHoverContent {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Kartın üzerine gelince başlığı yukarı it (isteğe bağlı) */
+/* .templateCard:hover .cardTitle {
+  transform: translateY(-10px);
+  transition: transform 0.25s ease;
+} 
+
+/* Kart ikonu için yer (isteğe bağlı) */
+.cardIcon {
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  /* display: none; */ /* Başlangıçta gizleyip hover'da gösterilebilir */
+}
+/* .templateCard:hover .cardIcon { display: block; } */
 
 .cardTitle {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0; /* Alt boşluğu kaldır */
   color: var(--gray-800);
   font-size: 1.1rem;
-  text-align: center; /* Sade görünüm için ortala */
-  min-height: 3em; /* İki satır başlık için yer ayır, hizalamayı düzeltir */
-  display: flex; /* Dikey ortalama için */
-  align-items: center;
-  justify-content: center;
+  text-align: center;
+  /* min-height: 3em; Kaldırıldı, flex ile ortalanacak */
+  display: flex;
+  align-items: center; /* Dikey ortala */
+  justify-content: center; /* Yatay ortala */
+  flex-grow: 1; /* Başlığın kartın ortasını doldurmasını sağla */
+  font-weight: 600;
+  padding: 1rem 0; /* İç boşluk */
+  transition: transform 0.25s ease; /* Hover için hazırlık */
 }
 
-/* Hover içeriği (başlangıçta normal görünür, sonra gizlenip hover'da gösterilir) */
+/* Hover içeriği (Başlangıçta gizli) */
 .cardHoverContent {
-  margin-top: auto; /* İçeriği kartın altına iter */
-  padding-top: 1rem; /* Başlıkla arasına boşluk */
-  text-align: center; /* İçeriği ortala */
-  /* Başlangıçta gizlemek için (sonraki adımda) */
-  /* opacity: 0; */
-  /* transform: translateY(10px); */
-  /* transition: opacity 0.3s ease, transform 0.3s ease; */
+  position: absolute; /* Kartın altına pozisyonla */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(255,255,255,1) 70%, rgba(255,255,255,0.8)); /* Hafif geçişli arka plan */
+  padding: 1rem 1.5rem 1.5rem 1.5rem; /* İç boşluklar */
+  text-align: center;
+  opacity: 0; /* Başlangıçta gizli */
+  transform: translateY(100%); /* Başlangıçta kartın altında */
+  transition: opacity 0.25s ease, transform 0.25s ease; /* Yumuşak geçiş */
+  border-top: 1px solid var(--gray-200); /* Üst çizgi */
 }
 
 .cardPrice {
-  font-size: 0.9rem; /* Biraz küçült */
+  font-size: 0.9rem;
   font-weight: 500;
-  color: var(--gray-700); /* Rengi normale çek */
+  color: var(--gray-700);
   margin-bottom: 0.8rem;
 }
 
 .cardLink {
-  /* display: inline-block; */ /* Kaldırıldı, div içinde zaten block gibi davranır */
   padding: 0.6rem 1.2rem;
   background-color: var(--primary-color);
   color: white !important;
@@ -187,11 +211,10 @@
   font-weight: 500;
   text-decoration: none !important;
   transition: background-color 0.2s;
-  /* align-self: flex-start; Kaldırıldı, ortalanacak */
-  /* margin-top: 1rem; Kaldırıldı, hover div'i yönetecek */
   text-align: center;
-  width: 100%; /* Buton tüm genişliği kapsasın */
-  box-sizing: border-box; /* Padding genişliği etkilemesin */
+  width: auto; /* Tam genişlik yerine içeriğe göre ayarla */
+  display: inline-block; /* inline-block gerekli */
+  /* box-sizing: border-box; */ /* Gerekli değil */
 }
 
 .cardLink:hover {
@@ -243,4 +266,15 @@
   font-size: 1.1rem;
   color: var(--gray-600);
   grid-column: 1 / -1; /* Grid'de tüm sütunları kapla */
+}
+
+/* Media Query içinde grid ayarını güncelleyelim */
+@media (max-width: 767px) {
+  /* ... (listHeader stilleri) ... */
+
+  .templateList.modernGrid, /* Hem normal hem modern grid için */
+  .templateList {
+    grid-template-columns: 1fr; /* Mobil'de tek sütun */
+    gap: 1rem; /* Mobil'de boşluğu azalt */
+  }
 }
