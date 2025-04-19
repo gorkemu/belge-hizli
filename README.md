@@ -6,15 +6,17 @@ A web application that allows users to generate contracts and documents in PDF f
 
 *   **Dynamic Templates:** New contract/document types can be added to the system simply by adding new template documents to MongoDB, without requiring code changes.
 *   **Dynamic Form Generation:** The user interface form for each template is automatically generated based on the template's `fields` array in MongoDB.
-*   **Conditional Form Fields:** Forms intelligently show or hide relevant fields based on user selections in other fields.
-*   **Live Preview:** A real-time preview updates as the user fills out the form, reflecting the final document structure based on the template's `content` field (using Handlebars.js).
+*   **Conditional Form Fields:** Forms intelligently show or hide relevant fields based on user selections in other fields, providing a more interactive experience.
+*   **Live Preview:** A real-time preview updates as the user fills out the form, reflecting the final document structure based on the template's `content` field (using Handlebars.js and Inter font).
+*   **Template Search:** Users can easily search through templates by name or description on the template list page.
+*   **Modern Template List UI:** Features a clean grid layout with template preview images and hover effects for details.
 *   **Form Validation:** Basic validation is performed for required fields that are currently visible.
-*   **PDF Generation (External):** Leverages the Browserless.io API to generate PDF documents from the filled form data and template content, ensuring reliability and scalability.
+*   **PDF Generation (External):** Leverages the Browserless.io API to generate PDF documents with embedded Inter font from the filled form data and template content, ensuring consistency and reliability.
 *   **Document Delivery:**
     *   **Direct Download:** Users can instantly download the generated PDF after successful processing.
     *   **Email Delivery:** A copy of the generated PDF is automatically sent to the user's provided email address via SMTP using Nodemailer.
 *   **Payment Simulation:** Includes a simulated payment step before document generation (ready for actual payment gateway integration).
-*   **Custom Domain & SSL:** Hosted on custom domains with automatically managed free SSL certificates via Vercel and Fly.io.
+*   **Custom Domain & SSL:** Hosted on `belgehizli.com` with automatically managed free SSL certificates via Vercel and Fly.io.
 *   **Static Pages:** Provides basic informational pages (About Us, Contact, Privacy Policy, etc.).
 
 ## 🛠️ Technology Stack
@@ -39,7 +41,8 @@ A web application that allows users to generate contracts and documents in PDF f
     *   Browserless.io (PDF Generation API)
     *   Vercel (Frontend Hosting: `belgehizli.com`)
     *   Fly.io (Backend Docker Hosting: `belgehizli-api.fly.dev`)
-    *   SMTP Provider (For `info@belgehizli.com` email sending)
+    *   SMTP Provider (For email sending)
+
 
 ## 🚀 Live URLs
 
@@ -61,12 +64,13 @@ New templates can be added directly to the MongoDB `templates` collection withou
     *   `required`: (Boolean) If the field is mandatory.
     *   `placeholder`: (String, Optional) Placeholder text.
     *   `options`: (Array, Required for select/radio) Array of option strings.
-    *   `condition`: (Object, Optional) Defines visibility based on another field: `{ "field": "controlling_field_name", "value": "required_value" }`. **Remember to add a `belge_email` field (type: email, required: true) to all templates for email delivery.**
+    *   `condition`: (Object, Optional) Defines visibility based on another field: `{ "field": "controlling_field_name", "value": "required_value" }`.
+    *   **Crucially, include a field named `belge_email` (type: email, required: true) in all templates** to enable the email delivery feature.
 
 ## 📜 Available Scripts
 
 *   **Backend:**
-    *   `npm start`: Runs the backend server with node (for production).
+    *   `npm start`: Runs the backend server with node (used in production).
     *   `npm run dev`: Runs the backend server with nodemon (for development).
 *   **Frontend:**
     *   `npm run dev`: Starts the frontend development server.
@@ -81,12 +85,13 @@ New templates can be added directly to the MongoDB `templates` collection withou
 *   Advanced form feature: Repeatable blocks/sections.
 *   UI/UX improvements and enhanced styling.
 *   Detailed error handling and user feedback.
+*   Individual template preview image generation/management.
 *   Increased test coverage (Unit & Integration tests).
 
 ## 🤝 Contributing 
 
 Contributions are welcome. Please open an issue first to discuss proposed changes.
 
-## 📄 License 
+## 📄 License
 
-[MIT License](https://github.com/gorkemu/belge-hizli/blob/main/LICENCE)
+This project is licensed under the **MIT License**. See the [LICENCE](https://github.com/gorkemu/belge-hizli/blob/main/LICENCE) file for details.
