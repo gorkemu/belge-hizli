@@ -4,7 +4,6 @@
   /* Sayfanın genel konteyneri için padding vb. ayarlanabilir */
 }
 
-/* --- YENİ STILLER --- */
 .listHeader {
   display: flex;
   flex-wrap: wrap; /* Küçük ekranlarda alt alta gelmesi için */
@@ -76,16 +75,55 @@
     padding-bottom: 1rem; /* Span ile hizalamak için ayar */
 }
 
+/* --- YENİ ARAMA STILLERİ --- */
+.searchContainer {
+  margin-bottom: 2rem; /* Liste ile arasına boşluk */
+  position: relative; /* İkonu pozisyonlamak için */
+  max-width: 600px; /* Çok genişlemesin */
+  margin-left: auto;
+  margin-right: auto; /* Ortala */
+}
 
-/* --- YENİ STILLER SONU --- */
+.searchInput {
+  width: 100%;
+  padding: 0.8rem 1rem; /* Daha büyük padding */
+  padding-right: 3rem; /* İkon için sağda yer aç */
+  font-size: 1rem;
+  border: 1px solid var(--gray-400);
+  border-radius: 25px; /* Yuvarlak köşeler */
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
 
-/* --- MEVCUT STILLER --- */
+.searchInput:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2); /* Yeşil odak halkası */
+}
+
+.searchIcon {
+  position: absolute;
+  right: 1rem; /* Sağdan boşluk */
+  top: 50%;
+  transform: translateY(-50%); /* Dikey ortala */
+  font-size: 1.2rem;
+  color: var(--gray-500);
+  pointer-events: none; /* İkonun tıklanmasını engelle */
+}
+/* --- YENİ ARAMA STILLERİ SONU --- */
+
+/* --- MEVCUT/GÜNCELLENMİŞ LİSTE VE KART STILLERİ --- */
 .templateList {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  /* grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); */ /* Eski */
   gap: 1.5rem;
-  /* margin-top kaldırıldı, header ile arası ayarlandı */
+  margin-top: 0; /* Arama çubuğundan sonra boşluk yeterli */
 }
+
+/* Yeni Modern Grid Stili (şimdilik 3 sütunlu) */
+.modernGrid {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Biraz daha geniş kartlar */
+  gap: 2rem; /* Daha fazla boşluk */
+ }
 
 .templateCard {
   background-color: var(--background-color);
@@ -93,49 +131,67 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   transition: transform 0.2s, box-shadow 0.2s;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
   display: flex;
   flex-direction: column;
+  /* Hover'da görünecek içeriği gizlemek için hazırlık (sonraki adımda aktifleşecek) */
+  /* overflow: hidden; */ /* Şimdilik kapalı */
 }
 
 .templateCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px); /* Biraz daha belirgin hover */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+   /* Hover'da içeriği gösterme (sonraki adımda) */
+  /* .cardHoverContent { opacity: 1; transform: translateY(0); } */
 }
 
 .cardTitle {
   margin-bottom: 0.5rem;
   color: var(--gray-800);
   font-size: 1.1rem;
+  text-align: center; /* Sade görünüm için ortala */
+  min-height: 3em; /* İki satır başlık için yer ayır, hizalamayı düzeltir */
+  display: flex; /* Dikey ortalama için */
+  align-items: center;
+  justify-content: center;
 }
 
-.cardDescription {
-  color: var(--text-color);
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  flex-grow: 1;
+/* Hover içeriği (başlangıçta normal görünür, sonra gizlenip hover'da gösterilir) */
+.cardHoverContent {
+  margin-top: auto; /* İçeriği kartın altına iter */
+  padding-top: 1rem; /* Başlıkla arasına boşluk */
+  text-align: center; /* İçeriği ortala */
+  /* Başlangıçta gizlemek için (sonraki adımda) */
+  /* opacity: 0; */
+  /* transform: translateY(10px); */
+  /* transition: opacity 0.3s ease, transform 0.3s ease; */
 }
 
 .cardPrice {
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-    margin-top: auto;
+  font-size: 0.9rem; /* Biraz küçült */
+  font-weight: 500;
+  color: var(--gray-700); /* Rengi normale çek */
+  margin-bottom: 0.8rem;
 }
 
 .cardLink {
-  display: inline-block;
+  /* display: inline-block; */ /* Kaldırıldı, div içinde zaten block gibi davranır */
   padding: 0.6rem 1.2rem;
   background-color: var(--primary-color);
-  color: white !important; /* CSS değişkeni yerine direkt white */
+  color: white !important;
   border-radius: 4px;
   font-weight: 500;
   text-decoration: none !important;
   transition: background-color 0.2s;
-  align-self: flex-start;
-  margin-top: 1rem; /* Fiyattan veya açıklamadan sonra boşluk */
-  text-align: center; /* Buton içindeki metni ortala */
+  /* align-self: flex-start; Kaldırıldı, ortalanacak */
+  /* margin-top: 1rem; Kaldırıldı, hover div'i yönetecek */
+  text-align: center;
+  width: 100%; /* Buton tüm genişliği kapsasın */
+  box-sizing: border-box; /* Padding genişliği etkilemesin */
 }
 
 .cardLink:hover {
@@ -179,4 +235,12 @@
   .templateList {
     grid-template-columns: 1fr; /* Tek sütun */
   }
+}
+
+.noTemplatesMessage {
+  text-align: center;
+  padding: 3rem; /* Daha fazla boşluk */
+  font-size: 1.1rem;
+  color: var(--gray-600);
+  grid-column: 1 / -1; /* Grid'de tüm sütunları kapla */
 }
