@@ -1,6 +1,7 @@
 .container {
   border: 1px solid var(--gray-300); /* Açık gri border */
   padding: 1rem;
+  padding-left: 2rem; /* Form ile arasında boşluk */
   border-radius: 4px;
   background-color: var(--gray-100); /* Çok açık gri arka plan */
   height: 100%; /* Ana konteynerin yüksekliğine göre ayarlanabilir */
@@ -15,10 +16,42 @@
 }
 
 .previewArea {
+  background-color: var(--gray-100); /* Hafif farklı arka plan */
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid var(--gray-300);
   white-space: pre-wrap; /* Satır sonlarını ve boşlukları korur */
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 10pt; /* PDF çıktısıyla uyumlu boyut */
+  line-height: 1.5; /* PDF çıktısıyla uyumlu satır aralığı */
+  color: var(--text-color); /* PDF çıktısıyla uyumlu renk */
   color: var(--text-color); /* Orta gri metin */
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.previewArea pre {
+  font-family: 'Inter', sans-serif; /* Monospace yerine Inter */
+  /* Gerekirse pre için diğer stiller (arka plan, padding vb.) PDF stiliyle eşleşebilir */
+  background-color: #f0f0f0; /* Biraz farklı arka plan */
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 9.5pt; /* Biraz daha küçük */
+}
+
+.previewError {
+  /* ... hata stilleri ... */
+   border: 1px solid #dc3545;
+   background-color: #f8d7da;
+   color: #721c24;
+   padding: 1rem;
+   border-radius: 5px;
+}
+
+.previewError p {
+  margin-bottom: 0.5rem;
+}
+.previewError i {
+  font-size: 0.9em;
 }
 
 .emptyPlaceholder {
