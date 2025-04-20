@@ -3,7 +3,7 @@ import styles from './TermsOfService.module.css'; // Stil dosyasını import et
 
 function TermsOfService() {
   const siteName = "Belge Hızlı";
-  const siteUrl = "https://www.belgehizli.com/";
+  const siteUrl = "web sitesi";
   const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
   const ownerName = "[Şirket Sahibi Adı Soyadı]";
   const address = "[Merkez Adresiniz]";
