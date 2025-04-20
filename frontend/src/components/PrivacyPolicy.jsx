@@ -2,11 +2,11 @@ import React from 'react';
 import styles from './PrivacyPolicy.module.css'; // Stil dosyasını import et
 
 function PrivacyPolicy() {
-  const siteName = "Belge Hızlı";
-  const ownerName = "[Şirket Sahibi Adı Soyadı]";
-  const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
-  const address = "[Merkez Adresiniz]";
-  const email = "info@belgehizli.com";
+  const siteName = "site adı";
+  // const ownerName = "[Şirket Sahibi Adı Soyadı]";
+  // const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
+  // const address = "[Merkez Adresiniz]";
+  const email = "info@belgehizli.com"; // E-posta adresinizi buraya girin
   const lastUpdateDate = "20.04.2025";
   const siteUrl = "https://www.belgehizli.com/";
 
@@ -16,18 +16,18 @@ function PrivacyPolicy() {
       <p className={styles.lastUpdated}><strong>Son Güncelleme:</strong> {lastUpdateDate}</p>
 
       <p className={styles.paragraph}>
-        <strong>{companyTitle}</strong> ({ownerName}) olarak (bundan sonra "{siteName}" veya "Biz" olarak anılacaktır),
+        <strong>{/* companyTitle */} Belge Hızlı</strong> {/* ownerName */ } olarak (bundan sonra "{siteName}" veya "Biz" olarak anılacaktır),
         <strong> {siteUrl} </strong> internet sitemizi ("Site") ziyaret eden ve kullanan siz değerli
         kullanıcılarımızın/üyelerimizin kişisel verilerinin gizliliğine ve güvenliğine büyük önem veriyoruz.
-        Bu kapsamda, 6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) ve ilgili diğer yasal mevzuat
+        Bu kapsamda, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") ve ilgili diğer yasal mevzuat
         uyarınca kişisel verilerinizin işlenmesi ve korunması hakkında sizleri bilgilendirmek amacıyla bu
         Gizlilik Politikası ve Aydınlatma Metni'ni hazırladık.
       </p>
 
       <h3 className={styles.sectionTitle}>1. Veri Sorumlusunun Kimliği</h3>
       <ul className={styles.infoList}>
-        <li><strong>Veri Sorumlusu:</strong> {companyTitle} ({ownerName})</li>
-        <li><strong>Adres:</strong> {address}</li>
+        {/* <li><strong>Veri Sorumlusu:</strong> {companyTitle} ({ownerName})</li> */}
+        {/* <li><strong>Adres:</strong> {address}</li> */}
         <li><strong>E-posta:</strong> {email}</li>
         {/* Varsa KEP adresinizi ekleyebilirsiniz: <li><strong>KEP Adresi:</strong> [KEP Adresiniz]</li> */}
       </ul>
@@ -80,7 +80,7 @@ function PrivacyPolicy() {
         <li><strong>Hukuk ve Danışmanlık Büroları:</strong> Hukuki süreçlerin takibi veya danışmanlık alınması amacıyla sır saklama yükümlülüğü çerçevesinde.</li>
       </ul>
 
-       <h3 className={styles.sectionTitle}>5. Kişisel Veri Toplamanın Yöntemi</h3>
+      <h3 className={styles.sectionTitle}>5. Kişisel Veri Toplamanın Yöntemi</h3>
       <p className={styles.paragraph}>
         Kişisel verileriniz, Site üzerindeki formları doldurmanız, üye olmanız, hizmetlerimizi kullanmanız,
         bizimle iletişime geçmeniz ve çerezler gibi otomatik veya kısmen otomatik yöntemlerle toplanmaktadır.
@@ -127,8 +127,8 @@ function PrivacyPolicy() {
       <p className={styles.paragraph}>
         Bu haklarınızı kullanmak için taleplerinizi yazılı olarak veya kayıtlı elektronik posta (KEP) adresi,
         güvenli elektronik imza, mobil imza ya da tarafınızca bize daha önce bildirilen ve sistemimizde
-        kayıtlı bulunan elektronik posta adresinizi kullanmak suretiyle <a href={`mailto:${email}`}>{email}</a> adresine veya
-        {address} adresine posta yoluyla iletebilirsiniz. Başvurunuzda kimliğinizi tevsik edici belgelerin
+        kayıtlı bulunan elektronik posta adresinizi kullanmak suretiyle <a href={`mailto:${email}`}>{email}</a> adresine {/* veya
+        {address} adresine posta yoluyla */} iletebilirsiniz. Başvurunuzda kimliğinizi tevsik edici belgelerin
         ve talep konusunun açıkça belirtilmesi gerekmektedir.
       </p>
 
