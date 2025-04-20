@@ -1,48 +1,39 @@
 # Contract-Generator
 
-A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system dynamically creates forms and previews based on the template structure stored in MongoDB, utilizes an external service for PDF generation, and delivers the final document via direct download and email.
+A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system dynamically creates forms and previews based on the template structure stored in MongoDB, utilizes an external service for PDF generation, and delivers the final document via direct download and email. It also includes a cookie consent mechanism for privacy compliance.
 
 ## ✨ Core Features
 
 *   **Dynamic Templates:** New contract/document types can be added to the system simply by adding new template documents to MongoDB, without requiring code changes.
 *   **Dynamic Form Generation:** The user interface form for each template is automatically generated based on the template's `fields` array in MongoDB.
-*   **Conditional Form Fields:** Forms intelligently show or hide relevant fields based on user selections in other fields, providing a more interactive experience.
-*   **Live Preview:** A real-time preview updates as the user fills out the form, reflecting the final document structure based on the template's `content` field (using Handlebars.js and Inter font).
-*   **Template Search:** Users can easily search through templates by name or description on the template list page.
-*   **Modern Template List UI:** Features a clean grid layout with template preview images and hover effects for details.
+*   **Conditional Form Fields:** Forms intelligently show or hide relevant fields based on user selections in other fields.
+*   **Live Preview:** A real-time preview updates as the user fills out the form, reflecting the final document structure (using Handlebars.js and Inter font).
+*   **Template Search:** Users can easily search through templates by name or description.
+*   **Modern Template List UI:** Features a clean grid layout with template preview images and hover effects.
 *   **Form Validation:** Basic validation is performed for required fields that are currently visible.
-*   **PDF Generation (External):** Leverages the Browserless.io API to generate PDF documents with embedded Inter font from the filled form data and template content, ensuring consistency and reliability.
-*   **Document Delivery:**
-    *   **Direct Download:** Users can instantly download the generated PDF after successful processing.
-    *   **Email Delivery:** A copy of the generated PDF is automatically sent to the user's provided email address via SMTP using Nodemailer.
-*   **Payment Simulation:** Includes a simulated payment step before document generation (ready for actual payment gateway integration).
-*   **Custom Domain & SSL:** Hosted on `belgehizli.com` with automatically managed free SSL certificates via Vercel and Fly.io.
-*   **Static Pages:** Provides basic informational pages (About Us, Contact, Privacy Policy, etc.).
+*   **PDF Generation (External):** Leverages the Browserless.io API to generate PDF documents with embedded Inter font, ensuring consistency and reliability.
+*   **Document Delivery:** Includes direct download and automatic email delivery of the generated PDF.
+*   **Cookie Consent Banner:** Informs users about cookie usage and collects consent using `react-cookie-consent`, respecting user preferences and aiding compliance (KVKK/GDPR).
+*   **Payment Simulation:** Includes a simulated payment step (ready for actual payment gateway integration).
+*   **Custom Domain & SSL:** Hosted on `belgehizli.com` with automatically managed free SSL certificates.
+*   **Static Pages:** Provides basic informational pages.
 
 ## 🛠️ Technology Stack
 
 *   **Frontend:**
-    *   React
-    *   Vite
-    *   React Router
-    *   CSS Modules
-    *   Axios
-    *   Handlebars.js (Client-side preview)
+    *   React, Vite, React Router
+    *   CSS Modules, Axios, Handlebars.js
+    *   `react-cookie-consent`
 *   **Backend:**
-    *   Node.js
-    *   Express.js
-    *   MongoDB Atlas (Database)
-    *   Mongoose (ODM)
-    *   Axios (Calling Browserless API)
-    *   Nodemailer (Email delivery)
-    *   Handlebars.js (Server-side template processing)
+    *   Node.js, Express.js
+    *   MongoDB Atlas, Mongoose
+    *   Axios, Nodemailer, Handlebars.js
     *   dotenv
 *   **Services & Hosting:**
-    *   Browserless.io (PDF Generation API)
+    *   Browserless.io (PDF Generation)
     *   Vercel (Frontend Hosting: `belgehizli.com`)
     *   Fly.io (Backend Docker Hosting: `belgehizli-api.fly.dev`)
-    *   SMTP Provider (For email sending)
-
+    *   SMTP Provider
 
 ## 🚀 Live URLs
 
@@ -69,24 +60,19 @@ New templates can be added directly to the MongoDB `templates` collection withou
 
 ## 📜 Available Scripts
 
-*   **Backend:**
-    *   `npm start`: Runs the backend server with node (used in production).
-    *   `npm run dev`: Runs the backend server with nodemon (for development).
-*   **Frontend:**
-    *   `npm run dev`: Starts the frontend development server.
-    *   `npm run build`: Builds the frontend for production.
-    *   `npm run preview`: Previews the production build locally.
+*   **Backend:** `npm start` (prod), `npm run dev` (dev)
+*   **Frontend:** `npm run dev` (dev), `npm run build` (build), `npm run preview` (preview prod build)
 
 ## 🔮 Future Enhancements
 
-*   Real payment system integration (Stripe, Iyzico, etc.).
-*   User accounts (Auth, document saving/management).
-*   Admin panel for template management (CRUD via UI).
-*   Advanced form feature: Repeatable blocks/sections.
-*   UI/UX improvements and enhanced styling.
-*   Detailed error handling and user feedback.
-*   Individual template preview image generation/management.
-*   Increased test coverage (Unit & Integration tests).
+*   Real payment system integration.
+*   User accounts & document management.
+*   Admin panel for template management.
+*   Advanced form feature: Repeatable blocks.
+*   UI/UX improvements.
+*   Detailed error handling & logging.
+*   Individual template preview image generation.
+*   Increased test coverage.
 
 ## 🤝 Contributing 
 
