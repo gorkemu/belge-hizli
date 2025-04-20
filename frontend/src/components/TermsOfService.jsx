@@ -3,15 +3,15 @@ import styles from './TermsOfService.module.css'; // Stil dosyasını import et
 
 function TermsOfService() {
   const siteName = "Belge Hızlı";
-  const siteUrl = "web sitesi";
-  const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
-  const ownerName = "[Şirket Sahibi Adı Soyadı]";
-  const address = "[Merkez Adresiniz]";
-  const email = "[E-posta Adresiniz]";
-  const phone = "[Telefon Numaranız]";
-  const lastUpdateDate = "18.04.2025";
-  const taxOffice = "[Vergi Dairesi]";
-  const taxIdNumber = "[Vergi Kimlik Numarası (VKN)]";
+  const siteUrl = "https://www.belgehizli.com/";
+  // const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]"; // Şirket ünvanınız varsa burayı açın
+  // const ownerName = "[Şirket Sahibi Adı Soyadı]"; // Şahıs şirketi ise sahip adı buraya
+  // const address = "[Merkez Adresiniz]"; // Resmi adresiniz buraya
+  const email = "info@belgehizli.com"; // E-posta adresinizi buraya girin
+  // const phone = "[Telefon Numaranız]"; // Telefon numaranız varsa burayı açın
+  const lastUpdateDate = "20.04.2025";
+  // const taxOffice = "[Vergi Dairesi]"; // Vergi dairesi bilgisi buraya
+  // const taxIdNumber = "[Vergi Kimlik Numarası (VKN)]"; // VKN bilgisi buraya
   // const mersisNo = "[MERSİS Numarası (varsa)]"; // Varsa ekleyin
   // const kepAddress = "[KEP Adresiniz (varsa)]"; // Varsa ekleyin
 
@@ -31,7 +31,7 @@ function TermsOfService() {
       {/* Madde Başlığı */}
       <h4 className={styles.articleTitle}>MADDE 1: TARAFLAR VE TANIMLAR</h4>
       <p className={styles.paragraph}>
-        İşbu Sözleşme, bir tarafta merkezi {address} adresinde bulunan <strong>{companyTitle} ({ownerName})</strong> (bundan sonra "{siteName}" veya "Hizmet Sağlayıcı" olarak anılacaktır) ile diğer tarafta Site'yi kullanan veya Site üzerinden hizmet satın alan gerçek veya tüzel kişi ("Kullanıcı" veya "Müşteri") arasında akdedilmiştir.
+        İşbu Sözleşme, bir tarafta merkezi {/* address */} adresinde bulunan <strong>{/* companyTitle */} ( {/* ownerName */} )</strong> (bundan sonra "{siteName}" veya "Hizmet Sağlayıcı" olarak anılacaktır) ile diğer tarafta Site'yi kullanan veya Site üzerinden hizmet satın alan gerçek veya tüzel kişi ("Kullanıcı" veya "Müşteri") arasında akdedilmiştir.
       </p>
       <ul className={styles.definitionList}>
         <li><strong>Site:</strong> {siteUrl} adresindeki web sitesi.</li>
@@ -135,21 +135,21 @@ function TermsOfService() {
       {/* Bölüm 2 Başlığı */}
       <h3 className={styles.mainSectionTitle}>BÖLÜM 2: MESAFELİ SATIŞ SÖZLEŞMESİ</h3>
       <p className={styles.paragraph}>
-        İşbu Mesafeli Satış Sözleşmesi ("Satış Sözleşmesi"), 6502 Sayılı Tüketicinin Korunması Hakkında Kanun (“Kanun”) ve Mesafeli Sözleşmeler Yönetmeliği’ne (“Yönetmelik”) uygun olarak düzenlenmiştir.
+        İşbu Mesafeli Satış Sözleşmesi ("Satış Sözleşmesi"), 6502 Sayılı Tüketicinin Korunması Hakkında Kanun ("Kanun") ve Mesafeli Sözleşmeler Yönetmeliği'ne ("Yönetmelik") uygun olarak düzenlenmiştir.
       </p>
 
       <h4 className={styles.articleTitle}>MADDE 1: TARAFLAR</h4>
       <p className={styles.paragraph}><strong>SATICI:</strong></p>
       <ul className={styles.infoList}>
-        <li>Unvan/Ad Soyad: {companyTitle} ({ownerName})</li>
-        <li>Adres: {address}</li>
-        <li>Telefon: {phone}</li>
+        {/* <li>Unvan/Ad Soyad: {companyTitle} ({ownerName})</li> */}
+        {/* <li>Adres: {address}</li> */}
+        {/* <li>Telefon: {phone}</li> */}
         <li>E-posta: {email}</li>
         {/* Varsa KEP ve MERSİS ekleyin */}
         {/* <li>KEP Adresi: {kepAddress}</li> */}
         {/* <li>MERSİS No: {mersisNo}</li> */}
-        <li>Vergi Dairesi: {taxOffice}</li>
-        <li>Vergi Kimlik No: {taxIdNumber}</li>
+        {/* <li>Vergi Dairesi: {taxOffice}</li> */}
+        {/* <li>Vergi Kimlik No: {taxIdNumber}</li> */}
       </ul>
       <p className={styles.paragraph}><strong>ALICI (MÜŞTERİ/TÜKETİCİ):</strong></p>
       <p className={styles.paragraph}>
@@ -183,7 +183,7 @@ function TermsOfService() {
 
       <h4 className={styles.articleTitle}>MADDE 5: CAYMA HAKKI</h4>
       <p className={styles.paragraph}>
-        Alıcı'nın sipariş ettiği Hizmet, Mesafeli Sözleşmeler Yönetmeliği’nin 15. maddesinin birinci fıkrasının (ğ) bendi uyarınca <strong>"Elektronik ortamda anında ifa edilen hizmetler veya tüketiciye anında teslim edilen gayrimaddi mallara ilişkin sözleşmeler"</strong> kapsamındadır.
+        Alıcı'nın sipariş ettiği Hizmet, Mesafeli Sözleşmeler Yönetmeliği'nin 15. maddesinin birinci fıkrasının (ğ) bendi uyarınca <strong>"Elektronik ortamda anında ifa edilen hizmetler veya tüketiciye anında teslim edilen gayrimaddi mallara ilişkin sözleşmeler"</strong> kapsamındadır.
       </p>
       {/* Cayma Hakkı Uyarısı */}
       <p className={styles.warningNote}>
@@ -197,7 +197,7 @@ function TermsOfService() {
 
       <h4 className={styles.articleTitle}>MADDE 7: BİLDİRİMLER VE DELİL SÖZLEŞMESİ</h4>
       <p className={styles.paragraph}>
-        Taraflar arasındaki bildirimler, Alıcı'nın belirttiği e-posta adresi ve Satıcı'nın {email} e-posta adresi üzerinden yapılacaktır. Alıcı, işbu Sözleşme’den doğabilecek ihtilaflarda Satıcı'nın resmi defter ve ticari kayıtlarıyla, kendi veritabanında, sunucularında tuttuğu elektronik bilgilerin ve bilgisayar kayıtlarının, bağlayıcı, kesin ve münhasır delil teşkil edeceğini, bu maddenin Hukuk Muhakemeleri Kanunu’nun 193. maddesi anlamında delil sözleşmesi niteliğinde olduğunu kabul eder.
+        Taraflar arasındaki bildirimler, Alıcı'nın belirttiği e-posta adresi ve Satıcı'nın {email} e-posta adresi üzerinden yapılacaktır. Alıcı, işbu Sözleşme'den doğabilecek ihtilaflarda Satıcı'nın resmi defter ve ticari kayıtlarıyla, kendi veritabanında, sunucularında tuttuğu elektronik bilgilerin ve bilgisayar kayıtlarının, bağlayıcı, kesin ve münhasır delil teşkil edeceğini, bu maddenin Hukuk Muhakemeleri Kanunu'nun 193. maddesi anlamında delil sözleşmesi niteliğinde olduğunu kabul eder.
       </p>
 
        <h4 className={styles.articleTitle}>MADDE 8: YÜRÜRLÜK</h4>
