@@ -103,14 +103,16 @@ const pdfStyles = `
       ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
       li { margin-bottom: 0.4rem; }
       pre {
-           font-family: monospace;
+           font-family: 'Inter', sans-serif;
            background-color: #f8f9fa;
            padding: 0.8rem;
            border-radius: 4px;
            border: 1px solid #dee2e6;
-           white-space: pre-wrap;
-           word-wrap: break-word;
-           font-size: 10pt;
+           white-space: pre-wrap; /* Bu KESİNLİKLE kalmalı */
+           word-wrap: break-word; /* Bu KESİNLİKLE kalmalı */
+           font-size: 10pt; /* Font boyutu kalabilir veya body ile aynı olabilir */
+           line-height: 1.5; /* Body ile aynı satır aralığı */
+           color: inherit; /* Body'den renk alsın */
            margin-bottom: 1rem;
       }
       a { color: #218838; text-decoration: none; }
