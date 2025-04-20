@@ -1,6 +1,7 @@
 import React from 'react';
 // ÖNEMLİ: Routes ve Route'u react-router-dom'dan import et
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import CookieConsent from "react-cookie-consent"; // <-- YENİ IMPORT
 import styles from './App.module.css'; // Mevcut stil dosyanız
 
 // Bileşenleri import et
@@ -70,6 +71,36 @@ function App() {
             </ul>
           </nav>
         </footer>
+
+        {/* ---- YENİ: Çerez Onay Banner'ı ---- */}
+        <CookieConsent
+          location="bottom" // Banner'ın konumu (bottom, top, none)
+          buttonText="Kabul Et" // Kabul butonu metni
+          declineButtonText="Reddet" // Reddet butonu metni (opsiyonel, enableDeclineButton true ise)
+          cookieName="belgeHizliCookieConsent" // Tarayıcıda saklanacak cookie adı
+          style={{ background: "var(--gray-800)", color: "var(--gray-100)", fontSize: "14px" }} // Temel stil
+          buttonStyle={{ color: "var(--gray-900)", background: "var(--gray-100)", fontSize: "13px", fontWeight: "bold", borderRadius: "5px", padding: "8px 15px" }}
+          declineButtonStyle={{ color: "#aaa", background: "#555", fontSize: "13px", borderRadius: "5px", padding: "8px 15px", marginLeft: "10px" }}
+          expires={150} // Cookie geçerlilik süresi (gün)
+          enableDeclineButton // Reddet butonunu aktif et
+          // onAccept={() => { // Kabul edildiğinde çalışacak fonksiyon (opsiyonel)
+          //   alert("Çerezleri kabul ettiniz! Analitikler şimdi başlayabilir.");
+          //   // Burada Google Analytics'i başlatma vb. kodlar olabilir
+          // }}
+          // onDecline={() => { // Reddedildiğinde çalışacak fonksiyon (opsiyonel)
+          //   alert("Pazarlama/Analitik çerezleri reddettiniz.");
+          // }}
+          // debug={true} // Geliştirme sırasında test için her zaman gösterir
+        >
+          Bu web sitesi, kullanıcı deneyimini geliştirmek ve site trafiğini analiz etmek için çerezleri kullanır. Zorunlu çerezler sitenin çalışması için gereklidir. Devam ederek veya "Kabul Et" butonuna tıklayarak tüm çerezleri kabul etmiş olursunuz. Daha fazla bilgi için{" "}
+          <Link to="/gizlilik-politikasi" style={{ color: "var(--secondary-color)", textDecoration: "underline" }}>
+            Gizlilik Politikamızı
+          </Link>{" "}
+          inceleyebilirsiniz.
+           {/* İsterseniz buraya "Ayarlar" linki/butonu ekleyebilirsiniz */}
+        </CookieConsent>
+        {/* ---- YENİ SON ---- */}
+
       </div>
     </Router>
   );
