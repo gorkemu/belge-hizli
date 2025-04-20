@@ -19,6 +19,11 @@ function ContactUs() {
   // const professionalRulesLink = "[Mesleki Davranış Kuralları ve Erişim Linki (varsa)]";
 
   return (
+    <>
+  <title>İletişim - Belge Hızlı | Bize Ulaşın</title>
+  <meta name="description" content="Belge Hızlı ile iletişime geçin. Soru, öneri veya işbirliği talepleriniz için e-posta gönderebilirsiniz." />
+  <link rel="canonical" href="https://www.belgehizli.com/iletisim" />
+
     <div className={styles.container}>
       <h2 className={styles.title}>İletişim Bilgileri</h2>
       <p className={styles.paragraph}>
@@ -88,6 +93,7 @@ function ContactUs() {
       </form>
       */}
     </div>
+    </>
   );
 }
 

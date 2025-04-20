@@ -8,6 +8,15 @@ const IconPlaceholder = ({ label }) => <div className={styles.iconPlaceholder}>{
 
 function HomePage() {
   return (
+    <> {/* Fragment kullanmak iyi */}
+      {/* --- Doğrudan Meta Etiketleri --- */}
+      <title>Belge Hızlı - Online Sözleşme ve Belge Oluşturucu</title>
+      <meta name="description" content="İhtiyacınıza özel kira sözleşmesi, iş anlaşması, dilekçe ve daha birçok belge şablonunu online olarak kolayca doldurun ve anında PDF indirin." />
+      <link rel="canonical" href="https://www.belgehizli.com/" />
+      {/* İsterseniz Open Graph vb. etiketleri de buraya ekleyebilirsiniz */}
+      {/* <meta property="og:title" content="..." /> */}
+      {/* --- Meta Etiketleri Sonu --- */}
+    
     <div className={styles.homeContainer}>
       {/* Ana Bölüm (Hero Section) */}
       <section className={styles.heroSection}>
@@ -57,6 +66,7 @@ function HomePage() {
         </Link>
       </section>
     </div>
+    </>
   );
 }
 

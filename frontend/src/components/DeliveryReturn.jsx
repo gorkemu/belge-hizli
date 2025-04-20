@@ -6,6 +6,11 @@ function DeliveryReturn() {
   const email = "info@belgehizli.com";
 
   return (
+    <>
+  <title>Teslimat ve İade Koşulları - Belge Hızlı</title>
+  <meta name="description" content="Belge Hızlı'dan satın alınan şablonların teslimatı ve olası iade süreçleri hakkındaki politikamız." />
+  <link rel="canonical" href="https://www.belgehizli.com/teslimat-iade" /> {/* URL'yi kontrol edin, /teslimat-ve-iade olabilir */}
+
     <div className={styles.container}>
       <h2 className={styles.title}>Teslimat ve İade Politikası</h2>
 
@@ -67,6 +72,7 @@ function DeliveryReturn() {
         düzeltme yapılacak veya istisnai olarak iade değerlendirilebilecektir.
       </p>
     </div>
+    </>
   );
 }
 

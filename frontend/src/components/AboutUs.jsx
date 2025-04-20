@@ -5,7 +5,11 @@ function AboutUs() {
   const siteName = "Belge Hızlı";
 
   return (
-    // Ana container stilini uygula
+    <>
+      <title>Hakkımızda - Belge Hızlı | Amacımız ve Kolaylaştırdığımız Belge Oluşturma Süreci</title>
+      <meta name="description" content="Belge Hızlı'nın kuruluş amacı ve online belge oluşturma sürecini nasıl kolaylaştırdığımız hakkında bilgi edinin." />
+      <link rel="canonical" href="https://www.belgehizli.com/hakkimizda" />
+      
     <div className={styles.container}>
       {/* Başlık stilini uygula */}
       <h2 className={styles.title}>Hakkımızda</h2>
@@ -37,6 +41,7 @@ function AboutUs() {
         Bize güvendiğiniz için teşekkür ederiz!
       </p>
     </div>
+    </>
   );
 }
 

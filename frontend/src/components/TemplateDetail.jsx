@@ -166,6 +166,24 @@ function TemplateDetail() {
     const isFormCurrentlyValid = Object.keys(formErrors).length === 0; // Basit kontrol
 
     return (
+        <> {/* Fragment */}
+            {/* --- Dinamik Meta Etiketleri --- */}
+            {template && ( // Sadece template verisi varsa render et
+                <>
+                    <title>{`${template.name} - Belge Hızlı`}</title>
+                    <meta name="description" content={`${template.description} Şablonunu Belge Hızlı'da doldurun ve indirin.`} />
+                    <link rel="canonical" href={`https://www.belgehizli.com/templates/${id}`} />
+                     {/* <meta property="og:title" content={`${template.name} - Belge Hızlı`} /> */}
+                </>
+            )}
+            {!template && ( // Yüklenirken veya hata durumunda varsayılan
+                 <>
+                     <title>Şablon Detayı - Belge Hızlı</title>
+                     <meta name="description" content="Belge Hızlı şablon detayı." />
+                 </>
+            )}
+            {/* --- Meta Etiketleri Sonu --- */}
+
         <div className={styles.container}>
             <button onClick={() => navigate(-1)} className={styles.backButton}>
                 ← Geri
@@ -227,6 +245,7 @@ function TemplateDetail() {
                 {paymentError && <p className={styles.paymentError}>{paymentError}</p>}
             </div>
         </div>
+        </>
     );
 }
 

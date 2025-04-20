@@ -16,6 +16,11 @@ function TermsOfService() {
   // const kepAddress = "[KEP Adresiniz (varsa)]"; // Varsa ekleyin
 
   return (
+    <>
+  <title>Kullanım Şartları - Belge Hızlı</title>
+  <meta name="description" content="Belge Hızlı platformunun kullanım koşulları ve hizmet sözleşmesi. Sitemizi kullanarak kabul ettiğiniz şartları inceleyin." />
+  <link rel="canonical" href="https://www.belgehizli.com/kullanim-sartlari" />
+
     <div className={styles.container}>
       <h2 className={styles.title}>Kullanım Şartları ve Mesafeli Satış Sözleşmesi</h2>
       <p className={styles.lastUpdated}><strong>Son Güncelleme:</strong> {lastUpdateDate}</p>
@@ -206,6 +211,7 @@ function TermsOfService() {
       </p>
 
     </div>
+    </>
   );
 }
 

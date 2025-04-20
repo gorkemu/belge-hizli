@@ -11,6 +11,11 @@ function PrivacyPolicy() {
   const siteUrl = "https://www.belgehizli.com/";
 
   return (
+    <>
+  <title>Gizlilik Politikası - Belge Hızlı</title>
+  <meta name="description" content="Belge Hızlı web sitesinin gizlilik politikası. Kişisel verilerinizi nasıl topladığımızı, kullandığımızı ve koruduğumuzu öğrenin (KVKK ve GDPR uyumlu)." />
+  <link rel="canonical" href="https://www.belgehizli.com/gizlilik-politikasi" />
+
     <div className={styles.container}>
       <h2 className={styles.title}>Gizlilik Politikası ve Aydınlatma Metni</h2>
       <p className={styles.lastUpdated}><strong>Son Güncelleme:</strong> {lastUpdateDate}</p>
@@ -138,6 +143,7 @@ function PrivacyPolicy() {
         zaman zaman güncellenebilir. Güncellemeler Sitemizde yayınlandığı tarihte yürürlüğe girer.
       </p>
     </div>
+    </>
   );
 }
 

@@ -69,78 +69,52 @@ function TemplateList() {
   
 
   return (
-    // Ana konteyner
+    <> {/* Fragment */}
+    {/* ---- Sayfa Başlığı ve Meta Etiketleri ---- */}
+    <title>Tüm Şablonlar - Belge Hızlı | Online Sözleşme Oluştur</title>
+    <meta name="description" content="Kira sözleşmesi, iş sözleşmesi, freelancer anlaşması, dilekçe ve daha birçok hazır belge şablonu Belge Hızlı'da. Hemen seçin, doldurun, indirin." />
+    <link rel="canonical" href="https://www.belgehizli.com/templates" />
+    {/* ---- Etiketler Sonu ---- */}
+
     <div className={styles.listPageContainer}>
-
-      {/* ---- BİLGİLENDİRME BÖLÜMÜ ---- */}
+      {/* Bilgilendirme Bölümü */}
       <div className={styles.listHeader}>
-        <div className={styles.headerText}>
           <h2>Belgenizi Kolayca Oluşturun</h2>
-          <p>
-            Sadece 3 adımda profesyonel belgeniz hazır: İhtiyacınız olan şablonu seçin,
-            yönlendirmelerle formu doldurun ve PDF olarak anında indirin.
-          </p>
+          <p>İhtiyacınız olan şablonu seçin, formu doldurun ve PDF olarak anında indirin.</p>
           <p className={styles.disclaimer}>
-            Şablonlarımız genel kullanıma uygun olarak hazırlanmıştır, özel durumlar için
-            profesyonel danışmanlık almanız önerilir.
+            Şablonlarımız genel kullanıma uygundur, özel durumlar için profesyonel danışmanlık almanız önerilir.
           </p>
-        </div>
-        <div className={styles.headerIcons}>
-          <div className={styles.stepItem}>
-            <IconPlaceholder label="🔍" />
-            <span>Seç</span>
-          </div>
-          <div className={styles.stepSeparator}>→</div> {/* Ayırıcı */}
-          <div className={styles.stepItem}>
-            <IconPlaceholder label="✍️" />
-            <span>Doldur</span>
-          </div>
-          <div className={styles.stepSeparator}>→</div> {/* Ayırıcı */}
-          <div className={styles.stepItem}>
-            <IconPlaceholder label="📄" />
-            <span>İndir</span>
-          </div>
-        </div>
       </div>
-      {/* ---- BİLGİLENDİRME BÖLÜMÜ SONU ---- */}
 
-      {/* ---- Arama Çubuğu ---- */}
+      {/* Arama Çubuğu */}
       <div className={styles.searchContainer}>
         <input
           type="text"
-          placeholder="Şablon ara (isim veya açıklamaya göre)..."
+          placeholder="Şablon ara (örn: kira, iş, dilekçe)..." // Placeholder güncellendi
           className={styles.searchInput}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} // State'i güncelle
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
-         {/* Arama ikonunu ekleyebiliriz */}
-         {/* <span className={styles.searchIcon}>🔍</span> */}
       </div>
-      {/* ---- Arama Çubuğu SON ---- */}
 
-      {/* Şablon Listesi (Yeni Kart Yapısı) */}
+      {/* Şablon Listesi */}
       {filteredTemplates.length > 0 ? (
-        <div className={styles.templateGrid}> {/* Class ismini değiştirdim */}
+        <div className={styles.templateGrid}>
           {filteredTemplates.map(template => (
             <div key={template._id} className={styles.templateCard}>
-              {/* ---- GÖRSEL BÖLÜMÜ ---- */}
               <div className={styles.cardImageContainer}>
-                {/* Statik veya Dinamik Görsel */}
                 <img
-                  src={getPreviewImageUrl(template._id)} // ID'yi fonksiyona gönder
+                  src={`/template-previews/${template._id}.webp`} // ID'yi kullan (resimleri bu ID ile kaydettiysen)
                   alt={`${template.name} Önizleme`}
                   className={styles.cardPreviewImage}
-                  loading="lazy" // Lazy loading
-                  // Hata durumunda placeholder gösterme:
-                  onError={(e) => { e.target.onerror = null; e.target.src = '/template-previews/placeholder.png'; }}
+                  loading="lazy"
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/template-previews/placeholder.png'; }} // Hata durumunda placeholder
                 />
               </div>
-              {/* ---- İÇERİK BÖLÜMÜ ---- */}
               <div className={styles.cardContent}>
                 <h3 className={styles.cardTitle}>{template.name}</h3>
                 <p className={styles.cardDescription}>{template.description}</p>
               </div>
-              {/* ---- FOOTER BÖLÜMÜ ---- */}
               <div className={styles.cardFooter}>
                 <Link to={`/templates/${template._id}`} className={styles.cardLink}>
                   Şablonu Kullan
@@ -155,6 +129,7 @@ function TemplateList() {
         </div>
       )}
     </div>
+  </>
   );
 }
 
