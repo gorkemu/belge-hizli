@@ -7,7 +7,7 @@ function PrivacyPolicy() {
   const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
   const address = "[Merkez Adresiniz]";
   const email = "info@belgehizli.com";
-  const lastUpdateDate = "18.04.2025";
+  const lastUpdateDate = "20.04.2025";
   const siteUrl = "https://www.belgehizli.com/";
 
   return (

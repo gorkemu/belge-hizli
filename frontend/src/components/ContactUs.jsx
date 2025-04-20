@@ -3,20 +3,20 @@ import styles from './ContactUs.module.css'; // Stil dosyasını import et
 
 function ContactUs() {
   // Placeholder bilgileri doldurun
-  const ownerName = "[Şirket Sahibi Adı Soyadı]";
-  const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
-  const address = "[Merkez Adresiniz (Resmi kayıtlardaki adresiniz)]";
-  const taxOffice = "[Vergi Dairesi]";
-  const taxIdNumber = "[Vergi Kimlik Numanız (VKN)]";
-  const mersisNo = "[MERSİS Numarası (Ticaret Odasına kayıtlıysanız ve varsa)]";
-  const kepAddress = "[KEP Adresiniz (varsa)]";
-  const email = "[E-posta Adresiniz (Müşteri desteği için)]";
-  const phone = "[Telefon Numaranız]";
-  const businessName = "[İşletme Adınız (Kullanıyorsanız)]";
-  const registeredTrademark = "[Tescilli Markanız (varsa)]";
-  const chamberMembership = "[Mensup Olduğunuz Meslek Odası (varsa)]";
-  const chamberRegistryNo = "[Oda Sicil Numarası (varsa)]";
-  const professionalRulesLink = "[Mesleki Davranış Kuralları ve Erişim Linki (varsa)]";
+  // const ownerName = "[Şirket Sahibi Adı Soyadı]";
+  // const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
+  // const address = "[Merkez Adresiniz (Resmi kayıtlardaki adresiniz)]";
+  // const taxOffice = "[Vergi Dairesi]";
+  // const taxIdNumber = "[Vergi Kimlik Numanız (VKN)]";
+  // const mersisNo = "[MERSİS Numarası (Ticaret Odasına kayıtlıysanız ve varsa)]";
+  // const kepAddress = "[KEP Adresiniz (varsa)]";
+  const email = "info@belgehizli.com"; // E-posta adresinizi buraya girin
+  // const phone = "[Telefon Numaranız]";
+  // const businessName = "[İşletme Adınız (Kullanıyorsanız)]";
+  // const registeredTrademark = "[Tescilli Markanız (varsa)]";
+  // const chamberMembership = "[Mensup Olduğunuz Meslek Odası (varsa)]";
+  // const chamberRegistryNo = "[Oda Sicil Numarası (varsa)]";
+  // const professionalRulesLink = "[Mesleki Davranış Kuralları ve Erişim Linki (varsa)]";
 
   return (
     <div className={styles.container}>
@@ -27,11 +27,9 @@ function ContactUs() {
       </p>
 
       {/* Bilgi kutusu stili */}
-      <div className={styles.infoBox}>
-        {/* Alt başlık stili */}
+      {/* <div className={styles.infoBox}>
         <h4 className={styles.subHeading}>Firma Bilgileri (iyzico ve Yasal Bilgilendirme Kapsamında)</h4>
         <p className={styles.infoItem}>
-          {/* Etiket stili */}
           <strong className={styles.label}>Adı Soyadı / Unvan:</strong> {companyTitle || ownerName} {companyTitle && `(Sahibi: ${ownerName})`}
         </p>
         <p className={styles.infoItem}>
@@ -44,17 +42,17 @@ function ContactUs() {
         <p className={styles.infoItem}>
           <strong className={styles.label}>Merkez Adresi:</strong> {address}
         </p>
-      </div>
+      </div> */}
 
       <div className={styles.contactChannels}>
         <h4 className={styles.subHeading}>İletişim Kanalları</h4>
         <p className={styles.infoItem}><strong className={styles.label}>E-posta:</strong> {email}</p>
-        <p className={styles.infoItem}><strong className={styles.label}>Telefon:</strong> {phone}</p>
-        {kepAddress && <p className={styles.infoItem}><strong className={styles.label}>KEP Adresi:</strong> {kepAddress}</p>}
+        {/* <p className={styles.infoItem}><strong className={styles.label}>Telefon:</strong> {phone}</p> */}
+        {/* {kepAddress && <p className={styles.infoItem}><strong className={styles.label}>KEP Adresi:</strong> {kepAddress}</p>} */}
       </div>
 
       {/* Sadece varsa gösterilecek bölüm */}
-      {(businessName || registeredTrademark || chamberMembership || professionalRulesLink) && (
+      {/* {(businessName || registeredTrademark || chamberMembership || professionalRulesLink) && (
         <div className={styles.otherInfo}>
             <h4 className={styles.subHeading}>Diğer Bilgiler (varsa)</h4>
             {businessName && <p className={styles.infoItem}><strong className={styles.label}>İşletme Adı:</strong> {businessName}</p>}
@@ -71,7 +69,7 @@ function ContactUs() {
             </p>
             )}
         </div>
-      )}
+      )} */}
 
       {/* İletişim formu (Şu an yorumlu, istenirse aktif edilebilir) */}
       {/*
