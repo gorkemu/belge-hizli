@@ -108,12 +108,12 @@ function PrivacyPolicy() {
         ziyaret edebilirsiniz:
       </p>
       <ul className={styles.linkList}>
-          <li><a href="https://tools.google.com/dlpage/gaoptout?hl=tr" target="_blank" rel="noopener noreferrer">Google Analytics Kapsamı Dışında Kalma</a></li>
-          <li><a href="https://support.google.com/chrome/answer/95647?hl=tr" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
-          <li><a href="https://support.microsoft.com/tr-tr/windows/microsoft-edge-de-tan%C4%B1mlama-bilgilerini-y%C3%B6netme-g%C3%B6r%C3%BCnt%C3%BCleme-izin-verme-engelleme-silme-ve-kullanma-168dab11-0753-043d-7c16-ede5947fc64d" target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
-          <li><a href="https://support.mozilla.org/tr/kb/cerezler-web-sitelerinin-bilgisayarinizda-depoladi?redirectslug=Cookies&redirectlocale=en-US" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
-          <li><a href="https://support.apple.com/kb/ph19214?locale=tr_TR" target="_blank" rel="noopener noreferrer">Safari</a></li>
-          <li><a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noopener noreferrer">Opera</a></li>
+        <li><a href="https://tools.google.com/dlpage/gaoptout?hl=tr" target="_blank" rel="noopener noreferrer">Google Analytics Kapsamı Dışında Kalma</a></li>
+        <li><a href="https://support.google.com/chrome/answer/95647?hl=tr" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
+        <li><a href="https://support.microsoft.com/tr-tr/windows/microsoft-edge-de-tan%C4%B1mlama-bilgilerini-y%C3%B6netme-g%C3%B6r%C3%BCnt%C3%BCleme-izin-verme-engelleme-silme-ve-kullanma-168dab11-0753-043d-7c16-ede5947fc64d" target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
+        <li><a href="https://support.mozilla.org/tr/kb/cerezler-web-sitelerinin-bilgisayarinizda-depoladi?redirectslug=Cookies&redirectlocale=en-US" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
+        <li><a href="https://support.apple.com/kb/ph19214?locale=tr_TR" target="_blank" rel="noopener noreferrer">Safari</a></li>
+        <li><a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noopener noreferrer">Opera</a></li>
       </ul>
 
       <h3 className={styles.sectionTitle}>7. İlgili Kişi Olarak Haklarınız (KVKK Madde 11)</h3>
