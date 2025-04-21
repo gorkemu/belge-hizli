@@ -2,6 +2,36 @@ import React, { useEffect } from 'react'; // useEffect eklendi
 import styles from './DocumentPreview.module.css';
 import Handlebars from 'handlebars';
 
+// --- YENİ DATE FORMAT HELPER ---
+function formatDateHelper(dateString) {
+  if (!dateString || typeof dateString !== 'string') return ''; // Geçersiz girdi kontrolü
+  try {
+    // ISO formatı (YYYY-MM-DD) veya benzeri varsayılır
+    const date = new Date(dateString);
+    // Tarih geçerli mi kontrol et
+    if (isNaN(date.getTime())) return dateString; // Geçersizse orijinal string'i döndür
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Aylar 0'dan başlar
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  } catch (e) {
+     console.error("Error formatting date:", dateString, e);
+     return dateString; // Hata olursa orijinal string'i döndür
+  }
+}
+// --- HELPER SONU ---
+
+// Helper'ları kaydet (try-catch içinde)
+try {
+    Handlebars.registerHelper('math', /* ... */ ); // Mevcut helperlar
+    Handlebars.registerHelper('eq', /* ... */ );
+    Handlebars.registerHelper('each_with_index', /* ... */ );
+    Handlebars.registerHelper('gt', /* ... */ );
+    Handlebars.registerHelper('default', /* ... */ );
+    Handlebars.registerHelper('formatDate', formatDateHelper); // <-- YENİ HELPER'I KAYDET
+} catch (e) { /* ... */ }
+
 // Handlebars helper'ları (Backend ile aynı olmalı)
 try {
     Handlebars.registerHelper('math', function (lvalue, operator, rvalue) {

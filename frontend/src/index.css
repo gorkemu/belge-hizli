@@ -69,4 +69,32 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(33, 136, 56, 0.25); /* Yeşil tonuna uygun halka */
 }
-textarea { min-height: 90px; }
+textarea { min-height: 90px; 
+  resize: vertical; /* Sadece dikeyde boyutlandırmaya izin ver (daha kontrollü) */
+  overflow: auto; /* İçerik taşarsa scroll bar çıksın */
+}
+
+/* Placeholder Stilleri */
+::placeholder { /* Firefox */
+  color: var(--gray-500);
+  opacity: 1; /* Firefox opaklığı düşürebiliyor */
+  font-size: 0.85rem; /* Daha küçük placeholder */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: var(--gray-500);
+   font-size: 0.85rem;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: var(--gray-500);
+   font-size: 0.85rem;
+}
+
+/* Diğer tarayıcılar için */
+input::placeholder,
+textarea::placeholder {
+  color: var(--gray-500); /* Biraz daha soluk */
+  font-size: 0.85rem; /* Daha küçük placeholder */
+  opacity: 1;
+}

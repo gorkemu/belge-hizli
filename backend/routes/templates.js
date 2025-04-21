@@ -8,6 +8,20 @@ const fs = require('fs').promises;
 const crypto = require('crypto');
 const Handlebars = require('handlebars');
 
+// --- YENİ DATE FORMAT HELPER ---
+function formatDateHelper(dateString) {
+    if (!dateString || typeof dateString !== 'string') return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    } catch (e) { return dateString; }
+  }
+  // --- HELPER SONU ---
+
 // Handlebars helper'ları (Bunlar doğruydu)
 Handlebars.registerHelper('math', function (lvalue, operator, rvalue, options) {
     lvalue = parseFloat(lvalue);
@@ -31,6 +45,7 @@ Handlebars.registerHelper('default', function (value, defaultValue) {
     return value !== undefined && value !== null && value !== '' ? value : defaultValue;
 });
 
+Handlebars.registerHelper('formatDate', formatDateHelper); // <-- YENİ HELPER'I KAYDET
 
 // Türkçe karakterleri Latin'e çevirme fonksiyonu (güvenli dosya adları için)
 function turkceToLatin(text) {
