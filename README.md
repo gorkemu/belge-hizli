@@ -9,11 +9,11 @@ A web application that allows users to generate contracts and documents in PDF f
     *   Automatically generates UI forms based on the template's `fields` array.
     *   **Repeatable Blocks:** Supports adding or removing multiple instances of a group of fields (e.g., multiple tenants, partners, items) using the `repeatable` fieldType.
     *   **Conditional Fields:** Intelligently shows or hides relevant fields based on user selections in other fields.
-*   **Live Preview:** A real-time preview updates as the user fills out the form, reflecting the final document structure (using Handlebars.js and Inter font).
+*   **Live Preview:** A real-time preview updates as the user fills out the form, reflecting the final document structure (using Handlebars.js with consistent **Inter font and dd.mm.yyyy date format**).
 *   **Template Search:** Users can easily search through templates by name or description.
-*   **Modern Template List UI:** Features a clean grid layout with template preview images and hover effects.
+*   **Modern Template List UI:** Features a clean grid layout with template preview images, hover effects, and search functionality.
 *   **Form Validation:** Performs validation for required fields, including those within repeatable blocks.
-*   **PDF Generation (External):** Leverages the Browserless.io API to generate PDF documents with embedded Inter font.
+*   **PDF Generation (External):** Leverages the Browserless.io API to generate PDF documents with embedded **Inter font and formatted dates (dd.mm.yyyy)**.
 *   **Document Delivery:** Offers direct download and automatic email delivery of the generated PDF.
 *   **Cookie Consent Banner:** Informs users about cookie usage and collects consent.
 *   **Payment Simulation:** Includes a simulated payment step.
@@ -22,7 +22,7 @@ A web application that allows users to generate contracts and documents in PDF f
 
 ## 🛠️ Technology Stack
 
-*   **Frontend:** React, Vite, React Router, CSS Modules, Axios, Handlebars.js, `react-cookie-consent`
+*   **Frontend:** React, Vite, React Router, CSS Modules, Axios, Handlebars.js, `react-cookie-consent`, **`react-imask`**
 *   **Backend:** Node.js, Express.js, MongoDB Atlas, Mongoose, Axios, Nodemailer, Handlebars.js, dotenv
 *   **Services & Hosting:** Browserless.io (PDF), Vercel (Frontend), Fly.io (Backend Docker), SMTP Provider
 
