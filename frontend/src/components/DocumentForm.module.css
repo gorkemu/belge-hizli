@@ -352,3 +352,96 @@ select:-ms-input-placeholder {
   color: var(--gray-600); /* Biraz soluk renk */
   font-style: italic;
 }
+
+/* --- YENİ TEKRARLAYAN BLOK STİLLERİ --- */
+
+.repeatableBlockContainer {
+  border: 1px solid var(--gray-300); /* Bloğu çevreleyen kenarlık */
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem; /* Diğer alanlarla arasına boşluk */
+  background-color: var(--gray-100); /* Hafif farklı arka plan */
+}
+
+.repeatableBlockLabel {
+  display: block;
+  font-size: 1.1rem; /* Ana blok etiketi biraz daha büyük */
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 1.5rem; /* İlk bloktan önce boşluk */
+  border-bottom: 1px solid var(--gray-300); /* Ayırıcı çizgi */
+  padding-bottom: 0.75rem;
+}
+
+.repeatableBlockInstance {
+  border: 1px dashed var(--gray-400); /* Her bir örneği ayıran kesikli çizgi */
+  border-radius: 5px;
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  margin-bottom: 1.5rem; /* Örnekler arası boşluk */
+  background-color: #fff; /* Örneklerin arka planı beyaz */
+  position: relative; /* Sil butonu için */
+}
+
+.blockHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; /* Altındaki ilk alandan boşluk */
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.blockHeader h4 {
+  margin: 0; /* Varsayılan başlık marjinini sıfırla */
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.removeButton {
+  background-color: #f8d7da; /* Açık kırmızı arka plan */
+  color: #721c24; /* Koyu kırmızı metin */
+  border: 1px solid #f5c6cb;
+  padding: 0.25rem 0.6rem; /* Daha küçük buton */
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.removeButton:hover {
+  background-color: #f5c6cb;
+  color: #58151c;
+}
+
+.subfieldGroup {
+  /* Alt alan grupları için gerekirse ek ayarlar */
+  /* Örneğin normal formGroup'tan farklı marjinler */
+   margin-bottom: 0.8rem; /* Alt alanlar arası boşluk */
+}
+
+.subfieldGroup .label {
+    /* Alt alan etiketlerini biraz küçültebiliriz */
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.1rem; /* Input'a daha yakın */
+}
+
+.addButton {
+  /* Temel buton stilini kullanır ama rengi farklı olabilir */
+  background-color: var(--gray-600);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  display: block; /* Tam genişlik kaplasın */
+  width: 100%;
+  margin-top: 0.5rem; /* Son bloktan sonra boşluk */
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: var(--gray-700);
+}
+
+/* --- YENİ TEKRARLAYAN BLOK STİLLERİ SONU --- */
