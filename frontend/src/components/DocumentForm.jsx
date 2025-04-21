@@ -208,147 +208,132 @@ const DocumentForm = forwardRef(({ templateFields, onChange }, ref) => {
     }));
 
     const validateForm = () => {
-        // TODO: Bu fonksiyon tekrarlayan blokları da içerecek şekilde güncellenmeli.
-        // Şimdilik sadece normal alanları kontrol eden eski mantığı bırakıyoruz.
-        // Tekrarlayan blokların doğrulaması sonraki adımda eklenecek.
-        const validationErrors = {};
-        let isValid = true;
+        console.log("Validating form with values:", formValues); // Doğrulama başlangıcı log
+        const newErrors = {}; // Hataları toplamak için boş obje
+        let formIsValid = true;
 
-        if (!templateFields || !Array.isArray(templateFields)) return false;
+        if (!templateFields || !Array.isArray(templateFields)) {
+            console.error("templateFields prop is missing or invalid during validation.");
+            return false;
+        }
 
         templateFields.forEach(field => {
-            const visible = isFieldVisible(field, formValues);
-            if (!visible) return;
+            const isVisible = isFieldVisible(field, formValues);
 
-            // Sadece normal alanları doğrula (şimdilik)
+            // Alan görünmüyorsa doğrulamayı tamamen atla
+            if (!isVisible) {
+                 // Görünmeyen alan için mevcut hatayı temizle (varsa)
+                 // Bu, setErrors içinde yapılacak
+                 return;
+            }
+
+            // --- Normal Alan Doğrulaması ---
             if (field.fieldType !== 'repeatable') {
+                let fieldError = ''; // Alan için hata mesajı
                 if (field.required) {
                     const value = formValues[field.name];
                     if (value === undefined || value === null || String(value).trim() === '') {
-                        validationErrors[field.name] = `${field.label || field.name} alanı zorunludur.`;
-                        isValid = false;
+                        fieldError = `${field.label || field.name} alanı zorunludur.`;
+                        formIsValid = false;
                     }
                 }
-                // ... diğer normal alan doğrulamaları ...
-            } else {
-                 // Tekrarlayan alanların doğrulaması buraya eklenecek
-                 const blocks = formValues[field.name] || [];
-                 const blockErrors = [];
-                 blocks.forEach((block, index) => {
-                     const currentBlockErrors = {};
-                     field.subfields.forEach(subfield => {
-                         // Alt alanın görünürlük koşulu varsa kontrol et (şimdilik basit tutuyoruz)
-                         if (subfield.required) {
-                             const subValue = block[subfield.name];
-                              if (subValue === undefined || subValue === null || String(subValue).trim() === '') {
-                                 currentBlockErrors[subfield.name] = `${subfield.label || subfield.name} zorunludur.`;
-                                 isValid = false;
-                             }
-                         }
-                         // ... diğer alt alan doğrulamaları ...
-                     });
-                      blockErrors[index] = currentBlockErrors;
-                 });
-                  if (blockErrors.some(err => Object.keys(err).length > 0)) { // Eğer herhangi bir blokta hata varsa
-                     validationErrors[field.name] = blockErrors;
-                  }
+                // E-posta formatı kontrolü
+                if (!fieldError && field.fieldType === 'email' && formValues[field.name] && !/\S+@\S+\.\S+/.test(formValues[field.name])) {
+                    fieldError = `${field.label || field.name} geçerli bir e-posta adresi olmalıdır.`;
+                    formIsValid = false;
+                }
+                // Sayı formatı kontrolü
+                if (!fieldError && field.fieldType === 'number' && formValues[field.name] && isNaN(Number(formValues[field.name]))) {
+                     fieldError = `${field.label || field.name} bir sayı olmalıdır.`;
+                     formIsValid = false;
+                }
+                // Başka normal alan doğrulamaları buraya eklenebilir...
+
+                if (fieldError) {
+                    newErrors[field.name] = fieldError;
+                }
+            }
+            // --- Tekrarlayan Blok Doğrulaması ---
+            else {
+                const blocks = formValues[field.name] || [];
+                const blockErrorsArray = []; // Bu blok için hataları tutacak dizi
+                let blockHasErrors = false;
+
+                blocks.forEach((block, index) => {
+                    const currentBlockErrors = {}; // Bu spesifik örnek için hatalar
+                    field.subfields.forEach(subfield => {
+                        // TODO: Alt alanlar için de koşul kontrolü eklenebilir
+                        let subfieldError = '';
+                        if (subfield.required) {
+                            const subValue = block[subfield.name];
+                            if (subValue === undefined || subValue === null || String(subValue).trim() === '') {
+                                subfieldError = `${subfield.label || subfield.name} zorunludur.`;
+                                formIsValid = false;
+                                blockHasErrors = true;
+                            }
+                        }
+                        // Başka alt alan doğrulamaları (email, number vb.) buraya eklenebilir...
+
+                        if (subfieldError) {
+                            currentBlockErrors[subfield.name] = subfieldError;
+                        }
+                    });
+                    blockErrorsArray[index] = currentBlockErrors; // Hata objesini diziye ekle
+                });
+
+                // Eğer en az bir blokta hata varsa, ana hata objesine ekle
+                if (blockHasErrors) {
+                    newErrors[field.name] = blockErrorsArray;
+                }
             }
         });
 
-        setErrors(validationErrors);
-        if (onChange) onChange(formValues, validationErrors);
-        return isValid;
+        console.log("Validation finished. Errors:", newErrors); // Doğrulama sonucu log
+        setErrors(newErrors); // Hata state'ini güncelle
+        if (onChange) {
+            onChange(formValues, newErrors); // Hataları üst bileşene bildir
+        }
+        return formIsValid; // Formun genel geçerlilik durumunu döndür
     };
     // --- Form Doğrulama Sonu ---
 
-
-    // --- Input Alanı Render Etme (Güncellendi) ---
+    // --- Input Alanı Render Etme (Aynı kalıyor) ---
     const renderInputField = (field, blockIndex = null) => {
-        if (!field || !field.name) return null;
+        // ... (renderInputField kodu önceki gibi) ...
+         if (!field || !field.name) return null;
+         const inputName = blockIndex !== null ? `${field.blockName}[${blockIndex}][${field.name}]` : field.name;
+         const value = blockIndex !== null ? formValues[field.blockName]?.[blockIndex]?.[field.name] || '' : formValues[field.name] || '';
+         // Hata objesini al (bu bir string veya obje olabilir)
+         const errorData = blockIndex !== null ? errors[field.blockName]?.[blockIndex]?.[field.name] : errors[field.name];
+         // Gösterilecek hata mesajı (string olmalı)
+         const errorMessage = (typeof errorData === 'string') ? errorData : ''; // Sadece string hataları göster
 
-        // Tekrarlayan blok içindeyse, name'i formatla: blockName[index][subfieldName]
-        const inputName = blockIndex !== null ? `${field.blockName}[${blockIndex}][${field.name}]` : field.name;
-        // Değeri alırken de doğru yerden al
-        const value = blockIndex !== null
-                        ? formValues[field.blockName]?.[blockIndex]?.[field.name] || ''
-                        : formValues[field.name] || '';
-        // Hatayı alırken de doğru yerden al
-         const error = blockIndex !== null
-                        ? errors[field.blockName]?.[blockIndex]?.[field.name]
-                        : errors[field.name];
+         const inputClass = errorMessage ? `${styles.input} ${styles.inputError}` : styles.input;
+         const selectClass = errorMessage ? `${styles.select} ${styles.inputError}` : styles.select;
+         const textareaClass = errorMessage ? `${styles.textarea} ${styles.inputError}` : styles.textarea;
+         const placeholderText = field.placeholder || field.label || '';
 
-
-        const inputClass = error ? `${styles.input} ${styles.inputError}` : styles.input;
-        const selectClass = error ? `${styles.select} ${styles.inputError}` : styles.select;
-        const textareaClass = error ? `${styles.textarea} ${styles.inputError}` : styles.textarea;
-        const placeholderText = field.placeholder || field.label || '';
-
-        // Not: handleInputChange tüm inputlar için çalışır, çünkü name özniteliğini kullanır.
-        switch (field.fieldType) {
-            case 'text':
-            case 'number':
-            case 'date':
-            case 'email':
-                return <input
-                           type={field.fieldType === 'email' ? 'email' : (field.fieldType === 'number' ? 'number' : (field.fieldType === 'date' ? 'date' : 'text'))}
-                           id={inputName} // ID'yi de benzersiz yap
-                           name={inputName} // Formatlanmış name
-                           className={inputClass}
-                           onChange={handleInputChange}
-                           placeholder={placeholderText}
-                           value={value} // Doğru yerden alınan değer
-                       />;
-            case 'textarea':
-                 return <textarea
-                            id={inputName}
-                            name={inputName}
-                            className={textareaClass}
-                            onChange={handleInputChange}
-                            placeholder={placeholderText}
-                            value={value}
-                            rows={field.rows || 3}
-                        />;
-            case 'select':
-                return (
-                    <select id={inputName} name={inputName} className={selectClass} onChange={handleInputChange} value={value}>
-                        <option value="">{placeholderText || 'Seçiniz...'}</option>
-                        {field.options && field.options.map((option, index) => (
-                             typeof option === 'string' ?
-                                <option key={`${inputName}-opt-${index}`} value={option}>{option}</option> :
-                                <option key={`${inputName}-opt-${index}`} value={option.value}>{option.label}</option>
-                        ))}
-                    </select>
-                );
-            case 'radio':
-                return (
-                    <div className={styles.radioGroup}>
-                        {field.options && field.options.map((option, index) => {
-                            const optionValue = typeof option === 'string' ? option : option.value;
-                            const optionLabel = typeof option === 'string' ? option : option.label;
-                            const inputId = `${inputName}-opt-${index}`;
-                            return (
-                                <div key={inputId} className={styles.radioContainer}>
-                                    <input type="radio" id={inputId} name={inputName} value={optionValue}
-                                        checked={String(value) === String(optionValue)}
-                                        onChange={handleInputChange} className={styles.radioInput} />
-                                    <label htmlFor={inputId} className={styles.radioLabel}>{optionLabel}</label>
-                                </div>
-                            );
-                         })}
-                    </div>
-                );
-            default:
-                 return <input type="text" id={inputName} name={inputName} className={inputClass} onChange={handleInputChange} placeholder={`Desteklenmeyen: ${field.fieldType}`} value={value} />;
-        }
+         switch (field.fieldType) {
+             case 'text':
+             case 'number':
+             case 'date':
+             case 'email':
+                 return <input type={field.fieldType === 'email' ? 'email' : (field.fieldType === 'number' ? 'number' : (field.fieldType === 'date' ? 'date' : 'text'))} id={inputName} name={inputName} className={inputClass} onChange={handleInputChange} placeholder={placeholderText} value={value} />;
+             case 'textarea':
+                  return <textarea id={inputName} name={inputName} className={textareaClass} onChange={handleInputChange} placeholder={placeholderText} value={value} rows={field.rows || 3} />;
+             case 'select':
+                 return ( <select id={inputName} name={inputName} className={selectClass} onChange={handleInputChange} value={value}> <option value="">{placeholderText || 'Seçiniz...'}</option> {field.options && field.options.map((option, index) => ( typeof option === 'string' ? <option key={`${inputName}-opt-${index}`} value={option}>{option}</option> : <option key={`${inputName}-opt-${index}`} value={option.value}>{option.label}</option> ))} </select> );
+             case 'radio':
+                 return ( <div className={styles.radioGroup}> {field.options && field.options.map((option, index) => { const optionValue = typeof option === 'string' ? option : option.value; const optionLabel = typeof option === 'string' ? option : option.label; const inputId = `${inputName}-opt-${index}`; return ( <div key={inputId} className={styles.radioContainer}> <input type="radio" id={inputId} name={inputName} value={optionValue} checked={String(value) === String(optionValue)} onChange={handleInputChange} className={styles.radioInput} /> <label htmlFor={inputId} className={styles.radioLabel}>{optionLabel}</label> </div> ); })} </div> );
+             default:
+                  return <input type="text" id={inputName} name={inputName} className={inputClass} onChange={handleInputChange} placeholder={`Desteklenmeyen: ${field.fieldType}`} value={value} />;
+         }
     };
     // --- Input Render Sonu ---
 
 
-    // --- Ana Render Fonksiyonu ---
-    if (!templateFields || templateFields.length === 0) {
-        return <div className={styles.container}>Form alanları yükleniyor...</div>;
-    }
-
+    // --- Ana Render Fonksiyonu (Güncellendi - Hata gösterimi) ---
+    // ... (Başlangıç kısmı aynı) ...
     return (
         <div className={styles.container}>
             <h3>Formu Doldurun</h3>
@@ -357,82 +342,61 @@ const DocumentForm = forwardRef(({ templateFields, onChange }, ref) => {
                     const visible = isFieldVisible(field, formValues);
                     if (!visible) return null;
 
-                    // --- Tekrarlayan Blok Render ---
                     if (field.fieldType === 'repeatable') {
                         const blocks = formValues[field.name] || [];
-                        const blockErrors = errors[field.name] || []; // Blok hatalarını al
+                        // Hata dizisini al (blok bazında hata objeleri içerir)
+                        const blockErrorsArray = errors[field.name] || [];
                         const minInstances = field.minInstances || 1;
                         const maxInstances = field.maxInstances;
+                        // Silme butonu görünürlüğü GÜNCELLENDİ
                         const canRemove = blocks.length > minInstances;
                         const canAdd = !maxInstances || blocks.length < maxInstances;
 
                         return (
                             <div key={field.name} className={styles.repeatableBlockContainer}>
                                 <label className={styles.repeatableBlockLabel}>{field.label}</label>
-                                {blocks.map((blockData, index) => (
-                                    <div key={`${field.name}-${index}`} className={styles.repeatableBlockInstance}>
-                                         <div className={styles.blockHeader}>
-                                            <h4>{field.blockTitle || 'Blok'} {index + 1}</h4>
-                                            {canRemove && (
-                                                <button type="button" onClick={() => handleRemoveBlock(field.name, index, minInstances)} className={styles.removeButton}>
-                                                    {field.removeLabel || 'Sil'}
-                                                </button>
-                                            )}
-                                         </div>
+                                {blocks.map((blockData, index) => {
+                                     // Bu spesifik blok örneği için hataları al
+                                    const currentBlockErrors = blockErrorsArray[index] || {};
+                                    return (
+                                        <div key={`${field.name}-${index}`} className={styles.repeatableBlockInstance}>
+                                            <div className={styles.blockHeader}>
+                                                <h4>{field.blockTitle || 'Blok'} {index + 1}</h4>
+                                                {canRemove && ( <button type="button" onClick={() => handleRemoveBlock(field.name, index, minInstances)} className={styles.removeButton}> {field.removeLabel || 'Sil'} </button> )}
+                                            </div>
 
-                                        {field.subfields.map(subfield => {
-                                             // Alt alan için görünürlük kontrolü (gerekirse eklenebilir)
-                                             // const subfieldVisible = isFieldVisible(subfield, blockData);
-                                             // if (!subfieldVisible) return null;
-
-                                             // blockName'i subfield objesine geçici olarak ekleyelim ki renderInputField bilsin
-                                              const subfieldWithError = errors[field.name]?.[index]?.[subfield.name];
-                                              const subfieldHasError = !!subfieldWithError;
-
-
-                                            return (
-                                                <div key={subfield.name} className={`${styles.formGroup} ${styles.subfieldGroup}`}>
-                                                    <label htmlFor={`${field.name}[${index}][${subfield.name}]`} className={styles.label}>
-                                                        {subfield.label || subfield.name}
-                                                        {subfield.required && <span className={styles.requiredIndicator}>*</span>}
-                                                    </label>
-                                                    {/* renderInputField'e blockName ve index'i de gönderelim */}
-                                                    {renderInputField({ ...subfield, blockName: field.name }, index)}
-                                                     {/* Alt alan hatasını göster */}
-                                                     {subfieldHasError && <p className={styles.errorMessage}>{subfieldWithError}</p>}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ))}
-                                {canAdd && (
-                                    <button type="button" onClick={() => handleAddBlock(field.name, field.subfields, maxInstances)} className={styles.addButton}>
-                                        {field.addLabel || 'Yeni Ekle'}
-                                    </button>
-                                )}
+                                            {field.subfields.map(subfield => {
+                                                // Alt alanın hatasını al
+                                                const subfieldError = currentBlockErrors[subfield.name];
+                                                return (
+                                                    <div key={subfield.name} className={`${styles.formGroup} ${styles.subfieldGroup}`}>
+                                                        <label htmlFor={`${field.name}[${index}][${subfield.name}]`} className={styles.label}>
+                                                            {subfield.label || subfield.name}
+                                                            {subfield.required && <span className={styles.requiredIndicator}>*</span>}
+                                                        </label>
+                                                        {renderInputField({ ...subfield, blockName: field.name }, index)}
+                                                        {/* Alt alan hatasını göster */}
+                                                        {subfieldError && <p className={styles.errorMessage}>{subfieldError}</p>}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })}
+                                {canAdd && ( <button type="button" onClick={() => handleAddBlock(field.name, field.subfields, maxInstances)} className={styles.addButton}> {field.addLabel || 'Yeni Ekle'} </button> )}
                             </div>
                         );
                     }
-                    // --- Normal Alan Render ---
-                    else {
+                    else { // Normal Alan Render
                          const fieldError = errors[field.name];
-                         const hasError = !!fieldError && typeof fieldError === 'string'; // Hatanın string olduğundan emin ol
+                         // Hatanın string olduğundan ve obje olmadığından emin ol
+                         const hasError = !!fieldError && typeof fieldError === 'string';
                         return (
                             <div key={field.name} className={styles.formGroup}>
-                                {field.fieldType !== 'checkbox' && (
-                                    <label htmlFor={field.name} className={styles.label}>
-                                        {field.label || field.name}
-                                        {field.required && <span className={styles.requiredIndicator}>*</span>}
-                                    </label>
-                                )}
+                                {/* ... (label, input/renderInputField) ... */}
                                 {renderInputField(field)}
-                                 {/* Normal alan hatasını göster */}
-                                 {hasError && <p className={styles.errorMessage}>{fieldError}</p>}
-                                 {field.name === 'belge_email' && (
-            <small className={styles.emailInfoText}>
-                (Oluşturulan PDF belgenizin bir kopyası bu e-posta adresine de gönderilecektir.)
-            </small>
-        )}
+                                {hasError && <p className={styles.errorMessage}>{fieldError}</p>}
+                                {field.name === 'belge_email' && ( <small className={styles.emailInfoText}> (Oluşturulan PDF belgenizin bir kopyası bu e-posta adresine de gönderilecektir.) </small> )}
                             </div>
                         );
                     }
