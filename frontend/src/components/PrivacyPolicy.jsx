@@ -2,13 +2,16 @@ import React from 'react';
 import styles from './PrivacyPolicy.module.css'; // Stil dosyasını import et
 
 function PrivacyPolicy() {
-  const siteName = "site adı";
-  // const ownerName = "[Şirket Sahibi Adı Soyadı]";
-  // const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
-  // const address = "[Merkez Adresiniz]";
-  const email = "info@belgehizli.com"; // E-posta adresinizi buraya girin
-  const lastUpdateDate = "20.04.2025";
-  const siteUrl = "https://www.belgehizli.com/";
+  // Şahıs firması için gerekli temel bilgiler (KVKK Aydınlatma Metni için)
+  // Lütfen kendi bilgilerinizle doldurun
+  const siteName = "Belge Hızlı"; // Sitenizin Adı
+  const ownerName = "Abdurrahman Görkem Ünal"; // veya direkt Adınız Soyadınız
+  const address = "Gülbahar Mah. Kurtuluş 1 Sk. No: 15 İç Kapı No:10 Şişli / İSTANBUL"; // Resmi kayıtlardaki adresiniz
+  const email = "info@belgehizli.com"; // E-posta adresiniz
+  const lastUpdateDate = "22.04.2025"; // Son güncelleme tarihi
+  const siteUrl = "https://www.belgehizli.com/"; // Sitenizin URL'si
+
+  // Kaldırılan placeholder bilgisi: companyTitle
 
   return (
     <>
@@ -21,7 +24,7 @@ function PrivacyPolicy() {
       <p className={styles.lastUpdated}><strong>Son Güncelleme:</strong> {lastUpdateDate}</p>
 
       <p className={styles.paragraph}>
-        <strong>{/* companyTitle */} Belge Hızlı</strong> {/* ownerName */ } olarak (bundan sonra "{siteName}" veya "Biz" olarak anılacaktır),
+        <strong> Belge Hızlı</strong> olarak (bundan sonra "{siteName}" veya "Biz" olarak anılacaktır),
         <strong> {siteUrl} </strong> internet sitemizi ("Site") ziyaret eden ve kullanan siz değerli
         kullanıcılarımızın/üyelerimizin kişisel verilerinin gizliliğine ve güvenliğine büyük önem veriyoruz.
         Bu kapsamda, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") ve ilgili diğer yasal mevzuat
@@ -31,13 +34,13 @@ function PrivacyPolicy() {
 
       <h3 className={styles.sectionTitle}>1. Veri Sorumlusunun Kimliği</h3>
       <ul className={styles.infoList}>
-        {/* <li><strong>Veri Sorumlusu:</strong> {companyTitle} ({ownerName})</li> */}
-        {/* <li><strong>Adres:</strong> {address}</li> */}
+        <li><strong>Veri Sorumlusu:</strong> {ownerName}</li> {/* Şahıs firması sahibi olarak */}
+        <li><strong>Adres:</strong> {address}</li>
         <li><strong>E-posta:</strong> {email}</li>
-        {/* Varsa KEP adresinizi ekleyebilirsiniz: <li><strong>KEP Adresi:</strong> [KEP Adresiniz]</li> */}
+        {/* KEP Adresi ve Ticaret Ünvanı gibi bilgiler şahıs firması için zorunlu değil, kaldırıldı. */}
       </ul>
 
-      <h3 className={styles.sectionTitle}>2. İşlenen Kişisel Verileriniz ve İşlenme Amaçları</h3>
+      <h3 className={styles.sectionTitle}>2. İşlenen Kişisel Veriler ve Amaçları</h3>
       <p className={styles.paragraph}>
         Sitemizi ziyaret etmeniz, üye olmanız, hizmetlerimizden faydalanmanız (şablonları doldurmanız,
         ödeme yapmanız ve PDF indirmeniz) durumunda aşağıdaki kişisel verileriniz işlenebilmektedir:
@@ -45,7 +48,7 @@ function PrivacyPolicy() {
       <ul className={styles.dataList}>
         <li><strong>Kimlik Bilgileri:</strong> Adınız, soyadınız (üyelik veya fatura için).</li>
         <li><strong>İletişim Bilgileri:</strong> E-posta adresiniz, telefon numaranız (gerekirse), adresiniz (fatura için).</li>
-        <li><strong>Kullanıcı İşlem Bilgileri:</strong> Üyelik bilgileriniz, doldurduğunuz formlara girdiğiniz veriler (sözleşme oluşturma amacıyla), satın aldığınız şablonlar, sipariş detayları, ödeme bilgileriniz (doğrudan tarafımızca saklanmaz, güvenli ödeme hizmeti sağlayıcısı [iyzico gibi] aracılığıyla işlenir), indirdiğiniz belgeler.</li>
+        <li><strong>Kullanıcı İşlem Bilgileri:</strong> Üyelik bilgileriniz, doldurduğunuz formlara girdiğiniz veriler (sözleşme oluşturma amacıyla), satın aldığınız şablonlar, sipariş detayları, ödeme bilgileriniz (doğrudan tarafımızca saklanmaz, güvenli ödeme hizmeti sağlayıcısı aracılığıyla işlenir), indirdiğiniz belgeler.</li>
         <li><strong>İşlem Güvenliği Bilgileri:</strong> IP adresiniz, log kayıtları, parola ve şifre bilgileri (güvenli şekilde saklanır), çerezler aracılığıyla toplanan bilgiler.</li>
         <li><strong>Pazarlama Bilgileri (Açık rızanız ile):</strong> Çerez kayıtları, hedefleme bilgileri, alışkanlık ve beğenileri gösteren değerlendirmeler.</li>
       </ul>
@@ -53,7 +56,7 @@ function PrivacyPolicy() {
       <ul className={styles.purposeList}>
         <li>Hizmetlerimizin sunulması (belge şablonlarının doldurulması, PDF oluşturulması ve teslimi).</li>
         <li>Üyelik işlemlerinin gerçekleştirilmesi ve yönetilmesi.</li>
-        <li>Sipariş ve ödeme süreçlerinin yürütülmesi (iyzico gibi ödeme sağlayıcıları aracılığıyla).</li>
+        <li>Sipariş ve ödeme süreçlerinin yürütülmesi (Moka United gibi ödeme sağlayıcıları aracılığıyla).</li>
         <li>Sözleşmesel yükümlülüklerin yerine getirilmesi (Mesafeli Satış Sözleşmesi vb.).</li>
         <li>Müşteri hizmetleri ve destek taleplerinin karşılanması.</li>
         <li>Yasal yükümlülüklerin yerine getirilmesi (fatura düzenleme, yasal bildirimler vb.).</li>
@@ -73,25 +76,25 @@ function PrivacyPolicy() {
         <li>Açık rızanızın bulunması (KVKK m.5/1) (Örn: Pazarlama iletişimleri için).</li>
       </ul>
 
-      <h3 className={styles.sectionTitle}>4. Kişisel Verilerin Aktarılması</h3>
+      <h3 className={styles.sectionTitle}>4. Kişisel Verilerin Aktarımı</h3>
       <p className={styles.paragraph}>
         Kişisel verileriniz, yukarıda belirtilen amaçlar doğrultusunda ve KVKK'nın 8. ve 9. maddelerine uygun olarak,
         gerekli güvenlik önlemleri alınarak aşağıdaki taraflara aktarılabilecektir:
       </p>
       <ul className={styles.purposeList}>
-        <li><strong>Ödeme Hizmeti Sağlayıcıları:</strong> Ödeme işlemlerinin güvenli bir şekilde gerçekleştirilmesi amacıyla iyzico gibi lisanslı ödeme kuruluşlarına.</li>
+        <li><strong>Ödeme Hizmeti Sağlayıcıları:</strong> Ödeme işlemlerinin güvenli bir şekilde gerçekleştirilmesi amacıyla Moka United gibi lisanslı ödeme kuruluşlarına.</li>
         <li><strong>İş Ortakları ve Tedarikçiler:</strong> Hizmetlerin sunulması için destek alınan taraflar (örn: sunucu/hosting hizmeti, e-posta gönderim hizmeti, analitik hizmetleri).</li>
         <li><strong>Yetkili Kamu Kurum ve Kuruluşları:</strong> Yasal talepler doğrultusunda ve mevzuat gereği bilgi verilmesi gereken merciler (mahkemeler, savcılıklar vb.).</li>
         <li><strong>Hukuk ve Danışmanlık Büroları:</strong> Hukuki süreçlerin takibi veya danışmanlık alınması amacıyla sır saklama yükümlülüğü çerçevesinde.</li>
       </ul>
 
-      <h3 className={styles.sectionTitle}>5. Kişisel Veri Toplamanın Yöntemi</h3>
+      <h3 className={styles.sectionTitle}>5. Kişisel Verilerin Toplanma Yöntemleri</h3>
       <p className={styles.paragraph}>
         Kişisel verileriniz, Site üzerindeki formları doldurmanız, üye olmanız, hizmetlerimizi kullanmanız,
         bizimle iletişime geçmeniz ve çerezler gibi otomatik veya kısmen otomatik yöntemlerle toplanmaktadır.
       </p>
 
-      <h3 className={styles.sectionTitle}>6. Çerez Politikası</h3>
+      <h3 className={styles.sectionTitle}>6. Çerezler (Cookies)</h3>
       <p className={styles.paragraph}>
         Sitemizde kullanıcı deneyimini geliştirmek, sitenin verimli çalışmasını sağlamak ve tercihlerinizi
         hatırlamak gibi amaçlarla çerezler kullanmaktayız. Kullandığımız çerez türleri şunlardır:
@@ -116,7 +119,7 @@ function PrivacyPolicy() {
         <li><a href="https://help.opera.com/en/latest/web-preferences/#cookies" target="_blank" rel="noopener noreferrer">Opera</a></li>
       </ul>
 
-      <h3 className={styles.sectionTitle}>7. İlgili Kişi Olarak Haklarınız (KVKK Madde 11)</h3>
+      <h3 className={styles.sectionTitle}>7. KVKK Kapsamındaki Haklarınız</h3>
       <p className={styles.paragraph}>KVKK'nın 11. maddesi uyarınca aşağıdaki haklara sahipsiniz:</p>
       <ul className={styles.rightsList}>
         <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme,</li>
@@ -137,7 +140,7 @@ function PrivacyPolicy() {
         ve talep konusunun açıkça belirtilmesi gerekmektedir.
       </p>
 
-      <h3 className={styles.sectionTitle}>8. Değişiklikler</h3>
+      <h3 className={styles.sectionTitle}>8. Politika Değişiklikleri</h3>
       <p className={styles.paragraph}>
         İşbu Gizlilik Politikası ve Aydınlatma Metni, değişen şartlara ve mevzuata uyum sağlamak amacıyla
         zaman zaman güncellenebilir. Güncellemeler Sitemizde yayınlandığı tarihte yürürlüğe girer.

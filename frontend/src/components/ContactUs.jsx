@@ -2,97 +2,65 @@ import React from 'react';
 import styles from './ContactUs.module.css'; // Stil dosyasını import et
 
 function ContactUs() {
-  // Placeholder bilgileri doldurun
-  // const ownerName = "[Şirket Sahibi Adı Soyadı]";
-  // const companyTitle = "[Şahıs Şirketi Ünvanı (varsa)]";
-  // const address = "[Merkez Adresiniz (Resmi kayıtlardaki adresiniz)]";
-  // const taxOffice = "[Vergi Dairesi]";
-  // const taxIdNumber = "[Vergi Kimlik Numanız (VKN)]";
-  // const mersisNo = "[MERSİS Numarası (Ticaret Odasına kayıtlıysanız ve varsa)]";
-  // const kepAddress = "[KEP Adresiniz (varsa)]";
+  // Yalnızca şahıs firması için gerekli placeholder bilgileri
+  // Lütfen kendi bilgilerinizle doldurun
+  const ownerName = "Abdurrahman Görkem Ünal"; // veya direkt Adınız Soyadınız
+  const address = "Gülbahar Mah. Kurtuluş 1 Sk. No: 15 İç Kapı No:10 Şişli / İSTANBUL";
+  const taxOffice = "Zincirlikuyu Vergi Dairesi Müd.";
+  const taxIdNumber = "9070132427";
   const email = "info@belgehizli.com"; // E-posta adresinizi buraya girin
-  // const phone = "[Telefon Numaranız]";
-  // const businessName = "[İşletme Adınız (Kullanıyorsanız)]";
-  // const registeredTrademark = "[Tescilli Markanız (varsa)]";
-  // const chamberMembership = "[Mensup Olduğunuz Meslek Odası (varsa)]";
-  // const chamberRegistryNo = "[Oda Sicil Numarası (varsa)]";
-  // const professionalRulesLink = "[Mesleki Davranış Kuralları ve Erişim Linki (varsa)]";
+  const phone = "05530968833";
+
+  // Kaldırılan placeholder bilgileri: companyTitle, mersisNo, kepAddress,
+  // businessName, registeredTrademark, chamberMembership, chamberRegistryNo, professionalRulesLink
 
   return (
     <>
-  <title>İletişim - Belge Hızlı | Bize Ulaşın</title>
-  <meta name="description" content="Belge Hızlı ile iletişime geçin. Soru, öneri veya işbirliği talepleriniz için e-posta gönderebilirsiniz." />
-  <link rel="canonical" href="https://www.belgehizli.com/iletisim" />
+      <title>İletişim - Belge Hızlı | Bize Ulaşın</title>
+      <meta
+        name="description"
+        content="Belge Hızlı ile iletişime geçin. Soru, öneri veya işbirliği talepleriniz için e-posta gönderebilirsiniz."
+      />
+      <link rel="canonical" href="https://www.belgehizli.com/iletisim" />
 
-    <div className={styles.container}>
-      <h2 className={styles.title}>İletişim Bilgileri</h2>
-      <p className={styles.paragraph}>
-        Bizimle iletişime geçmek için aşağıdaki bilgileri kullanabilirsiniz. Müşteri destek talepleriniz için
-        öncelikli olarak e-posta adresimizi kullanmanızı rica ederiz.
-      </p>
+      <div className={styles.container}>
+        <h2 className={styles.title}>İletişim Bilgileri</h2>
+        <p className={styles.paragraph}>
+          Bizimle iletişime geçmek için aşağıdaki bilgileri kullanabilirsiniz.
+          Müşteri destek talepleriniz için öncelikli olarak e-posta adresimizi kullanmanızı rica ederiz.
+        </p>
 
-      {/* Bilgi kutusu stili */}
-      {/* <div className={styles.infoBox}>
-        <h4 className={styles.subHeading}>Firma Bilgileri (iyzico ve Yasal Bilgilendirme Kapsamında)</h4>
-        <p className={styles.infoItem}>
-          <strong className={styles.label}>Adı Soyadı / Unvan:</strong> {companyTitle || ownerName} {companyTitle && `(Sahibi: ${ownerName})`}
-        </p>
-        <p className={styles.infoItem}>
-          <strong className={styles.label}>Vergi Dairesi:</strong> {taxOffice}
-        </p>
-        <p className={styles.infoItem}>
-          <strong className={styles.label}>Vergi Kimlik Numarası:</strong> {taxIdNumber}
-        </p>
-        {mersisNo && <p className={styles.infoItem}><strong className={styles.label}>MERSİS Numarası:</strong> {mersisNo}</p>}
-        <p className={styles.infoItem}>
-          <strong className={styles.label}>Merkez Adresi:</strong> {address}
-        </p>
-      </div> */}
-
-      <div className={styles.contactChannels}>
-        <h4 className={styles.subHeading}>İletişim Kanalları</h4>
-        <p className={styles.infoItem}><strong className={styles.label}>E-posta:</strong> {email}</p>
-        {/* <p className={styles.infoItem}><strong className={styles.label}>Telefon:</strong> {phone}</p> */}
-        {/* {kepAddress && <p className={styles.infoItem}><strong className={styles.label}>KEP Adresi:</strong> {kepAddress}</p>} */}
-      </div>
-
-      {/* Sadece varsa gösterilecek bölüm */}
-      {/* {(businessName || registeredTrademark || chamberMembership || professionalRulesLink) && (
-        <div className={styles.otherInfo}>
-            <h4 className={styles.subHeading}>Diğer Bilgiler (varsa)</h4>
-            {businessName && <p className={styles.infoItem}><strong className={styles.label}>İşletme Adı:</strong> {businessName}</p>}
-            {registeredTrademark && <p className={styles.infoItem}><strong className={styles.label}>Tescilli Marka:</strong> {registeredTrademark}</p>}
-            {chamberMembership && (
-            <p className={styles.infoItem}>
-                <strong className={styles.label}>Mensup Olunan Meslek Odası:</strong> {chamberMembership} <br />
-                {chamberRegistryNo && <><strong className={styles.label}>Oda Sicil No:</strong> {chamberRegistryNo}</>}
-            </p>
-            )}
-            {professionalRulesLink && (
-            <p className={styles.infoItem}>
-                <strong className={styles.label}>Mesleki Davranış Kuralları:</strong> <a href={professionalRulesLink} target="_blank" rel="noopener noreferrer">Kurallara Erişmek İçin Tıklayınız</a>
-            </p>
-            )}
+        {/* Şahıs Firması Bilgileri */}
+        <div className={styles.infoBox}>
+          <h4 className={styles.subHeading}>Firma Bilgileri</h4>
+          <p className={styles.infoItem}>
+            <strong className={styles.label}>Adı Soyadı:</strong> {ownerName}
+          </p>
+          <p className={styles.infoItem}>
+            <strong className={styles.label}>Vergi Dairesi:</strong> {taxOffice}
+          </p>
+          <p className={styles.infoItem}>
+            <strong className={styles.label}>Vergi Kimlik Numarası:</strong> {taxIdNumber}
+          </p>
+          <p className={styles.infoItem}>
+            <strong className={styles.label}>Merkez Adresi:</strong> {address}
+          </p>
         </div>
-      )} */}
 
-      {/* İletişim formu (Şu an yorumlu, istenirse aktif edilebilir) */}
-      {/*
-      <form className={styles.contactForm}>
-        <h3 className={styles.subHeading}>İletişim Formu</h3>
-        <label className={styles.formLabel} htmlFor="name">Adınız Soyadınız:</label>
-        <input className={styles.input} type="text" id="name" name="name"/>
+        {/* İletişim Kanalları */}
+        <div className={styles.contactChannels}>
+          <h4 className={styles.subHeading}>İletişim Kanalları</h4>
+          <p className={styles.infoItem}>
+            <strong className={styles.label}>E-posta:</strong> {email}
+          </p>
+          <p className={styles.infoItem}>
+            <strong className={styles.label}>Telefon:</strong> {phone}
+          </p>
+        </div>
 
-        <label className={styles.formLabel} htmlFor="email">E-posta Adresiniz:</label>
-        <input className={styles.input} type="email" id="email" name="email"/>
-
-        <label className={styles.formLabel} htmlFor="message">Mesajınız:</label>
-        <textarea className={styles.textarea} id="message" name="message" rows="5"></textarea>
-
-        <button className={styles.submitButton} type="submit">Gönder</button>
-      </form>
-      */}
-    </div>
+        {/* Diğer Bilgiler bölümü tamamen kaldırıldı */}
+        {/* Yorumlu İletişim formu kısmı olduğu gibi bırakıldı */}
+      </div>
     </>
   );
 }
