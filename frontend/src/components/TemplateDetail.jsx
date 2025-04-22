@@ -41,7 +41,7 @@ function TemplateDetail() {
 				setLoading(false);
 			})
 			.catch(error => {
-				console.error('Error fetching template:', error);
+				// console.error('Error fetching template:', error); // Debugging
 				if (error.response && error.response.status === 404) {
 					setError('Şablon bulunamadı.');
 				} else {
@@ -62,7 +62,7 @@ function TemplateDetail() {
 	// Ödeme ve PDF indirme işlemini başlat
 	const handlePayAndDownload = async () => {
 		if (!formRef.current) {
-			console.error("DocumentForm referansı bulunamadı.");
+			// console.error("DocumentForm referansı bulunamadı.");
 			alert("Bir hata oluştu, lütfen sayfayı yenileyin.");
 			return;
 		}
@@ -70,7 +70,7 @@ function TemplateDetail() {
 		const isValid = await formRef.current.handleSubmit();
 
 		if (!isValid) {
-			console.error("Form validation failed. Errors:", formErrors);
+			// console.error("Form validation failed. Errors:", formErrors); // Debugging
 			alert('Lütfen formdaki zorunlu alanları doldurun veya işaretli hataları düzeltin.');
 			return;
 		}
@@ -101,7 +101,7 @@ function TemplateDetail() {
 
 			document.body.removeChild(link);
 			window.URL.revokeObjectURL(url);
-			console.log("PDF indirme işlemi başarılı.");
+			// console.log("PDF indirme işlemi başarılı.");
 
 			setShowSuccessMessage(true);
 			setTimeout(() => {
@@ -109,7 +109,7 @@ function TemplateDetail() {
 			}, 5000);
 
 		} catch (error) {
-			console.error('Ödeme/İndirme hatası:', error.response || error.message || error);
+			// console.error('Ödeme/İndirme hatası:', error.response || error.message || error);
 			let errorMessage = 'Ödeme veya PDF oluşturma sırasında bir hata oluştu.';
 			if (error.response && error.response.data) {
 				if (error.response.data instanceof Blob && error.response.data.type === "application/json") {
@@ -117,7 +117,7 @@ function TemplateDetail() {
 						const errJson = JSON.parse(await error.response.data.text());
 						errorMessage = errJson.message || errorMessage;
 					} catch (parseError) {
-						console.error("Hata mesajı parse edilemedi:", parseError);
+						// console.error("Hata mesajı parse edilemedi:", parseError);
 					}
 				} else if (error.response.data.message) {
 					errorMessage = error.response.data.message;
