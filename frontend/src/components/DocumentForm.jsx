@@ -91,7 +91,7 @@ const DocumentForm = forwardRef(({ templateFields, onChange }, ref) => {
     // --- Form Doğrulama ---
     useImperativeHandle(ref, () => ({ handleSubmit: validateForm }));
     const validateForm = () => { /* ... (Kod aynı) ... */
-        console.log("Validating form with values:", formValues);
+        // console.log("Validating form with values:", formValues);
         const newErrors = {}; let formIsValid = true;
         if (!templateFields) return false;
         templateFields.forEach(field => {
@@ -99,7 +99,7 @@ const DocumentForm = forwardRef(({ templateFields, onChange }, ref) => {
             if (field.fieldType !== 'repeatable') { let fieldError = ''; if (field.required) { const v = formValues[field.name]; if (v === undefined || v === null || String(v).trim() === '') { fieldError = `${field.label || field.name} alanı zorunludur.`; formIsValid = false; } } if (!fieldError && field.fieldType === 'email' && formValues[field.name] && !/\S+@\S+\.\S+/.test(formValues[field.name])) { fieldError = `${field.label || field.name} geçerli bir e-posta adresi olmalıdır.`; formIsValid = false; } if (!fieldError && field.fieldType === 'number' && formValues[field.name] && isNaN(Number(formValues[field.name]))) { fieldError = `${field.label || field.name} bir sayı olmalıdır.`; formIsValid = false; } if (fieldError) { newErrors[field.name] = fieldError; } }
             else { const blocks = formValues[field.name] || []; const blockErrorsArray = []; let blockHasErrors = false; blocks.forEach((block, index) => { const currentBlockErrors = {}; field.subfields.forEach(subfield => { let subfieldError = ''; if (subfield.required) { const sv = block[subfield.name]; if (sv === undefined || sv === null || String(sv).trim() === '') { subfieldError = `${subfield.label || subfield.name} zorunludur.`; formIsValid = false; blockHasErrors = true; } } if (subfieldError) { currentBlockErrors[subfield.name] = subfieldError; } }); blockErrorsArray[index] = currentBlockErrors; }); if (blockHasErrors) { newErrors[field.name] = blockErrorsArray; } }
         });
-        console.log("Validation finished. Errors:", newErrors);
+        // console.log("Validation finished. Errors:", newErrors);
         setErrors(newErrors); if (onChange) onChange(formValues, newErrors); return formIsValid;
      };
     // --- Form Doğrulama Sonu ---
