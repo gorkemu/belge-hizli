@@ -27,7 +27,7 @@ function HomePage() {
           <p className={styles.heroSubtitle}>
             İhtiyacınıza özel, dinamik olarak oluşturulan şablonlarla saniyeler içinde PDF belgelerinizi hazırlayın.
           </p>
-          <Link to="/templates" className={styles.ctaButton}>
+          <Link to="/sablonlar" className={styles.ctaButton}>
             Şablonları İncele
           </Link>
         </div>
@@ -61,7 +61,7 @@ function HomePage() {
 
       {/* Alt Çağrı (Footer CTA) */}
       <section className={styles.footerCtaSection}>
-        <Link to="/templates" className={styles.ctaButton}>
+        <Link to="/sablonlar" className={styles.ctaButton}>
           Tüm Şablonları Gör
         </Link>
       </section>
