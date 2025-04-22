@@ -26,7 +26,7 @@ function TemplateList() {
 				setLoading(false);
 			})
 			.catch(error => {
-				console.error('Error fetching templates:', error);
+				// console.error('Error fetching templates:', error);
 				// Kullanıcıya daha anlamlı hata mesajı gösterebiliriz
 				let errorMessage = 'Şablonlar yüklenirken bir hata oluştu.';
 				if (error.response) {
