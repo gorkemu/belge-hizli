@@ -2,251 +2,230 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './TemplateDetail.module.css';
-import DocumentForm from './DocumentForm';       // Dinamik form bileşeni
+import DocumentForm from './DocumentForm'; 		// Dinamik form bileşeni
 import DocumentPreview from './DocumentPreview'; // Dinamik önizleme bileşeni
 // import PaymentScreen from './PaymentScreen'; // Ayrı ödeme ekranı gerekirse aktif edilebilir
+import { Helmet } from 'react-helmet-async'; // <-- YENİ: Helmet import edildi
 
 function TemplateDetail() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const formRef = useRef(null); // DocumentForm bileşenine referans
+	const { slug } = useParams(); // slug parametresini alıyoruz
+	const navigate = useNavigate();
+	const formRef = useRef(null); // DocumentForm bileşenine referans
 
-    const [template, setTemplate] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+	const [template, setTemplate] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-    const [formData, setFormData] = useState({}); // Form verilerini tutacak state
-    const [formErrors, setFormErrors] = useState({}); // Form hatalarını tutacak state (bilgi amaçlı)
+	const [formData, setFormData] = useState({}); // Form verilerini tutacak state
+	const [formErrors, setFormErrors] = useState({}); // Form hatalarını tutacak state (bilgi amaçlı)
 
-    const [loadingPayment, setLoadingPayment] = useState(false); // Ödeme/İndirme işlemi yükleme durumu
-    const [paymentError, setPaymentError] = useState(null); // Ödeme/İndirme hatası
+	const [loadingPayment, setLoadingPayment] = useState(false); // Ödeme/İndirme işlemi yükleme durumu
+	const [paymentError, setPaymentError] = useState(null); // Ödeme/İndirme hatası
 
-    const [showSuccessMessage, setShowSuccessMessage] = useState(false); 
+	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
-    // Şablon verisini backend'den çek
-    useEffect(() => {
-        setLoading(true);
-        setError(null);
-        axios.get(`${API_BASE_URL}/templates/${id}`)
-            .then(response => {
-                // console.log('Template data fetched:', response.data); // Debugging
-                setTemplate(response.data);
-                // Form state'ini sıfırla (yeni şablon için)
-                setFormData({});
-                setFormErrors({});
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error fetching template:', error);
-                setError('Şablon detayları yüklenirken bir hata oluştu.');
-                setLoading(false);
-            });
-    }, [id]); // id değiştiğinde tekrar çek
+	// Şablon verisini backend'den çek
+	useEffect(() => {
+		setLoading(true);
+		setError(null);
+		// API çağrısını slug tabanlı rota üzerinden yapıyoruz
+		axios.get(`${API_BASE_URL}/sablonlar/detay/${slug}`)
+			.then(response => {
+				// console.log('Template data fetched:', response.data); // Debugging
+				setTemplate(response.data);
+				// Form state'ini sıfırla (yeni şablon için)
+				setFormData({});
+				setFormErrors({});
+				setLoading(false);
+			})
+			.catch(error => {
+				console.error('Error fetching template:', error);
+				if (error.response && error.response.status === 404) {
+					setError('Şablon bulunamadı.');
+				} else {
+					setError('Şablon detayları yüklenirken bir hata oluştu.');
+				}
+				setLoading(false);
+			});
+	}, [slug]); // useEffect bağımlılığı slug
 
-    // DocumentForm'dan gelen veri ve hata güncellemelerini işle
-    const handleFormChange = (newFormData, errors) => {
-        setFormData(newFormData);
-        setFormErrors(errors); // Hataları da takip edebiliriz (örn: butonu disable etmek için)
-        // console.log('TemplateDetail FormData Updated:', newFormData); // Debugging
-        // console.log('TemplateDetail FormErrors Updated:', errors); // Debugging
-    };
+	// DocumentForm'dan gelen veri ve hata güncellemelerini işle
+	const handleFormChange = (newFormData, errors) => {
+		setFormData(newFormData);
+		setFormErrors(errors);
+		// console.log('TemplateDetail FormData Updated:', newFormData); // Debugging
+		// console.log('TemplateDetail FormErrors Updated:', errors); // Debugging
+	};
 
-    // Ödeme ve PDF indirme işlemini başlat
-    const handlePayAndDownload = async () => {
-        // 1. Form referansı var mı kontrol et
-        if (!formRef.current) {
-            console.error("DocumentForm referansı bulunamadı.");
-            alert("Bir hata oluştu, lütfen sayfayı yenileyin.");
-            return;
-        }
+	// Ödeme ve PDF indirme işlemini başlat
+	const handlePayAndDownload = async () => {
+		if (!formRef.current) {
+			console.error("DocumentForm referansı bulunamadı.");
+			alert("Bir hata oluştu, lütfen sayfayı yenileyin.");
+			return;
+		}
 
-        // 2. Formu doğrula (DocumentForm içindeki validateForm fonksiyonunu çağır)
-        const isValid = await formRef.current.handleSubmit();
+		const isValid = await formRef.current.handleSubmit();
 
-        // 3. Doğrulama başarısızsa işlemi durdur
-        if (!isValid) {
-            console.error("Form validation failed. Errors:", formErrors); // Konsolda hataları gör
-            alert('Lütfen formdaki zorunlu alanları doldurun veya işaretli hataları düzeltin.');
-            return;
-        }
+		if (!isValid) {
+			console.error("Form validation failed. Errors:", formErrors);
+			alert('Lütfen formdaki zorunlu alanları doldurun veya işaretli hataları düzeltin.');
+			return;
+		}
 
-        // 4. Doğrulama başarılıysa, ödeme/indirme işlemini başlat
-        // console.log("Form geçerli, ödeme/indirme işlemi başlıyor..."); // Debugging
-        // console.log("Gönderilecek FormData:", formData); // Debugging
+		setShowSuccessMessage(false);
+		setPaymentError(null);
 
-        // Önceki mesajları temizle
-        setShowSuccessMessage(false);
-        setPaymentError(null); // Hata mesajını da temizle
+		setLoadingPayment(true);
+		try {
+			// Ödeme rotası hala ID kullandığı için burada template._id kullanıyoruz.
+			const response = await axios.post(`${API_BASE_URL}/templates/${template._id}/process-payment`, {
+				formData,
+				amount: template?.price || 0,
+				currency: 'TRY',
+				email: formData?.belge_email || ''
+			}, {
+				responseType: 'blob'
+			});
 
-        setLoadingPayment(true);
-        try {
-            // 5. Backend'e veriyi gönder (formData olduğu gibi gönderiliyor)
-            const response = await axios.post(`${API_BASE_URL}/templates/${id}/process-payment`, {
-                formData, // Dinamik formdan gelen tüm veri
-                amount: template?.price || 0, // Şablondan fiyatı al
-                currency: 'TRY', // Para birimi (gerekirse dinamikleştirilebilir)
-                // E-posta alanı formda tanımlıysa onu kullan, değilse boş gönderilebilir
-                // Backend tarafı gerekirse e-postayı ayrıca isteyebilir veya zorunlu kılabilir
-                email: formData?.belge_email || ''
-            }, {
-                responseType: 'blob' // Yanıtı PDF dosyası olarak almak için
-            });
+			const blob = new Blob([response.data], { type: 'application/pdf' });
+			const url = window.URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			const filename = template?.name ? `${template.name.replace(/[^a-zA-Z0-9._-]/g, '_')}.pdf` : 'document.pdf';
+			link.download = filename;
+			document.body.appendChild(link);
+			link.click();
 
-            // 6. Başarılı yanıt geldiyse PDF'i indir
-            const blob = new Blob([response.data], { type: 'application/pdf' });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            // Dosya adını şablon adından türet, geçersiz karakterleri temizle
-            const filename = template?.name ? `${template.name.replace(/[^a-zA-Z0-9._-]/g, '_')}.pdf` : 'document.pdf';
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
+			document.body.removeChild(link);
+			window.URL.revokeObjectURL(url);
+			console.log("PDF indirme işlemi başarılı.");
 
-            // 7. İndirme sonrası temizlik
-            document.body.removeChild(link);
+			setShowSuccessMessage(true);
+			setTimeout(() => {
+				setShowSuccessMessage(false);
+			}, 5000);
 
-            window.URL.revokeObjectURL(url);
-            console.log("PDF indirme işlemi başarılı."); // Debugging
+		} catch (error) {
+			console.error('Ödeme/İndirme hatası:', error.response || error.message || error);
+			let errorMessage = 'Ödeme veya PDF oluşturma sırasında bir hata oluştu.';
+			if (error.response && error.response.data) {
+				if (error.response.data instanceof Blob && error.response.data.type === "application/json") {
+					try {
+						const errJson = JSON.parse(await error.response.data.text());
+						errorMessage = errJson.message || errorMessage;
+					} catch (parseError) {
+						console.error("Hata mesajı parse edilemedi:", parseError);
+					}
+				} else if (error.response.data.message) {
+					errorMessage = error.response.data.message;
+				}
+			}
+			setPaymentError(errorMessage);
+			alert(`Hata: ${errorMessage}`);
+			setShowSuccessMessage(false);
 
-            // İsteğe bağlı: Başarı mesajı gösterilebilir veya başka bir sayfaya yönlendirilebilir
-            // alert('PDF dosyanız başarıyla indirildi!');
+		} finally {
+			setLoadingPayment(false);
+		}
+	};
 
-            // ---- YENİ: Başarı Mesajını Göster ----
-            setShowSuccessMessage(true);
-            // Mesajı birkaç saniye sonra otomatik gizle (opsiyonel)
-            setTimeout(() => {
-                setShowSuccessMessage(false);
-            }, 5000); // 5 saniye sonra gizle
-            // ---- YENİ SON ----
+	// --- Render Logic ---
 
-        } catch (error) {
-            console.error('Ödeme/İndirme hatası:', error.response || error.message || error);
-            // Backend'den gelen hata mesajını göstermeye çalış
-            let errorMessage = 'Ödeme veya PDF oluşturma sırasında bir hata oluştu.';
-            if (error.response && error.response.data) {
-                 // Blob yerine JSON hatası gelmiş olabilir
-                 if (error.response.data instanceof Blob && error.response.data.type === "application/json") {
-                     try {
-                         const errJson = JSON.parse(await error.response.data.text());
-                         errorMessage = errJson.message || errorMessage;
-                     } catch (parseError) {
-                         console.error("Hata mesajı parse edilemedi:", parseError);
-                     }
-                 } else if (error.response.data.message) { // Normal JSON hatası
-                    errorMessage = error.response.data.message;
-                }
-            }
-            setPaymentError(errorMessage);
-            alert(`Hata: ${errorMessage}`); // Kullanıcıya hata mesajını göster
-            setShowSuccessMessage(false); // Hata durumunda başarı mesajını gizle
+	if (loading) {
+		return <div className={styles.statusMessage}>Şablon yükleniyor...</div>;
+	}
 
-        } finally {
-            setLoadingPayment(false); // Yükleme durumunu kapat
-        }
-    };
+	if (error) {
+		return <div className={styles.statusMessage}>{error} <button onClick={() => window.location.reload()}>Yeniden Dene</button></div>;
+	}
 
-    // --- Render Logic ---
+	if (!template) {
+		return <div className={styles.statusMessage}>Şablon bulunamadı.</div>;
+	}
 
-    if (loading) {
-        return <div className={styles.statusMessage}>Şablon yükleniyor...</div>;
-    }
+	const isFormCurrentlyValid = Object.keys(formErrors).length === 0;
 
-    if (error) {
-        return <div className={styles.statusMessage}>{error} <button onClick={() => window.location.reload()}>Yeniden Dene</button></div>;
-    }
+	return (
+		<> {/* Fragment */}
+			{/* --- Dinamik Meta Etiketleri (Helmet ile) --- */}
+			{/* Daha önceki manuel <title>, <meta>, <link> etiketleri kaldırıldı */}
+			<Helmet>
+				{/* Şablon verisi yüklendiğinde dinamik başlık ve açıklama */}
+				<title>{template.name ? `${template.name} - Belge Hızlı` : 'Şablon Detayı - Belge Hızlı'}</title>
+				<meta
+					name="description"
+					content={template.description ? `${template.description} Şablonunu Belge Hızlı'da doldurun ve indirin.` : 'Belge Hızlı şablon detayı.'}
+				/>
+				{/* Canonical URL, slug tabanlı yeni yapıyı kullanıyor */}
+				{template.slug && <link rel="canonical" href={`https://www.belgehizli.com/sablonlar/detay/${template.slug}`} />}
+				{/* Open Graph başlığı da eklenebilir */}
+				{/* {template.name && <meta property="og:title" content={`${template.name} - Belge Hızlı`} />} */}
+				{/* Diğer Open Graph, Twitter Card etiketleri buraya eklenebilir */}
+			</Helmet>
+			{/* --- Meta Etiketleri Sonu --- */}
 
-    if (!template) {
-        return <div className={styles.statusMessage}>Şablon bulunamadı.</div>;
-    }
 
-    // Formun geçerli olup olmadığını kontrol et (Ödeme butonunu etkinleştirmek için)
-    const isFormCurrentlyValid = Object.keys(formErrors).length === 0; // Basit kontrol
+			<div className={styles.container}>
+				<button onClick={() => navigate(-1)} className={styles.backButton}>
+					← Geri
+				</button>
 
-    return (
-        <> {/* Fragment */}
-            {/* --- Dinamik Meta Etiketleri --- */}
-            {template && ( // Sadece template verisi varsa render et
-                <>
-                    <title>{`${template.name} - Belge Hızlı`}</title>
-                    <meta name="description" content={`${template.description} Şablonunu Belge Hızlı'da doldurun ve indirin.`} />
-                    <link rel="canonical" href={`https://www.belgehizli.com/templates/${id}`} />
-                     {/* <meta property="og:title" content={`${template.name} - Belge Hızlı`} /> */}
-                </>
-            )}
-            {!template && ( // Yüklenirken veya hata durumunda varsayılan
-                 <>
-                     <title>Şablon Detayı - Belge Hızlı</title>
-                     <meta name="description" content="Belge Hızlı şablon detayı." />
-                 </>
-            )}
-            {/* --- Meta Etiketleri Sonu --- */}
+				<h2 className={styles.title}>{template.name}</h2>
+				<p className={styles.description}>{template.description}</p>
+				{template.price > 0 && <p className={styles.price}>Fiyat: {template.price} TRY</p>}
 
-        <div className={styles.container}>
-            <button onClick={() => navigate(-1)} className={styles.backButton}>
-                ← Geri
-            </button>
+				<div className={styles.editorContainer}>
+					{/* Sol Sütun: Dinamik Form */}
+					<div className={styles.formColumn}>
+						{template.fields && template.fields.length > 0 ? (
+							<DocumentForm
+								templateFields={template.fields}
+								onChange={handleFormChange}
+								ref={formRef}
+							/>
+						) : (
+							<div className={styles.statusMessage}>Bu şablon için doldurulacak form alanı bulunmamaktadır.</div>
+						)}
+					</div>
 
-            <h2 className={styles.title}>{template.name}</h2>
-            <p className={styles.description}>{template.description}</p>
-            {template.price > 0 && <p className={styles.price}>Fiyat: {template.price} TRY</p>}
+					{/* Sağ Sütun: Dinamik Önizleme */}
+					<div className={styles.previewColumn}>
+						{template.content ? (
+							<DocumentPreview
+								templateContent={template.content}
+								formData={formData}
+							/>
+						) : (
+							<div className={styles.statusMessage}>Bu şablon için önizleme içeriği tanımlanmamış.</div>
+						)}
 
-            <div className={styles.editorContainer}>
-                {/* Sol Sütun: Dinamik Form */}
-                <div className={styles.formColumn}>
-                    {template.fields && template.fields.length > 0 ? (
-                        <DocumentForm
-                            templateFields={template.fields} // Şablondan gelen alan tanımları
-                            onChange={handleFormChange}     // Form verisi değiştikçe state'i güncelle
-                            ref={formRef}                  // Form'a erişim için referans
-                        />
-                    ) : (
-                        <div className={styles.statusMessage}>Bu şablon için doldurulacak form alanı bulunmamaktadır.</div>
-                    )}
-                </div>
+					</div>
+				</div>
 
-                {/* Sağ Sütun: Dinamik Önizleme */}
-                <div className={styles.previewColumn}>
-                     {template.content ? (
-                        <DocumentPreview
-                            templateContent={template.content} // Şablondan gelen Handlebars içerik
-                            formData={formData}             // Formdan gelen güncel veri
-                        />
-                     ) : (
-                        <div className={styles.statusMessage}>Bu şablon için önizleme içeriği tanımlanmamış.</div>
-                     )}
+				 {/* Alt Kısım: Ödeme ve İndirme Butonu */}
+				 <div className={styles.paymentSection}>
+					 <button
+						 onClick={handlePayAndDownload}
+						 disabled={loadingPayment}
+						 className={styles.payDownloadButton}
+					 >
+						 {loadingPayment ? 'İşleniyor...' : `Öde (${template.price || 0} TRY) ve İndir`}
+					 </button>
 
-                </div>
-            </div>
+					 {showSuccessMessage && (
+						 <p className={styles.successMessage}>
+							 ✅ PDF başarıyla oluşturuldu ve indiriliyor. Bir kopya da e-posta adresinize gönderiliyor...
+						 </p>
+					 )}
 
-             {/* Alt Kısım: Ödeme ve İndirme Butonu */}
-             <div className={styles.paymentSection}>
-                 {/* Gerekirse ek ödeme bilgileri (örn: formda email yoksa burada sor) */}
-                 {/* {!(template.fields.some(f => f.name === 'belge_email')) && ( ... input ... )} */}
-
-                <button
-                    onClick={handlePayAndDownload}
-                    disabled={loadingPayment} // İşlem sırasında butonu devre dışı bırak
-                    className={styles.payDownloadButton}
-                >
-                    {loadingPayment ? 'İşleniyor...' : `Öde (${template.price || 0} TRY) ve İndir`}
-                </button>
-
-                {/* ---- YENİ: Başarı Mesajı Alanı ---- */}
-                {showSuccessMessage && (
-                    <p className={styles.successMessage}>
-                        ✅ PDF başarıyla oluşturuldu ve indiriliyor. Bir kopya da e-posta adresinize gönderiliyor...
-                    </p>
-                )}
-                {/* ---- YENİ SON ---- */}
-
-                {paymentError && <p className={styles.paymentError}>{paymentError}</p>}
-            </div>
-        </div>
-        </>
-    );
+					 {paymentError && <p className={styles.paymentError}>{paymentError}</p>}
+				 </div>
+			</div>
+		</>
+	);
 }
 
 export default TemplateDetail;
