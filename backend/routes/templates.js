@@ -106,19 +106,63 @@ router.get('/sablonlar/detay/:slug', async (req, res) => {
     }
 });
 
-// Belirli bir şablonun detaylarını ID'ye göre getir (Geriye uyumluluk için bırakıldı, path değiştirildi)
+// Belirli bir şablonun detaylarını ID'ye göre getir (Redirect Logic Kaldırıldı)
+// Frontend'den /sablonlar/:id şeklinde çağrılmadığı sürece (ki artık slug kullanılıyor) bu rota kullanılmaz.
+// Ancak backend tarafından ID ile çekilmesi gerekirse veya eski frontend code çalışırsa hala veri sağlar.
 router.get('/sablonlar/:id', async (req, res) => {
     try {
+        console.log(`Request received on /sablonlar/:id path: /api/sablonlar/${req.params.id}`); // Loglama
         const template = await Template.findById(req.params.id);
         if (!template) {
+            console.warn(`Template with ID ${req.params.id} not found on /sablonlar/:id path.`); // Loglama
             return res.status(404).json({ message: 'Şablon bulunamadı' });
         }
+
+        // Redirect logic kaldırıldı. Bu rota artık sadece ID ile şablon verisi döndürür.
+        console.log(`Template found by ID ${req.params.id}. Returning JSON data.`); // Loglama
         res.json(template);
+
     } catch (error) {
-        console.error('Şablon detayı (ID ile) alınırken hata oluştu:', error);
+        console.error('Şablon detayı (ID ile, /sablonlar/:id rotası) alınırken hata oluştu:', error);
         res.status(500).json({ message: 'Şablon detayı alınırken bir hata oluştu.' });
     }
 });
+
+// --- YENİ EKLEDİĞİMİZ /templates/:id Rotası DURACAK ---
+// Bu rota, eski frontend URL'lerinden gelen trafiği yeni slug'lı Frontend URL'lerine yönlendirdiği için GEREKLİDİR.
+// --- YENİ: Eski /templates/:id API rotasına gelen istekleri yakala ve 301 yönlendir ---
+// Bu rota, Vercel'den gelen /templates/:id rewrite isteklerini karşılar.
+// Amaç: Eski indexlenmiş veya link verilmiş /templates/:id URL'lerinden gelen trafiği yeni slug'lı URL'lere yönlendirmek.
+router.get('/templates/:id', async (req, res) => {
+    try {
+        console.log(`Request received on old ID path: /api/templates/${req.params.id}`); // Loglama
+        const template = await Template.findById(req.params.id);
+        if (!template) {
+            // Eski ID ile şablon bulunamazsa 404 döndür
+            console.warn(`Template with old ID ${req.params.id} not found.`); // Loglama
+            return res.status(404).json({ message: 'Şablon bulunamadı' });
+        }
+
+        // Eğer şablon bulunduysa ve bir slug'ı varsa, yeni slug'lı Frontend URL'ine 301 yönlendirme yap
+        if (template.slug) {
+            console.log(`301 Redirecting from /api/templates/${req.params.id} to /sablonlar/detay/${template.slug}`); // Loglama
+            // Frontend URL yapısına yönlendiriyoruz. Vercel bu path'i tekrar işleyip index.html'e gidecek.
+            return res.redirect(301, `/sablonlar/detay/${template.slug}`); // <-- 301 Yönlendirme (Frontend Path)
+        } else {
+             // Eğer slug'ı yoksa ve eski bir URL'den geldiyse, ne yapmalı?
+             // Normalde tüm eski şablonlara slug ekledik, bu durum olmamalı.
+             // Ama olursa 404 döndürmek en güvenlisi.
+            console.warn(`Template found by old ID ${req.params.id} but no slug found. Returning 404.`); // Loglama
+            return res.status(404).json({ message: 'Şablon bulunamadı veya slug atanmamış.' });
+        }
+
+    } catch (error) {
+        console.error('Eski ID rotası (/templates/:id) işlenirken hata oluştu:', error);
+        res.status(500).json({ message: 'Şablon detayı alınırken bir sunucu hatası oluştu.' });
+    }
+});
+// --- YENİ SON ---
+
 
 // Ödeme işlemi ve PDF oluşturma (Path şimdilik eski kaldı)
 router.post('/templates/:id/process-payment', async (req, res) => {
@@ -203,6 +247,8 @@ router.post('/templates/:id/process-payment', async (req, res) => {
         }
     }
 });
+
+
 
 // --- Dinamik Sitemap Rotası (URL Yapısı Güncellendi) ---
 router.get('/sitemap.xml', async (req, res) => {
