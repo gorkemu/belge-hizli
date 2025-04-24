@@ -74,6 +74,21 @@ try {
 // --- CSS Yükleme Sonu ---
 
 
+// --- Eski ID - Slug Eşleme Dosyasını Yükle ---
+// Dosyanın backend ana dizininde olduğunu varsayarız.
+const oldIdToSlugMapPath = path.join(__dirname, '..', 'old-id-to-slug-map.json');
+let oldIdToSlugMap = {};
+try {
+    const mapData = fs.readFileSync(oldIdToSlugMapPath, 'utf8');
+    oldIdToSlugMap = JSON.parse(mapData);
+    console.log(`Successfully loaded old ID to slug map from ${oldIdToSlugMapPath}`); // Log
+} catch (error) {
+    // Eğer dosya yoksa veya okuma/parse hatası olursa logla ve boş eşleme objesiyle devam et
+    console.error(`Failed to load old ID to slug map from ${oldIdToSlugMapPath}:`, error.message); // Log error
+    // Hata durumunda eşleme objesi boş kalır, aşağıdaki logic 404'e düşer.
+}
+// --- Eşleme Yükleme Sonu ---
+
 // --- Routes ---
 
 // Tüm şablonların listesini getir (Path değiştirildi)
@@ -128,40 +143,47 @@ router.get('/sablonlar/:id', async (req, res) => {
     }
 });
 
-// --- YENİ EKLEDİĞİMİZ /templates/:id Rotası DURACAK ---
-// Bu rota, eski frontend URL'lerinden gelen trafiği yeni slug'lı Frontend URL'lerine yönlendirdiği için GEREKLİDİR.
-// --- YENİ: Eski /templates/:id API rotasına gelen istekleri yakala ve 301 yönlendir ---
+// --- Eski /templates/:id API rotasına gelen istekleri yakala ve 301 yönlendir ---
 // Bu rota, Vercel'den gelen /templates/:id rewrite isteklerini karşılar.
 // Amaç: Eski indexlenmiş veya link verilmiş /templates/:id URL'lerinden gelen trafiği yeni slug'lı URL'lere yönlendirmek.
 router.get('/templates/:id', async (req, res) => {
     try {
-        console.log(`Request received on old ID path: /api/templates/${req.params.id}`); // Loglama
-        const template = await Template.findById(req.params.id);
-        if (!template) {
-            // Eski ID ile şablon bulunamazsa 404 döndür
-            console.warn(`Template with old ID ${req.params.id} not found.`); // Loglama
-            return res.status(404).json({ message: 'Şablon bulunamadı' });
+        console.log(`Request received on old ID path: /api/templates/${req.params.id}. Checking map.`); // Loglama
+        const oldId = req.params.id;
+
+        // 1. Gelen ID'yi doğrudan mevcut eşleme haritasında ara
+        if (oldIdToSlugMap[oldId]) {
+            const currentSlug = oldIdToSlugMap[oldId];
+            console.log(`Old ID ${oldId} found in map. Redirecting to /sablonlar/detay/${currentSlug}`); // Loglama
+            // Haritadan bulunan slug ile yeni Frontend URL yapısına 301 yönlendir
+            return res.redirect(301, `/sablonlar/detay/${currentSlug}`);
         }
 
-        // Eğer şablon bulunduysa ve bir slug'ı varsa, yeni slug'lı Frontend URL'ine 301 yönlendirme yap
-        if (template.slug) {
-            console.log(`301 Redirecting from /api/templates/${req.params.id} to /sablonlar/detay/${template.slug}`); // Loglama
-            // Frontend URL yapısına yönlendiriyoruz. Vercel bu path'i tekrar işleyip index.html'e gidecek.
-            return res.redirect(301, `/sablonlar/detay/${template.slug}`); // <-- 301 Yönlendirme (Frontend Path)
-        } else {
-             // Eğer slug'ı yoksa ve eski bir URL'den geldiyse, ne yapmalı?
-             // Normalde tüm eski şablonlara slug ekledik, bu durum olmamalı.
-             // Ama olursa 404 döndürmek en güvenlisi.
-            console.warn(`Template found by old ID ${req.params.id} but no slug found. Returning 404.`); // Loglama
-            return res.status(404).json({ message: 'Şablon bulunamadı veya slug atanmamış.' });
+        // 2. Eğer ID haritada bulunamadıysa, veritabanında ara (Bu kısım eğer eski ID silinmemiş ve slug eklenmişse işe yarar, genellikle harita yeterli olmalı)
+        const template = await Template.findById(oldId);
+
+        if (template && template.slug) {
+            // Eğer şablon haritada olmamasına rağmen (beklenmedik şekilde) mevcut ID ile veritabanında bulunduysa ve slug'ı varsa
+            console.log(`Template found directly by current ID ${oldId} (not in map). Redirecting to /sablonlar/detay/${template.slug}`); // Loglama
+            return res.redirect(301, `/sablonlar/detay/${template.slug}`); // Frontend URL yapısına 301 yönlendir
+        } else if (template && !template.slug) {
+             // Eğer ID veritabanında bulundu ama slug yoksa (beklenmez), 404 dön.
+            console.warn(`Template found directly by ID ${oldId} but no slug found. Returning 404.`); // Loglama
+            return res.status(404).json({ message: 'Şablon bulundu ancak slug atanmamış.' });
         }
+
+        // 3. Ne haritada ne de veritabanında bulunamadıysa 404 döndür
+        console.warn(`Old ID ${oldId} not found in map or database. Returning 404.`); // Loglama
+        return res.status(404).json({ message: 'Şablon bulunamadı.' });
+
 
     } catch (error) {
         console.error('Eski ID rotası (/templates/:id) işlenirken hata oluştu:', error);
         res.status(500).json({ message: 'Şablon detayı alınırken bir sunucu hatası oluştu.' });
     }
 });
-// --- YENİ SON ---
+// --- 301 YÖNLENDİRME LOGİĞİ SONU ---
+
 
 
 // Ödeme işlemi ve PDF oluşturma (Path şimdilik eski kaldı)
