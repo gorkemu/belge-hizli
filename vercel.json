@@ -5,6 +5,10 @@
       "destination": "https://belgehizli-api.fly.dev/api/sitemap.xml"
     },
     {
+      "source": "/templates/:id([^/]+)", 
+      "destination": "https://belgehizli-api.fly.dev/api/templates/:id" 
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
