@@ -14,6 +14,10 @@ function DeliveryReturn() {
     <div className={styles.container}>
       <h2 className={styles.title}>Teslimat ve İade Politikası</h2>
 
+      <p className={styles.importantNote}>
+                Sitemiz şu anda beta aşamasındadır ve tüm şablonlar geçici olarak ücretsiz sunulmaktadır. Ödeme entegrasyonumuz henüz aktif değildir. Aşağıdaki politikalar, gelecekte aktif olacak ücretli hizmetlerimiz ve ödeme süreçlerimiz için geçerlidir. Şu anda indirdiğiniz tüm şablonlar ücretsizdir.
+                </p>
+
       <h3 className={styles.sectionTitle}>Teslimat Süreci</h3>
       <p className={styles.paragraph}>
         {siteName} olarak sunduğumuz hizmet, kullanıcılarımızın seçtikleri şablonlar üzerindeki form alanlarını
@@ -25,8 +29,8 @@ function DeliveryReturn() {
         <li>İhtiyacınıza uygun belge şablonunu seçin.</li>
         <li>Şablon detay sayfasındaki form alanlarını dikkatlice doldurun.</li>
         <li>Gerekli bilgileri girdikten sonra ödeme adımına geçin.</li>
-        <li>Ödemeniz Moka United gibi güvenli ödeme altyapıları üzerinden başarıyla tamamlandıktan sonra,
-          girdiğiniz bilgilerle oluşturulan kişiselleştirilmiş PDF belgeniz indirilmeye hazır hale gelecektir.</li>
+        <li>{/* Ödemeniz Moka United gibi güvenli ödeme altyapıları üzerinden başarıyla tamamlandıktan sonra, */}
+          Ödemeniz ödeme altyapıları üzerinden başarıyla tamamlandıktan sonra, girdiğiniz bilgilerle oluşturulan kişiselleştirilmiş PDF belgeniz indirilmeye hazır hale gelecektir.</li>
       </ol>
       <p className={styles.paragraph}>
         Teslimat, ödemenin başarıyla tamamlanmasının hemen ardından elektronik ortamda anında gerçekleşir.

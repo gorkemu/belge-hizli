@@ -23,7 +23,11 @@
         <div className={styles.container}>
           <h2 className={styles.title}>Kullanım Şartları ve Mesafeli Satış Sözleşmesi</h2>
           <p className={styles.lastUpdated}><strong>Son Güncelleme:</strong> {lastUpdateDate}</p>
-  
+          
+          <p className={styles.importantNote}>
+          Sitemiz şu anda beta aşamasındadır ve tüm şablonlar geçici olarak ücretsiz sunulmaktadır. Ödeme entegrasyonumuz henüz aktif değildir. Aşağıdaki politikalar, gelecekte aktif olacak ücretli hizmetlerimiz ve ödeme süreçlerimiz için geçerlidir. Şu anda indirdiğiniz tüm şablonlar ücretsizdir.
+          </p>
+
           <p className={styles.paragraph}>
             Lütfen <strong>{siteUrl}</strong> ("Site") adresinde sunulan hizmetleri kullanmadan önce bu Kullanım Şartları'nı ("Sözleşme") dikkatlice okuyunuz.
             Site'ye erişerek veya hizmetleri kullanarak, bu Sözleşme'yi okuduğunuzu, anladığınızı ve hükümlerine bağlı kalmayı kabul ettiğinizi beyan etmiş olursunuz.
@@ -95,7 +99,7 @@
             6.1. Belirli şablonlardan PDF Belge oluşturma ve indirme hizmeti ücrete tabidir. Ücretler, ilgili şablonun sayfasında ve ödeme adımında açıkça belirtilir. Fiyatlara KDV dahildir.
           </p>
           <p className={styles.paragraph}>
-            6.2. Ödemeler, Site üzerinde belirtilen yöntemlerle (örn: Moka United aracılığıyla kredi kartı) yapılır. Kullanıcı, ödeme için verdiği bilgilerin doğru olduğunu kabul eder.
+            6.2. Ödemeler, Site üzerinde belirtilen yöntemlerle {/*(örn: Moka United aracılığıyla kredi kartı)*/} yapılır. Kullanıcı, ödeme için verdiği bilgilerin doğru olduğunu kabul eder.
           </p>
           <p className={styles.paragraph}>
             6.3. Başarılı ödeme sonrası, oluşturulan PDF Belge indirmeye hazır hale gelir ve/veya Kullanıcının belirttiği e-posta adresine gönderilebilir.

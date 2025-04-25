@@ -175,7 +175,7 @@ function TemplateDetail() {
 
 				<h2 className={styles.title}>{template.name}</h2>
 				<p className={styles.description}>{template.description}</p>
-				{template.price > 0 && <p className={styles.price}>Fiyat: {template.price} TRY</p>}
+				{template.price > 0 && <p className={styles.price}>Fiyat: Bu şablon normalde {template.price} TRY. Şu an ücretsiz!</p>}
 
 				<div className={styles.editorContainer}>
 					{/* Sol Sütun: Dinamik Form */}
@@ -205,14 +205,14 @@ function TemplateDetail() {
 					</div>
 				</div>
 
-				 {/* Alt Kısım: Ödeme ve İndirme Butonu */}
+				 {/* Alt Kısım: Ödeme ve İndirme Butonu - ödeme entegrasyonu sonrasında değişecek: {loadingPayment ? 'İşleniyor...' : `Öde (${template.price || 0} TRY) ve İndir`} */}
 				 <div className={styles.paymentSection}>
 					 <button
 						 onClick={handlePayAndDownload}
 						 disabled={loadingPayment}
 						 className={styles.payDownloadButton}
 					 >
-						 {loadingPayment ? 'İşleniyor...' : `Öde (${template.price || 0} TRY) ve İndir`}
+						 {loadingPayment ? 'İşleniyor...' : `İndir ve E-posta Gönder`}
 					 </button>
 
 					 {showSuccessMessage && (

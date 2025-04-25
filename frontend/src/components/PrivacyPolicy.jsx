@@ -23,6 +23,10 @@ function PrivacyPolicy() {
       <h2 className={styles.title}>Gizlilik Politikası ve Aydınlatma Metni</h2>
       <p className={styles.lastUpdated}><strong>Son Güncelleme:</strong> {lastUpdateDate}</p>
 
+      <p className={styles.importantNote}>
+                Sitemiz şu anda beta aşamasındadır ve tüm şablonlar geçici olarak ücretsiz sunulmaktadır. Ödeme entegrasyonumuz henüz aktif değildir. Aşağıdaki politikalar, gelecekte aktif olacak ücretli hizmetlerimiz ve ödeme süreçlerimiz için geçerlidir. Şu anda indirdiğiniz tüm şablonlar ücretsizdir.
+                </p>
+
       <p className={styles.paragraph}>
         <strong> Belge Hızlı</strong> olarak (bundan sonra "{siteName}" veya "Biz" olarak anılacaktır),
         <strong> {siteUrl} </strong> internet sitemizi ("Site") ziyaret eden ve kullanan siz değerli
@@ -56,7 +60,7 @@ function PrivacyPolicy() {
       <ul className={styles.purposeList}>
         <li>Hizmetlerimizin sunulması (belge şablonlarının doldurulması, PDF oluşturulması ve teslimi).</li>
         <li>Üyelik işlemlerinin gerçekleştirilmesi ve yönetilmesi.</li>
-        <li>Sipariş ve ödeme süreçlerinin yürütülmesi (Moka United gibi ödeme sağlayıcıları aracılığıyla).</li>
+        <li>Sipariş ve ödeme süreçlerinin yürütülmesi ({/* Moka United gibi */} Ödeme sağlayıcıları aracılığıyla).</li>
         <li>Sözleşmesel yükümlülüklerin yerine getirilmesi (Mesafeli Satış Sözleşmesi vb.).</li>
         <li>Müşteri hizmetleri ve destek taleplerinin karşılanması.</li>
         <li>Yasal yükümlülüklerin yerine getirilmesi (fatura düzenleme, yasal bildirimler vb.).</li>
@@ -82,7 +86,7 @@ function PrivacyPolicy() {
         gerekli güvenlik önlemleri alınarak aşağıdaki taraflara aktarılabilecektir:
       </p>
       <ul className={styles.purposeList}>
-        <li><strong>Ödeme Hizmeti Sağlayıcıları:</strong> Ödeme işlemlerinin güvenli bir şekilde gerçekleştirilmesi amacıyla Moka United gibi lisanslı ödeme kuruluşlarına.</li>
+        <li><strong>Ödeme Hizmeti Sağlayıcıları:</strong> Ödeme işlemlerinin güvenli bir şekilde gerçekleştirilmesi amacıyla {/*Moka United gibi */} lisanslı ödeme kuruluşlarına.</li>
         <li><strong>İş Ortakları ve Tedarikçiler:</strong> Hizmetlerin sunulması için destek alınan taraflar (örn: sunucu/hosting hizmeti, e-posta gönderim hizmeti, analitik hizmetleri).</li>
         <li><strong>Yetkili Kamu Kurum ve Kuruluşları:</strong> Yasal talepler doğrultusunda ve mevzuat gereği bilgi verilmesi gereken merciler (mahkemeler, savcılıklar vb.).</li>
         <li><strong>Hukuk ve Danışmanlık Büroları:</strong> Hukuki süreçlerin takibi veya danışmanlık alınması amacıyla sır saklama yükümlülüğü çerçevesinde.</li>
