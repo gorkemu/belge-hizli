@@ -115,3 +115,73 @@ display: inline-block; /* Sadece kendi genişliği kadar yer kaplasın */
   font-weight: bold;
   margin-top: 1rem;
 }
+
+.paymentSection {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gray-300);
+  display: flex; /* İçerikleri yan yana veya alt alta hizalamak için */
+  flex-direction: column; /* Checkbox ve butonu alt alta */
+  align-items: center; /* Ortalamak için */
+}
+
+.termsCheckboxContainer {
+display: flex;         /* Checkbox ve label'ı yan yana hizala */
+align-items: center;  /* Dikeyde ortala */
+margin-bottom: 15px; /* Buton ile arasına boşluk */
+max-width: 600px;      /* Geniş ekranlarda çok yayılmasın */
+text-align: left;     /* Metni sola yasla */
+}
+
+.checkboxInput {
+margin-right: 10px; /* Checkbox ile metin arasına boşluk */
+cursor: pointer;
+width: 16px;       /* Standart boyut */
+height: 16px;
+accent-color: var(--primary-color); /* Checkbox işaret rengi */
+}
+
+.termsLabel {
+font-size: 0.9rem;  /* Biraz daha küçük punto */
+color: var(--gray-700); /* Hafif soluk renk */
+line-height: 1.4;  /* Satır yüksekliği */
+cursor: pointer;
+}
+
+.termsLink {
+color: var(--primary-color); /* Ana renk */
+text-decoration: underline;
+margin: 0 3px; /* Linklerin etrafına hafif boşluk */
+}
+
+.termsLink:hover {
+color: var(--secondary-color); /* Hover rengi */
+}
+
+
+/* Opsiyonel: Kabul edilmediğinde butonu daha soluk göstermek için */
+.disabledButton {
+background-color: var(--gray-400);
+cursor: not-allowed;
+opacity: 0.7;
+}
+
+/* Başarı ve hata mesajları için stiller zaten vardı, kontrol edelim */
+.successMessage {
+color: green;
+margin-top: 10px;
+font-weight: bold;
+}
+
+.paymentError {
+color: red;
+margin-top: 10px;
+font-weight: bold;
+}
+
+.betaNote {
+font-size: 0.85rem;
+color: var(--secondary-color); /* veya başka bir dikkat çekici renk */
+margin-left: 5px;
+font-style: italic;
+}

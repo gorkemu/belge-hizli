@@ -1,0 +1,99 @@
+/* frontend/src/components/PreInformationForm.module.css */
+.container {
+    max-width: 800px; /* İçerik genişliği */
+    margin: 40px auto; /* Ortalama ve üst/alt boşluk */
+    padding: 30px;
+    background-color: #fff; /* Beyaz arka plan */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    font-family: var(--font-family-base); /* Ana font */
+    color: var(--gray-800); /* Koyu gri metin */
+    line-height: 1.7; /* Okunabilirlik için satır aralığı */
+  }
+  
+  .title {
+    text-align: center;
+    color: var(--primary-color); /* Ana renk */
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+  }
+  
+  .intro, .paragraph, .confirmation {
+    margin-bottom: 15px;
+    font-size: 1rem;
+  }
+  
+  .sectionTitle {
+    color: var(--secondary-color); /* İkincil renk */
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    border-bottom: 1px solid var(--gray-300);
+    padding-bottom: 5px;
+  }
+  
+  .infoList, .definitionList {
+    list-style: none; /* Liste işaretlerini kaldır */
+    padding-left: 0;
+    margin-bottom: 15px;
+  }
+  
+  .infoList li, .definitionList li {
+    margin-bottom: 8px;
+    padding-left: 15px; /* Hafif içeriden başlat */
+    position: relative;
+  }
+  
+  .infoList li strong {
+      display: inline-block;
+      min-width: 120px; /* Başlıkların hizalı durması için */
+      color: var(--gray-700);
+  }
+  
+  .definitionList li::before {
+      content: "•"; /* Madde işareti */
+      color: var(--primary-color);
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1.2em; /* İçeriden başlatmayı ayarla */
+      position: absolute;
+      top: 1px;
+  }
+  
+  
+  .warningNote {
+    background-color: #fff3cd; /* Açık sarı uyarı arka planı */
+    border-left: 5px solid #ffeeba; /* Sarı sol kenarlık */
+    padding: 15px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    color: #856404; /* Koyu sarı metin */
+    font-weight: bold;
+  }
+  
+  .separator {
+    border: none;
+    border-top: 1px dashed var(--gray-400); /* Kesikli çizgi */
+    margin: 30px 0;
+  }
+  
+  .confirmation {
+    font-style: italic;
+    text-align: center;
+    color: var(--gray-600);
+    margin-top: 20px;
+  }
+  
+  /* Link stilleri (gerekirse) */
+  .container a {
+    color: var(--primary-color);
+    text-decoration: underline;
+  }
+  
+  .container a:hover {
+    color: var(--secondary-color);
+  }

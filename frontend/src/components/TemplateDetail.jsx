@@ -1,47 +1,48 @@
+// frontend/src/components/TemplateDetail.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+// Link component'ini import etmeyi unutmayın
+import { useParams, useNavigate, Link } from 'react-router-dom'; // <-- GÜNCELLENDİ
 import axios from 'axios';
 import styles from './TemplateDetail.module.css';
-import DocumentForm from './DocumentForm'; 		// Dinamik form bileşeni
-import DocumentPreview from './DocumentPreview'; // Dinamik önizleme bileşeni
-// import PaymentScreen from './PaymentScreen'; // Ayrı ödeme ekranı gerekirse aktif edilebilir
-import { Helmet } from 'react-helmet-async'; // <-- YENİ: Helmet import edildi
+import DocumentForm from './DocumentForm';
+import DocumentPreview from './DocumentPreview';
+import { Helmet } from 'react-helmet-async';
 
 function TemplateDetail() {
-	const { slug } = useParams(); // slug parametresini alıyoruz
+	const { slug } = useParams();
 	const navigate = useNavigate();
-	const formRef = useRef(null); // DocumentForm bileşenine referans
+	const formRef = useRef(null);
 
 	const [template, setTemplate] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
-	const [formData, setFormData] = useState({}); // Form verilerini tutacak state
-	const [formErrors, setFormErrors] = useState({}); // Form hatalarını tutacak state (bilgi amaçlı)
+	const [formData, setFormData] = useState({});
+	const [formErrors, setFormErrors] = useState({});
 
-	const [loadingPayment, setLoadingPayment] = useState(false); // Ödeme/İndirme işlemi yükleme durumu
-	const [paymentError, setPaymentError] = useState(null); // Ödeme/İndirme hatası
+	const [loadingPayment, setLoadingPayment] = useState(false);
+	const [paymentError, setPaymentError] = useState(null);
 
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+	// --- YENİ: Onay durumu için state ---
+	const [agreedToTerms, setAgreedToTerms] = useState(false);
+	// --- YENİ SON ---
+
 	const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
-	// Şablon verisini backend'den çek
 	useEffect(() => {
 		setLoading(true);
 		setError(null);
-		// API çağrısını slug tabanlı rota üzerinden yapıyoruz
 		axios.get(`${API_BASE_URL}/sablonlar/detay/${slug}`)
 			.then(response => {
-				// console.log('Template data fetched:', response.data); // Debugging
 				setTemplate(response.data);
-				// Form state'ini sıfırla (yeni şablon için)
 				setFormData({});
 				setFormErrors({});
+				setAgreedToTerms(false); // <-- YENİ: Şablon değiştiğinde onayı sıfırla
 				setLoading(false);
 			})
 			.catch(error => {
-				// console.error('Error fetching template:', error); // Debugging
 				if (error.response && error.response.status === 404) {
 					setError('Şablon bulunamadı.');
 				} else {
@@ -49,20 +50,22 @@ function TemplateDetail() {
 				}
 				setLoading(false);
 			});
-	}, [slug]); // useEffect bağımlılığı slug
+	}, [slug]);
 
-	// DocumentForm'dan gelen veri ve hata güncellemelerini işle
 	const handleFormChange = (newFormData, errors) => {
 		setFormData(newFormData);
 		setFormErrors(errors);
-		// console.log('TemplateDetail FormData Updated:', newFormData); // Debugging
-		// console.log('TemplateDetail FormErrors Updated:', errors); // Debugging
 	};
 
-	// Ödeme ve PDF indirme işlemini başlat
 	const handlePayAndDownload = async () => {
+		// --- YENİ: Şartların kabul edilip edilmediğini kontrol et ---
+		if (!agreedToTerms) {
+			alert('Devam etmek için lütfen Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi\'ni okuyup kabul ettiğinizi onaylayın.');
+			return;
+		}
+		// --- YENİ SON ---
+
 		if (!formRef.current) {
-			// console.error("DocumentForm referansı bulunamadı.");
 			alert("Bir hata oluştu, lütfen sayfayı yenileyin.");
 			return;
 		}
@@ -70,26 +73,27 @@ function TemplateDetail() {
 		const isValid = await formRef.current.handleSubmit();
 
 		if (!isValid) {
-			// console.error("Form validation failed. Errors:", formErrors); // Debugging
 			alert('Lütfen formdaki zorunlu alanları doldurun veya işaretli hataları düzeltin.');
 			return;
 		}
 
 		setShowSuccessMessage(false);
 		setPaymentError(null);
-
 		setLoadingPayment(true);
+
 		try {
-			// Ödeme rotası hala ID kullandığı için burada template._id kullanıyoruz.
 			const response = await axios.post(`${API_BASE_URL}/templates/${template._id}/process-payment`, {
 				formData,
 				amount: template?.price || 0,
 				currency: 'TRY',
 				email: formData?.belge_email || ''
+				// İleride buraya onay zamanı gibi ek bilgiler de gönderilebilir
+				// consentTimestamp: agreedToTerms ? new Date().toISOString() : null
 			}, {
 				responseType: 'blob'
 			});
 
+			// ... (PDF indirme ve e-posta gönderme kodları aynı kalır) ...
 			const blob = new Blob([response.data], { type: 'application/pdf' });
 			const url = window.URL.createObjectURL(blob);
 			const link = document.createElement('a');
@@ -101,15 +105,15 @@ function TemplateDetail() {
 
 			document.body.removeChild(link);
 			window.URL.revokeObjectURL(url);
-			// console.log("PDF indirme işlemi başarılı.");
 
 			setShowSuccessMessage(true);
 			setTimeout(() => {
 				setShowSuccessMessage(false);
 			}, 5000);
 
+
 		} catch (error) {
-			// console.error('Ödeme/İndirme hatası:', error.response || error.message || error);
+			// ... (Hata yönetimi kodları aynı kalır) ...
 			let errorMessage = 'Ödeme veya PDF oluşturma sırasında bir hata oluştu.';
 			if (error.response && error.response.data) {
 				if (error.response.data instanceof Blob && error.response.data.type === "application/json") {
@@ -132,8 +136,6 @@ function TemplateDetail() {
 		}
 	};
 
-	// --- Render Logic ---
-
 	if (loading) {
 		return <div className={styles.statusMessage}>Şablon yükleniyor...</div>;
 	}
@@ -146,27 +148,19 @@ function TemplateDetail() {
 		return <div className={styles.statusMessage}>Şablon bulunamadı.</div>;
 	}
 
-	const isFormCurrentlyValid = Object.keys(formErrors).length === 0;
+	// Formun geçerli olup olmadığını kontrol etmek için (opsiyonel, buton stilinde kullanılabilir)
+	// const isFormCurrentlyValid = Object.keys(formErrors).length === 0;
 
 	return (
-		<> {/* Fragment */}
-			{/* --- Dinamik Meta Etiketleri (Helmet ile) --- */}
-			{/* Daha önceki manuel <title>, <meta>, <link> etiketleri kaldırıldı */}
+		<>
 			<Helmet>
-				{/* Şablon verisi yüklendiğinde dinamik başlık ve açıklama */}
 				<title>{template.name ? `${template.name} - Belge Hızlı` : 'Şablon Detayı - Belge Hızlı'}</title>
 				<meta
 					name="description"
 					content={template.description ? `${template.description} Şablonunu Belge Hızlı'da doldurun ve indirin.` : 'Belge Hızlı şablon detayı.'}
 				/>
-				{/* Canonical URL, slug tabanlı yeni yapıyı kullanıyor */}
 				{template.slug && <link rel="canonical" href={`https://www.belgehizli.com/sablonlar/detay/${template.slug}`} />}
-				{/* Open Graph başlığı da eklenebilir */}
-				{/* {template.name && <meta property="og:title" content={`${template.name} - Belge Hızlı`} />} */}
-				{/* Diğer Open Graph, Twitter Card etiketleri buraya eklenebilir */}
 			</Helmet>
-			{/* --- Meta Etiketleri Sonu --- */}
-
 
 			<div className={styles.container}>
 				<button onClick={() => navigate(-1)} className={styles.backButton}>
@@ -175,10 +169,13 @@ function TemplateDetail() {
 
 				<h2 className={styles.title}>{template.name}</h2>
 				<p className={styles.description}>{template.description}</p>
-				{template.price > 0 && <p className={styles.price}>Fiyat: Bu şablon normalde {template.price} TRY. Şu an ücretsiz!</p>}
+				{/* Fiyat gösterimini beta notu ile güncelleyelim */}
+				<p className={styles.price}>
+					{template.price > 0 ? `Normal Fiyat: ${template.price} TRY` : 'Bu şablon ücretsizdir.'}
+					<span className={styles.betaNote}> (Beta süresince tüm şablonlar ücretsizdir)</span>
+				</p>
 
 				<div className={styles.editorContainer}>
-					{/* Sol Sütun: Dinamik Form */}
 					<div className={styles.formColumn}>
 						{template.fields && template.fields.length > 0 ? (
 							<DocumentForm
@@ -191,7 +188,6 @@ function TemplateDetail() {
 						)}
 					</div>
 
-					{/* Sağ Sütun: Dinamik Önizleme */}
 					<div className={styles.previewColumn}>
 						{template.content ? (
 							<DocumentPreview
@@ -201,28 +197,47 @@ function TemplateDetail() {
 						) : (
 							<div className={styles.statusMessage}>Bu şablon için önizleme içeriği tanımlanmamış.</div>
 						)}
-
 					</div>
 				</div>
 
-				 {/* Alt Kısım: Ödeme ve İndirme Butonu - ödeme entegrasyonu sonrasında değişecek: {loadingPayment ? 'İşleniyor...' : `Öde (${template.price || 0} TRY) ve İndir`} */}
-				 <div className={styles.paymentSection}>
-					 <button
-						 onClick={handlePayAndDownload}
-						 disabled={loadingPayment}
-						 className={styles.payDownloadButton}
-					 >
-						 {loadingPayment ? 'İşleniyor...' : `İndir ve E-posta Gönder`}
-					 </button>
+				<div className={styles.paymentSection}>
+					{/* --- YENİ: Onay Checkbox ve Metni --- */}
+					<div className={styles.termsCheckboxContainer}>
+						<input
+							type="checkbox"
+							id="termsCheckbox"
+							checked={agreedToTerms}
+							onChange={(e) => setAgreedToTerms(e.target.checked)}
+							className={styles.checkboxInput}
+						/>
+						<label htmlFor="termsCheckbox" className={styles.termsLabel}>
+							{/* // <-- GÜNCELLENDİ: ÖBF linki doğru route'a yönlendirildi --> */}
+							<Link to="/on-bilgilendirme-formu" target="_blank" rel="noopener noreferrer" className={styles.termsLink}>Ön Bilgilendirme Formu</Link>'nu
+							ve <Link to="/kullanim-sartlari" target="_blank" rel="noopener noreferrer" className={styles.termsLink}>Mesafeli Satış Sözleşmesi</Link>'ni
+							okudum, anladım ve kabul ediyorum.
+						</label>
+					</div>
+					{/* --- YENİ SON --- */}
 
-					 {showSuccessMessage && (
-						 <p className={styles.successMessage}>
-							 ✅ PDF başarıyla oluşturuldu ve indiriliyor. Bir kopya da e-posta adresinize gönderiliyor...
-						 </p>
-					 )}
+					<button
+						onClick={handlePayAndDownload}
+						// Butonun disabled durumunu güncelle
+						disabled={loadingPayment || !agreedToTerms} // <-- GÜNCELLENDİ
+						className={`${styles.payDownloadButton} ${!agreedToTerms ? styles.disabledButton : ''}`} // <-- Opsiyonel: Kabul edilmediğinde farklı stil
+					>
+						{/* Beta sürecinde buton metni */}
+						{loadingPayment ? 'İşleniyor...' : `Ücretsiz İndir ve E-posta Gönder`}
+						{/* İleride ücretli olunca: {loadingPayment ? 'İşleniyor...' : `Öde (${template?.price || 0} TRY) ve İndir`} */}
+					</button>
 
-					 {paymentError && <p className={styles.paymentError}>{paymentError}</p>}
-				 </div>
+					{showSuccessMessage && (
+						<p className={styles.successMessage}>
+							✅ PDF başarıyla oluşturuldu ve indiriliyor. Bir kopya da e-posta adresinize gönderiliyor...
+						</p>
+					)}
+
+					{paymentError && <p className={styles.paymentError}>{paymentError}</p>}
+				</div>
 			</div>
 		</>
 	);

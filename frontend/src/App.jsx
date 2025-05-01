@@ -1,11 +1,10 @@
 import React from 'react';
-// ÖNEMLİ: Routes ve Route'u react-router-dom'dan import et
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import CookieConsent from "react-cookie-consent"; // <-- YENİ IMPORT
-import styles from './App.module.css'; // Mevcut stil dosyanız
+import CookieConsent from "react-cookie-consent";
+import styles from './App.module.css';
 
 // Bileşenleri import et
-import HomePage from './components/HomePage'; // Yeni Ana Sayfa
+import HomePage from './components/HomePage';
 import TemplateList from './components/TemplateList';
 import TemplateDetail from './components/TemplateDetail';
 import AboutUs from './components/AboutUs';
@@ -13,103 +12,76 @@ import ContactUs from './components/ContactUs';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import DeliveryReturn from './components/DeliveryReturn';
+import PreInformationForm from './components/PreInformationForm'; // <-- YENİ: ÖBF component'ini import et
 
 function App() {
 	return (
 		<Router>
-			{/* Ana container class'ını koru */}
 			<div className={styles.appContainer}>
-				{/* Header class'ını koru */}
 				<header className={styles.appHeader}>
-					{/* Logo Linkini ve class'ını koru */}
 					<Link to="/" className={styles.logo}>
-						{/* Logo görselini ekle (public klasöründe olduğundan emin ol) */}
-						<img src="/logo.png" alt="Belge Hızlı Logosu" height="50" /> {/* Yüksekliği ayarlayabilirsiniz */}
+						<img src="/logo.png" alt="Belge Hızlı Logosu" height="50" />
 					</Link>
-					{/* Nav class'ını koru */}
 					<nav className={styles.appNav}>
-						{/* Mevcut ul/li yapısını koru */}
 						<ul>
-							{/* Linkleri güncelle */}
 							<li><Link to="/">Ana Sayfa</Link></li>
-							<li><Link to="/sablonlar">Şablonlar</Link></li> {/* <-- Path güncellendi */}
+							<li><Link to="/sablonlar">Şablonlar</Link></li>
 							<li><Link to="/hakkimizda">Hakkımızda</Link></li>
 							<li><Link to="/iletisim">İletişim</Link></li>
 						</ul>
 					</nav>
 				</header>
 
-				{/* Main class'ını koru */}
 				<main className={styles.appMain}>
-					{/* Routes yapısını kullan */}
 					<Routes>
-						{/* Ana yol (/) için HomePage */}
 						<Route path="/" element={<HomePage />} />
-						{/* /sablonlar yolu için TemplateList (Path güncellendi) */}
 						<Route path="/sablonlar" element={<TemplateList />} />
-						{/* Şablon detay rotası (Path ve parametre adı güncellendi) */}
-						<Route path="/sablonlar/detay/:slug" element={<TemplateDetail />} /> {/* <-- Path güncellendi */}
-						{/* Geriye uyumluluk için eski ID rotasını isterseniz tutabilirsiniz, veya kaldırabilirsiniz. */}
-						{/* Şimdilik yeni slug rotasını ekledik, eski ID rotasını kaldırmadık. */}
-						{/* <Route path="/templates/:id" element={<TemplateDetail />} />  */}
-
-
-						{/* Diğer rotalar */}
+						<Route path="/sablonlar/detay/:slug" element={<TemplateDetail />} />
 						<Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
 						<Route path="/kullanim-sartlari" element={<TermsOfService />} />
-						{/* Teslimat linkini düzelt (muhtemelen - yerine / olmalı) */}
 						<Route path="/teslimat-iade" element={<DeliveryReturn />} />
 						<Route path="/hakkimizda" element={<AboutUs />} />
-						<Route path="/iletisim"> {/* <-- Link to ContactUs */}
-							<Route path=":status" element={<ContactUs />} />{/* Handle optional status param like /iletisim/success */}
-							<Route path="" element={<ContactUs />} />{/* Default /iletisim route */}
-						</Route>
+						{/* // <-- YENİ: ÖBF için route ekle --> */}
+						<Route path="/on-bilgilendirme-formu" element={<PreInformationForm />} />
 
+						<Route path="/iletisim">
+							<Route path=":status" element={<ContactUs />} />
+							<Route path="" element={<ContactUs />} />
+						</Route>
 						{/* <Route path="*" element={<NotFound />} /> */}
 					</Routes>
 				</main>
 
-				{/* Footer class'ını koru */}
-				<footer className={styles.appFooter}> {/* Footer class'ını düzelt: appFooter olmalı */}
+				<footer className={styles.appFooter}>
 					<p>© {new Date().getFullYear()} Belge Hızlı. Tüm hakları saklıdır.</p>
-					{/* Mevcut nav/ul/li yapısını koru */}
 					<nav>
 						<ul>
 							<li><Link to="/gizlilik-politikasi">Gizlilik Politikası</Link></li>
 							<li><Link to="/kullanim-sartlari">Kullanım Şartları</Link></li>
 							<li><Link to="/teslimat-iade">Teslimat ve İade</Link></li>
+                            {/* // <-- YENİ: Footer'a ÖBF linki ekle (opsiyonel ama iyi olur) --> */}
+                            <li><Link to="/on-bilgilendirme-formu">Ön Bilgilendirme Formu</Link></li>
 						</ul>
 					</nav>
 				</footer>
 
-				{/* ---- YENİ: Çerez Onay Banner'ı ---- */}
 				<CookieConsent
-					location="bottom" // Banner'ın konumu (bottom, top, none)
-					buttonText="Kabul Et" // Kabul butonu metni
-					declineButtonText="Reddet" // Reddet butonu metni (opsiyonel, enableDeclineButton true ise)
-					cookieName="belgeHizliCookieConsent" // Tarayıcıda saklanacak cookie adı
-					style={{ background: "var(--gray-800)", color: "var(--gray-100)", fontSize: "14px" }} // Temel stil
+                    // ... (CookieConsent ayarları aynı kalır) ...
+					location="bottom"
+					buttonText="Kabul Et"
+					declineButtonText="Reddet"
+					cookieName="belgeHizliCookieConsent"
+					style={{ background: "var(--gray-800)", color: "var(--gray-100)", fontSize: "14px" }}
 					buttonStyle={{ color: "var(--gray-900)", background: "var(--gray-100)", fontSize: "13px", fontWeight: "bold", borderRadius: "5px", padding: "8px 15px" }}
 					declineButtonStyle={{ color: "#aaa", background: "#555", fontSize: "13px", borderRadius: "5px", padding: "8px 15px", marginLeft: "10px" }}
-					expires={150} // Cookie geçerlilik süresi (gün)
-					enableDeclineButton // Reddet butonunu aktif et
-				// onAccept={() => { // Kabul edildiğinde çalışacak fonksiyon (opsiyonel)
-				// alert("Çerezleri kabul ettiniz! Analitikler şimdi başlayabilir.");
-				// // Burada Google Analytics'i başlatma vb. kodlar olabilir
-				// }}
-				// onDecline={() => { // Reddedildiğinde çalışacak fonksiyon (opsiyonel)
-				// alert("Pazarlama/Analitik çerezleri reddettiniz.");
-				// }}
-				// debug={true} // Geliştirme sırasında test için her zaman gösterir
+					expires={150}
+					enableDeclineButton
 				>
 					Bu web sitesi, kullanıcı deneyimini geliştirmek ve site trafiğini analiz etmek için çerezleri kullanır. Zorunlu çerezler sitenin çalışması için gereklidir. Devam ederek veya "Kabul Et" butonuna tıklayarak tüm çerezleri kabul etmiş olursunuz. Daha fazla bilgi için{" "}
 					<Link to="/gizlilik-politikasi" style={{ color: "var(--secondary-color)", textDecoration: "underline" }}>
 						Gizlilik Politikamızı
 					</Link>{" "}
-					{/* İsterseniz buraya "Ayarlar" linki/butonu ekleyebilirsiniz */}
 				</CookieConsent>
-				{/* ---- YENİ SON ---- */}
-
 			</div>
 		</Router>
 	);
