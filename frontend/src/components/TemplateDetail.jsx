@@ -323,7 +323,7 @@ function TemplateDetail() {
                      </p>
                      {/* --- YENİ SON --- */}
 
-                     {/* Fatura Gerekliyse Bilgilendirme (Bu artık beta notu varken gereksiz olabilir, isterseniz kaldırabilirsiniz) */}
+                     {/* Fatura Gerekliyse Bilgilendirme (Beta notu varken gereksiz) */}
                      {/* {isBillingRequired && !isBillingInfoSaved && (
                          <p className={styles.billingRequiredNotice}>
                              ⚠️ Devam etmek için fatura bilgilerinizi girmeniz gerekmektedir.
