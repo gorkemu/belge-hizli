@@ -99,7 +99,7 @@
             6.1. Belirli şablonlardan PDF Belge oluşturma ve indirme hizmeti ücrete tabidir. Ücretler, ilgili şablonun sayfasında ve ödeme adımında açıkça belirtilir. Fiyatlara KDV dahildir.
           </p>
           <p className={styles.paragraph}>
-            6.2. Ödemeler, Site üzerinde belirtilen güvenli ödeme yöntemleriyle (Kred Kart, Banka Kartı vb.) yapılır. Kullanıcı, ödeme için verdiği bilgilerin doğru olduğunu kabul eder.
+            6.2. Ödemeler, Site üzerinde belirtilen güvenli ödeme yöntemleriyle (Kredi Kart, Banka Kartı vb.) yapılır. Kullanıcı, ödeme için verdiği bilgilerin doğru olduğunu kabul eder.
           </p>
           <p className={styles.paragraph}>
             6.3. Başarılı ödeme sonrası, oluşturulan PDF Belge indirmeye hazır hale gelir ve/veya Kullanıcının belirttiği e-posta adresine gönderilebilir.
