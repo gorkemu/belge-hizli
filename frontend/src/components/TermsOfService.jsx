@@ -99,7 +99,7 @@
             6.1. Belirli şablonlardan PDF Belge oluşturma ve indirme hizmeti ücrete tabidir. Ücretler, ilgili şablonun sayfasında ve ödeme adımında açıkça belirtilir. Fiyatlara KDV dahildir.
           </p>
           <p className={styles.paragraph}>
-            6.2. Ödemeler, Site üzerinde belirtilen yöntemlerle {/*(örn: Moka United aracılığıyla kredi kartı)*/} yapılır. Kullanıcı, ödeme için verdiği bilgilerin doğru olduğunu kabul eder.
+            6.2. Ödemeler, Site üzerinde belirtilen güvenli ödeme yöntemleriyle (Kred Kart, Banka Kartı vb.) yapılır. Kullanıcı, ödeme için verdiği bilgilerin doğru olduğunu kabul eder.
           </p>
           <p className={styles.paragraph}>
             6.3. Başarılı ödeme sonrası, oluşturulan PDF Belge indirmeye hazır hale gelir ve/veya Kullanıcının belirttiği e-posta adresine gönderilebilir.
@@ -134,7 +134,7 @@
   
           <h4 className={styles.articleTitle}>MADDE 10: UYGULANACAK HUKUK VE YETKİLİ MAHKEME</h4>
           <p className={styles.paragraph}>
-            İşbu Sözleşme'den doğacak ihtilaflarda Türk Hukuku uygulanacaktır. Tüketici sıfatına haiz Kullanıcılar için, uyuşmazlıkların çözümünde 6502 Sayılı Kanun ve ilgili yönetmelikler uyarınca Kullanıcının yerleşim yerindeki veya hizmeti satın aldığı yerdeki Tüketici Sorunları Hakem Heyetleri veya Tüketici Mahkemeleri yetkilidir. Tacir veya diğer Kullanıcılar için İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir. {/* VEYA Kendi şehrinizi yazın */}
+            İşbu Sözleşme'den doğacak ihtilaflarda Türk Hukuku uygulanacaktır. Tüketici sıfatına haiz Kullanıcılar için, uyuşmazlıkların çözümünde 6502 Sayılı Kanun ve ilgili yönetmelikler uyarınca Kullanıcının yerleşim yerindeki veya hizmeti satın aldığı yerdeki Tüketici Sorunları Hakem Heyetleri veya Tüketici Mahkemeleri yetkilidir. Tacir veya diğer Kullanıcılar için İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir. 
           </p>
   
           {/* Ayırıcı Çizgi */}
@@ -196,7 +196,7 @@
   
           <h4 className={styles.articleTitle}>MADDE 6: UYUŞMAZLIKLARIN ÇÖZÜMÜ</h4>
           <p className={styles.paragraph}>
-            İşbu Satış Sözleşmesi'nden doğabilecek ihtilaflarda, T.C. Gümrük ve Ticaret Bakanlığı'nca ilan edilen değere kadar Alıcı'nın yerleşim yerinin bulunduğu veya hizmeti satın aldığı yerdeki Tüketici Sorunları Hakem Heyetleri, bu değerin üzerindeki ihtilaflarda ise Tüketici Mahkemeleri yetkilidir. Tacir veya diğer Kullanıcılar için İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir. {/* VEYA Kendi şehrinizi yazın */}
+            İşbu Satış Sözleşmesi'nden doğabilecek ihtilaflarda, T.C. Gümrük ve Ticaret Bakanlığı'nca ilan edilen değere kadar Alıcı'nın yerleşim yerinin bulunduğu veya hizmeti satın aldığı yerdeki Tüketici Sorunları Hakem Heyetleri, bu değerin üzerindeki ihtilaflarda ise Tüketici Mahkemeleri yetkilidir. Tacir veya diğer Kullanıcılar için İstanbul (Çağlayan) Mahkemeleri ve İcra Daireleri yetkilidir. 
           </p>
   
           <h4 className={styles.articleTitle}>MADDE 7: BİLDİRİMLER VE DELİL SÖZLEŞMESİ</h4>

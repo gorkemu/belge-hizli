@@ -52,7 +52,9 @@ function PrivacyPolicy() {
       <ul className={styles.dataList}>
         <li><strong>Kimlik Bilgileri:</strong> Adınız, soyadınız (üyelik veya fatura için).</li>
         <li><strong>İletişim Bilgileri:</strong> E-posta adresiniz, telefon numaranız (gerekirse), adresiniz (fatura için).</li>
-        <li><strong>Kullanıcı İşlem Bilgileri:</strong> Üyelik bilgileriniz, doldurduğunuz formlara girdiğiniz veriler (sözleşme oluşturma amacıyla), satın aldığınız şablonlar, sipariş detayları, ödeme bilgileriniz (doğrudan tarafımızca saklanmaz, güvenli ödeme hizmeti sağlayıcısı aracılığıyla işlenir), indirdiğiniz belgeler.</li>
+        <li><strong>Fatura Bilgileri:</strong> Adınız, soyadınız, TC Kimlik Numaranız (gerçek kişi ise) veya Vergi Kimlik Numaranız ve Vergi Daireniz (tüzel kişi veya şahıs şirketi ise), adresiniz</li>
+        <li><strong>Kullanıcı İşlem Bilgileri:</strong> Üyelik bilgileriniz, doldurduğunuz formlara girdiğiniz veriler (sözleşme oluşturma amacıyla), satın aldığınız şablonlar, sipariş detayları, ödeme bilgileriniz (doğrudan tarafımızca saklanmaz, güvenli ödeme hizmeti sağlayıcısı (örneğin, ileride entegre edilecek ParamPOS gibi) aracılığıyla işlenir, indirdiğiniz belgeler.</li>
+        <li><strong>e-Fatura/e-Arşiv Fatura Hizmeti Sağlayıcıları:</strong> Yasal faturaların oluşturulması ve saklanması amacıyla anlaşmalı özel entegratör firmalara</li>
         <li><strong>İşlem Güvenliği Bilgileri:</strong> IP adresiniz, log kayıtları, parola ve şifre bilgileri (güvenli şekilde saklanır), çerezler aracılığıyla toplanan bilgiler.</li>
         <li><strong>Pazarlama Bilgileri (Açık rızanız ile):</strong> Çerez kayıtları, hedefleme bilgileri, alışkanlık ve beğenileri gösteren değerlendirmeler.</li>
       </ul>

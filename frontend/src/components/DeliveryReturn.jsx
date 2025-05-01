@@ -29,8 +29,7 @@ function DeliveryReturn() {
         <li>İhtiyacınıza uygun belge şablonunu seçin.</li>
         <li>Şablon detay sayfasındaki form alanlarını dikkatlice doldurun.</li>
         <li>Gerekli bilgileri girdikten sonra ödeme adımına geçin.</li>
-        <li>{/* Ödemeniz Moka United gibi güvenli ödeme altyapıları üzerinden başarıyla tamamlandıktan sonra, */}
-          Ödemeniz ödeme altyapıları üzerinden başarıyla tamamlandıktan sonra, girdiğiniz bilgilerle oluşturulan kişiselleştirilmiş PDF belgeniz indirilmeye hazır hale gelecektir.</li>
+        <li>Ödemeniz ödeme altyapıları üzerinden başarıyla tamamlandıktan sonra, girdiğiniz bilgilerle oluşturulan kişiselleştirilmiş PDF belgeniz indirilmeye hazır hale gelecektir.</li>
       </ol>
       <p className={styles.paragraph}>
         Teslimat, ödemenin başarıyla tamamlanmasının hemen ardından elektronik ortamda anında gerçekleşir.
