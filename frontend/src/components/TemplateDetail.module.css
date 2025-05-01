@@ -158,14 +158,6 @@ margin: 0 3px; /* Linklerin etrafına hafif boşluk */
 color: var(--secondary-color); /* Hover rengi */
 }
 
-
-/* Opsiyonel: Kabul edilmediğinde butonu daha soluk göstermek için */
-.disabledButton {
-background-color: var(--gray-400);
-cursor: not-allowed;
-opacity: 0.7;
-}
-
 /* Başarı ve hata mesajları için stiller zaten vardı, kontrol edelim */
 .successMessage {
 color: green;
@@ -184,4 +176,218 @@ font-size: 0.85rem;
 color: var(--secondary-color); /* veya başka bir dikkat çekici renk */
 margin-left: 5px;
 font-style: italic;
+}
+
+.billingFormContainer {
+  background-color: var(--gray-100); /* Hafif farklı bir arka plan */
+  padding: 25px;
+  margin-top: 30px; /* Üstteki içerikle arasına boşluk */
+  margin-bottom: 20px; /* Alttaki paymentSection ile arasına boşluk */
+  border-radius: 8px;
+  border: 1px solid var(--gray-300);
+}
+
+.billingTitle {
+  text-align: center;
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+}
+
+.billingDesc {
+    text-align: center;
+    color: var(--gray-600);
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+.billingRadioGroup {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* Seçenekler arası boşluk */
+  margin-bottom: 25px;
+}
+
+.billingRadioGroup label {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Radio buton ile metin arası boşluk */
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.billingRadioGroup input[type="radio"] {
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.billingInputGroup {
+  margin-bottom: 20px;
+}
+
+.billingInputGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--gray-700);
+  font-size: 0.9rem;
+}
+
+.billingInputGroup input[type="text"],
+.billingInputGroup input[type="email"],
+.billingInputGroup input[type="tel"],
+.billingInputGroup textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-400);
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Padding ve border genişliği etkilemesin */
+  transition: border-color 0.2s ease;
+}
+
+.billingInputGroup input:focus,
+.billingInputGroup textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2); /* Odaklanma efekti */
+}
+
+
+.billingInputGroup textarea {
+    resize: vertical; /* Sadece dikeyde boyutlandırma */
+    min-height: 80px;
+}
+
+.billingErrorText {
+  color: #dc3545; /* Kırmızı hata rengi */
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 4px;
+}
+
+.saveBillingButton {
+  display: block; /* Tam genişlik kaplaması için */
+  width: 100%;
+  padding: 12px 20px;
+  background-color: var(--secondary-color); /* Farklı bir renk */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 25px; /* Üstteki alanla boşluk */
+  transition: background-color 0.2s ease;
+}
+
+.saveBillingButton:hover {
+  background-color: #5a6268; /* Hover rengi */
+}
+
+/* Fatura Formu Aç/Kapa Butonu Alanı */
+.billingToggleSection {
+  margin-top: 25px;
+  text-align: center; /* Butonu ortala */
+  margin-bottom: 15px; /* Fatura formu veya paymentSection ile araya boşluk */
+}
+
+.toggleBillingButton {
+  background-color: var(--gray-200); /* Daha nötr bir renk */
+  color: var(--gray-800);
+  border: 1px solid var(--gray-400);
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.toggleBillingButton:hover {
+  background-color: var(--gray-300);
+  border-color: var(--gray-500);
+}
+
+.savedIndicator {
+  color: green;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* Fatura Zorunlu Bildirimi */
+/*
+.billingRequiredNotice {
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+*/
+
+/* Fatura Kaydetme Başarı Mesajı */
+.billingSuccessMessage {
+color: #155724; /* Yeşil başarı rengi */
+background-color: #d4edda;
+border: 1px solid #c3e6cb;
+padding: 10px;
+margin-top: 15px; /* Kaydet butonu ile arasına boşluk */
+border-radius: 4px;
+text-align: center;
+font-size: 0.9rem;
+font-weight: bold;
+}
+
+/* Genel Hata Mesajı (Butonun Üstünde) */
+.paymentError {
+color: #dc3545; /* Kırmızı hata rengi */
+background-color: #f8d7da;
+border: 1px solid #f5c6cb;
+padding: 10px 15px; /* Biraz daha dolgun */
+margin-bottom: 15px; /* Altındaki butonla araya boşluk */
+border-radius: 5px;
+text-align: center;
+font-size: 0.95rem; /* Biraz daha belirgin */
+}
+
+/* Buton Disabled Stili (Zaten varsa üzerine yazabilir veya kontrol edebilirsiniz) */
+.disabledButton {
+background-color: var(--gray-400) !important; /* Daha belirgin */
+cursor: not-allowed !important;
+opacity: 0.6 !important;
+}
+
+/* Input odaklanma efekti (billingFormContainer içindeki input/textarea için) */
+.billingInputGroup input:focus,
+.billingInputGroup textarea:focus {
+outline: none;
+border-color: var(--primary-color);
+box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15); /* Hafif büyüttük */
+}
+
+/* Fatura Beta Bilgilendirme Notu */
+.billingBetaNotice {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  background-color: var(--gray-100); /* Hafif gri arka plan */
+  border: 1px dashed var(--gray-400); /* Kesikli kenarlık */
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px; /* Buton ile arasına boşluk */
+  display: inline-block; /* İçeriğe göre genişlesin */
+  max-width: 90%; /* Çok uzunsa taşmasın */
+}
+
+/* Buton ve Notun olduğu alan */
+.billingToggleSection {
+  margin-top: 25px;
+  text-align: center;
+  margin-bottom: 15px;
+  /* Gerekirse padding eklenebilir */
+  padding: 10px;
+  background-color: #f8f9fa; /* Hafif bir arka plan */
+  border-radius: 5px;
 }
