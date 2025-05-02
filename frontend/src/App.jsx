@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import CookieConsent from "react-cookie-consent";
 import styles from './App.module.css';
+import { Helmet } from 'react-helmet-async'; // <-- YENİ: Helmet import edildi
 
 // Bileşenleri import et
 import HomePage from './components/HomePage';
@@ -17,6 +18,27 @@ import PreInformationForm from './components/PreInformationForm'; // <-- YENİ: 
 function App() {
 	return (
 		<Router>
+			{/* --- Favicon ve Diğer Site Geneli Head Etiketleri --- */}
+			{/* HelmetProvider'ın App'i sarmaladığını varsayarak Helmet'i burada kullanıyoruz */}
+			<Helmet> {/* <-- YENİ: Helmet bileşeni başladı */}
+				{/* Favicon üretecinden aldığın link etiketleri buraya kopyalandı */}
+				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+				<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+				<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+				<link rel="manifest" href="/site.webmanifest" />
+				{/* --- Favicon Linkleri Sonu --- */}
+
+				{/*
+                Eğer robots veya language gibi site genelini ilgilendiren başka meta etiketler varsa
+                onları da buraya ekleyebilirsin. Ancak şablon detay sayfasındaki gibi
+                sayfaya özel title, description gibi etiketler ilgili sayfa bileşeninin
+                kendi Helmet'inde kalmalıdır.
+                */}
+
+			</Helmet> {/* <-- YENİ: Helmet bileşeni bitti */}
+			{/* --- Head Etiketleri Sonu --- */}
+
+
 			<div className={styles.appContainer}>
 				<header className={styles.appHeader}>
 					<Link to="/" className={styles.logo}>
@@ -59,14 +81,14 @@ function App() {
 							<li><Link to="/gizlilik-politikasi">Gizlilik Politikası</Link></li>
 							<li><Link to="/kullanim-sartlari">Kullanım Şartları</Link></li>
 							<li><Link to="/teslimat-iade">Teslimat ve İade</Link></li>
-                            {/* // <-- YENİ: Footer'a ÖBF linki ekle (opsiyonel ama iyi olur) --> */}
-                            <li><Link to="/on-bilgilendirme-formu">Ön Bilgilendirme Formu</Link></li>
+							{/* // <-- YENİ: Footer'a ÖBF linki ekle (opsiyonel ama iyi olur) --> */}
+							<li><Link to="/on-bilgilendirme-formu">Ön Bilgilendirme Formu</Link></li>
 						</ul>
 					</nav>
 				</footer>
 
 				<CookieConsent
-                    // ... (CookieConsent ayarları aynı kalır) ...
+					// ... (CookieConsent ayarları aynı kalır) ...
 					location="bottom"
 					buttonText="Kabul Et"
 					declineButtonText="Reddet"
@@ -81,6 +103,7 @@ function App() {
 					<Link to="/gizlilik-politikasi" style={{ color: "var(--secondary-color)", textDecoration: "underline" }}>
 						Gizlilik Politikamızı
 					</Link>{" "}
+					okuyun.
 				</CookieConsent>
 			</div>
 		</Router>
