@@ -97,3 +97,33 @@
   .container a:hover {
     color: var(--secondary-color);
   }
+
+  /* Önemli Notlar */
+.importantNote,
+.warningNote {
+  margin-top: 1.5rem;
+  margin-bottom: 1.2rem;
+  padding: 1rem;
+  background-color: var(--gray-100);
+  border-left: 4px solid var(--secondary-color); /* importantNote mavi */
+  font-size: 0.95rem;
+}
+
+.warningNote {
+  border-left-color: #dc3545; /* warningNote kırmızı (Bootstrap danger rengi) */
+}
+
+.importantNote strong,
+.warningNote strong {
+  font-weight: 600;
+}
+.importantNote strong { color: var(--secondary-color); }
+.warningNote strong { color: #dc3545; }
+
+
+/* Ayırıcı Çizgi */
+.separator {
+  border: none;
+  border-top: 2px solid var(--gray-300);
+  margin: 3rem 0; /* Üst ve alt boşluğu artıralım */
+}

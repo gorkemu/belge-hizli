@@ -103,3 +103,22 @@
   border-left: 4px solid var(--secondary-color); /* importantNote mavi */
   font-size: 0.95rem;
 }
+
+.warningNote {
+  border-left-color: #dc3545; /* warningNote kırmızı (Bootstrap danger rengi) */
+}
+
+.importantNote strong,
+.warningNote strong {
+  font-weight: 600;
+}
+.importantNote strong { color: var(--secondary-color); }
+.warningNote strong { color: #dc3545; }
+
+
+/* Ayırıcı Çizgi */
+.separator {
+  border: none;
+  border-top: 2px solid var(--gray-300);
+  margin: 3rem 0; /* Üst ve alt boşluğu artıralım */
+}

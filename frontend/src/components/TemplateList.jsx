@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import styles from './TemplateList.module.css';
-// import { Helmet } from 'react-helmet-async'; // Helmet'i ileriki adımda ekleyeceğiz
+import { Helmet } from 'react-helmet-async'; // <-- YENİ: Helmet import edildi
 
 // API Base URL'i backend rotası ile tutarlı olmalı
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'; // <-- Port 5001 olarak varsayıldı, backend'e göre ayarlayın
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
 // Basit ikon yer tutucusu (opsiyonel, kaldırılabilir)
 // const IconPlaceholder = ({ label }) => <div className={styles.stepIcon}>{label}</div>; // Kullanılmadığı için yorum satırı
@@ -26,6 +26,7 @@ function TemplateList() {
 				setLoading(false);
 			})
 			.catch(error => {
+				// console.error kaldırıldı - Hata bilgisi sadece developer için gerekli
 				// console.error('Error fetching templates:', error);
 				// Kullanıcıya daha anlamlı hata mesajı gösterebiliriz
 				let errorMessage = 'Şablonlar yüklenirken bir hata oluştu.';
@@ -60,17 +61,20 @@ function TemplateList() {
 
 	return (
 		<> {/* Fragment */}
-			{/* ---- Sayfa Başlığı ve Meta Etiketleri ---- */}
-			{/* Helmet kullanımı için bu etiketleri bir sonraki adımda Helmet bileşeni içine taşıyacağız. */}
-			<title>Tüm Şablonlar - Belge Hızlı | Online Sözleşme Oluştur</title>
-			<meta name="description" content="Kira sözleşmesi, iş sözleşmesi, freelancer anlaşması, dilekçe ve daha birçok hazır belge şablonu Belge Hızlı'da. Hemen seçin, doldurun, indirin." />
-			<link rel="canonical" href="https://www.belgehizli.com/sablonlar" /> {/* <-- Canonical URL güncellendi */}
+			{/* ---- Helmet ile Sayfa Başlığı ve Meta Etiketleri ---- */}
+			{/* Daha önceki doğrudan <title>, <meta>, <link> etiketleri Helmet içine taşındı */}
+			<Helmet> {/* <-- YENİ: Helmet bileşeni başladı */}
+				<title>Tüm Şablonlar - Belge Hızlı | Online Sözleşme Oluştur</title>
+				<meta name="description" content="Kira sözleşmesi, iş sözleşmesi, freelancer anlaşması, dilekçe ve daha birçok hazır belge şablonu Belge Hızlı'da. Hemen seçin, doldurun, indirin." />
+				<link rel="canonical" href="https://www.belgehizli.com/sablonlar" />
+			</Helmet> {/* <-- YENİ: Helmet bileşeni bitti */}
 			{/* ---- Etiketler Sonu ---- */}
 
 			<div className={styles.listPageContainer}>
 				{/* Bil bilgilendirme Bölümü */}
 				<div className={styles.listHeader}>
-					<h2>Belgenizi Kolayca Oluşturun</h2>
+					{/* Ana başlık H1 olarak güncellendi */}
+					<h1 className={styles.sectionTitle}>Belgenizi Kolayca Oluşturun</h1> {/* <-- GÜNCELLENDİ: H2 yerine H1 */}
 					<p>İhtiyacınız olan şablonu seçin, formu doldurun ve PDF olarak anında indirin.</p>
 					<p className={styles.disclaimer}>
 						Şablonlarımız genel kullanıma uygundur, özel durumlar için profesyonel danışmanlık almanız önerilir.
@@ -104,6 +108,7 @@ function TemplateList() {
 									/>
 								</div>
 								<div className={styles.cardContent}>
+									{/* Şablon kart başlıkları h3 olarak doğru kullanılmış */}
 									<h3 className={styles.cardTitle}>{template.name}</h3>
 									<p className={styles.cardDescription}>{template.description}</p>
 								</div>
