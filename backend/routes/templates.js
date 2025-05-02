@@ -290,6 +290,8 @@ router.get('/sitemap.xml', async (req, res) => {
             { loc: 'https://www.belgehizli.com/gizlilik-politikasi', changefreq: 'monthly', priority: '0.5' },
             { loc: 'https://www.belgehizli.com/kullanim-sartlari', changefreq: 'monthly', priority: '0.5' },
             { loc: 'https://www.belgehizli.com/teslimat-iade', changefreq: 'monthly', priority: '0.5' },
+            { loc: 'https://www.belgehizli.com/on-bilgilendirme-formu', changefreq: 'monthly', priority: '0.5' },
+
             // Gelecekte eklenebilecek diğer statik sayfalar buraya eklenecek
         ];
 
