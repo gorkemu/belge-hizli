@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import CookieConsent from "react-cookie-consent";
 import styles from './App.module.css';
-import { Helmet } from 'react-helmet-async'; // <-- YENİ: Helmet import edildi
+import { Helmet } from 'react-helmet-async'; 
+import NotFound from './components/NotFound';
+
 
 // Bileşenleri import et
 import HomePage from './components/HomePage';
@@ -13,7 +15,7 @@ import ContactUs from './components/ContactUs';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import DeliveryReturn from './components/DeliveryReturn';
-import PreInformationForm from './components/PreInformationForm'; // <-- YENİ: ÖBF component'ini import et
+import PreInformationForm from './components/PreInformationForm'; 
 
 function App() {
 	return (
@@ -70,7 +72,7 @@ function App() {
 							<Route path=":status" element={<ContactUs />} />
 							<Route path="" element={<ContactUs />} />
 						</Route>
-						{/* <Route path="*" element={<NotFound />} /> */}
+						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</main>
 
