@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Template = require('../models/template'); // Template modeli gerekli
+const Template = require('../models/template'); 
+const Transaction = require('../models/transaction'); // <-- YENİ: Transaction modelini import et
+const Invoice = require('../models/invoice');       // <-- YENİ: Invoice modelini import et
 const { generatePdf } = require('../pdf-generator/pdfGenerator');
 const { sendPdfEmail } = require('../utils/mailer');
 const path = require('path');
@@ -72,7 +74,6 @@ try {
     console.warn('UYARI: PDF stilleri yüklenemedi. PDF\'ler varsayılan stillerle oluşturulacak.');
 }
 // --- CSS Yükleme Sonu ---
-
 
 // --- Eski ID - Slug Eşleme Dosyasını Yükle ---
 // Dosyanın backend ana dizininde olduğunu varsayarız.
@@ -184,14 +185,14 @@ router.get('/templates/:id', async (req, res) => {
 });
 // --- 301 YÖNLENDİRME LOGİĞİ SONU ---
 
-
-
-// Ödeme işlemi ve PDF oluşturma (Path şimdilik eski kaldı)
+// --- GÜNCELLENDİ: Ödeme işlemi, PDF oluşturma ve KAYIT (Path templates olarak kaldı, sablonlar yerine) ---
 router.post('/templates/:id/process-payment', async (req, res) => {
     let pdfBuffer = null;
     let template = null;
     let safeFilename = 'document.pdf';
     let userEmail = null;
+    let newTransaction = null; // <-- YENİ: Transaction objesini tutmak için
+    let newInvoice = null;     // <-- YENİ: Invoice objesini tutmak için
 
     try {
         template = await Template.findById(req.params.id);
@@ -199,76 +200,186 @@ router.post('/templates/:id/process-payment', async (req, res) => {
             return res.status(404).json({ message: 'Şablon bulunamadı' });
         }
 
-        const { formData, amount, currency } = req.body;
-        userEmail = formData?.belge_email || null;
+        // --- YENİ: Request body'den billingInfo'yu da al ---
+        const { formData, billingInfo, amount, currency } = req.body;
+        // --- YENİ SON ---
+
+        userEmail = billingInfo?.email || formData?.belge_email || null; // Fatura emailini önceliklendir
 
         if (!userEmail) {
-            console.warn(`PDF e-posta ile gönderilemedi: Şablon "${template.name || 'Unknown'}" için formda e-posta alanı bulunamadı veya boş.`);
+            console.warn(`İşlem kaydedilemedi veya e-posta gönderilemedi: Şablon "${template.name || 'Unknown'}" için formda veya fatura bilgisinde e-posta alanı bulunamadı veya boş.`);
+            // E-posta olmadan devam etmek istemeyebiliriz, bu durumda hata dönebiliriz:
+            // return res.status(400).json({ message: 'Geçerli bir e-posta adresi sağlanmalıdır.' });
         }
 
+        // --- YENİ: İşlemi veritabanında başlat (henüz PDF/email yok) ---
+        newTransaction = new Transaction({
+            templateId: template._id,
+            templateName: template.name || 'İsimsiz Şablon',
+            userEmail: userEmail || 'unknown@example.com', // E-posta yoksa bile kaydetmek için placeholder
+            status: 'initiated', // Başlangıç durumu
+            amount: amount || template.price || 0,
+            currency: currency || 'TRY',
+        });
+        await newTransaction.save();
+        console.log(`Transaction ${newTransaction._id} initiated for template: ${template.name || 'Unknown'}.`);
+        // --- YENİ SON ---
+
+        // PDF Oluşturma
         const compiledTemplate = Handlebars.compile(template.content || '');
         const htmlContent = compiledTemplate(formData);
-
         const fullHtml = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8" />
-                <title>${template.name || 'Document'}</title>
-                ${pdfStyles} </head>
-            <body>
-                <div>${htmlContent}</div>
-            </body>
-            </html>`;
+            <!DOCTYPE html><html><head><meta charset="utf-8" /><title>${template.name || 'Document'}</title>${pdfStyles}</head>
+            <body><div>${htmlContent}</div></body></html>`;
 
-        console.log(`Generating PDF buffer for template: ${template.name || 'Unknown'}...`);
+        console.log(`Generating PDF buffer for transaction ${newTransaction._id}...`);
         pdfBuffer = await generatePdf(fullHtml);
-        console.log(`PDF buffer generated successfully for template: ${template.name || 'Unknown'}.`);
+        newTransaction.status = 'pdf_generated'; // Durumu güncelle
+        await newTransaction.save();
+        console.log(`PDF buffer generated for transaction ${newTransaction._id}.`);
 
-        const paymentSuccessful = true;
+        // Ödeme Simülasyonu (şimdilik hep başarılı)
+        const paymentSuccessful = true; // Gerçek entegrasyonda burası değişecek
         if (!paymentSuccessful) {
-            console.error(`Ödeme işlemi başarısız (simülasyon) for template: ${template.name || 'Unknown'}.`);
+            newTransaction.status = 'failed';
+            newTransaction.errorMessage = 'Ödeme işlemi başarısız (simülasyon)';
+            await newTransaction.save();
+            console.error(`Payment failed (simulated) for transaction ${newTransaction._id}.`);
             return res.status(402).json({ message: 'Ödeme işlemi başarısız oldu.' });
         }
-        console.log(`Payment successful (simulated) for template: ${template.name || 'Unknown'}.`);
+        // Ödeme başarılıysa paymentGatewayRef vb. güncellenebilir
+        console.log(`Payment successful (simulated) for transaction ${newTransaction._id}.`);
 
         safeFilename = turkceToLatin(template.name || 'Belge') + '.pdf';
 
+        // E-posta Gönderimi (Asenkron devam eder, sonucunu beklemeden yanıt dönebiliriz)
         if (userEmail && pdfBuffer) {
             const emailSubject = `Belge Hızlı - ${template.name || 'Belge'} Belgeniz`;
             const emailHtml = `<p>Merhaba,</p><p>Belge Hızlı platformunu kullanarak oluşturduğunuz <strong>${template.name || 'Belge'}</strong> belgesi ektedir.</p><p>İyi günlerde kullanın!</p><br><p>Saygılarımızla,<br>Belge Hızlı Ekibi</p>`;
             const emailText = `Merhaba,\n\nBelge Hızlı platformunu kullanarak oluşturduğunuz ${template.name || 'Belge'} belgesi ektedir.\n\nİyi günlerde kullanın!\n\nSaygılarımızla,\nBelge Hızlı Ekibi`;
 
-            console.log(`Initiating PDF email dispatch for template: ${template.name || 'Unknown Template'}`);
-
+            console.log(`Initiating PDF email dispatch for transaction ${newTransaction._id}`);
             sendPdfEmail(userEmail, emailSubject, emailText, emailHtml, pdfBuffer, safeFilename)
-                .then(() => console.log(`PDF email dispatch initiated successfully for template: ${template.name || 'Unknown Template'}.`))
-                .catch(emailError => console.error(`Error initiating PDF email dispatch for template: ${template.name || 'Unknown Template'}:`, emailError));
+                .then(async () => {
+                     console.log(`PDF email dispatch successful for transaction ${newTransaction._id}.`);
+                     // E-posta başarıyla gönderildiyse transaction durumunu güncelle
+                     try {
+                         const trans = await Transaction.findById(newTransaction._id);
+                         if (trans && trans.status !== 'completed' && trans.status !== 'failed') {
+                            trans.status = 'email_sent';
+                            // Eğer fatura da yoksa veya başarısızsa burayı 'completed' yapabiliriz.
+                            // Şimdilik sadece email durumunu güncelleyelim.
+                            await trans.save();
+                         }
+                     } catch (dbError) {
+                         console.error(`Error updating transaction status after email success for ${newTransaction._id}:`, dbError);
+                     }
+                 })
+                .catch(async (emailError) => {
+                    console.error(`Error during PDF email dispatch for transaction ${newTransaction._id}:`, emailError);
+                     // E-posta hatası durumunda transaction'a not düş
+                     try {
+                         const trans = await Transaction.findById(newTransaction._id);
+                         if (trans) {
+                             trans.errorMessage = (trans.errorMessage ? trans.errorMessage + '; ' : '') + 'E-posta gönderim hatası: ' + emailError.message;
+                             // Durumu 'failed' yapmak yerine belki 'completed_with_email_error' gibi bir durum eklenebilir.
+                             await trans.save();
+                         }
+                     } catch (dbError) {
+                          console.error(`Error updating transaction status after email failure for ${newTransaction._id}:`, dbError);
+                     }
+                });
 
-        } else if (pdfBuffer) {
-             console.log(`PDF email skipped for template: ${template.name || 'Unknown Template'} (no email provided or PDF missing).`);
         } else {
-             console.error(`PDF buffer was not created for template: ${template.name || 'Unknown Template'}. Cannot send email or file.`);
+            console.log(`PDF email skipped for transaction ${newTransaction._id} (no email provided or PDF missing).`);
         }
 
-        if (paymentSuccessful && pdfBuffer) {
-             console.log(`Sending PDF response to client for template: ${template.name || 'Unknown'}...`);
-             res.setHeader('Content-Type', 'application/pdf');
-             res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
-             res.send(pdfBuffer);
-             console.log(`PDF response sent for template: ${template.name || 'Unknown'}.`);
+        // --- YENİ: Fatura Bilgisi Geldiyse Fatura Kaydı Oluştur ---
+        if (billingInfo && Object.keys(billingInfo).length > 0 && userEmail) { // billingInfo null değilse ve e-posta varsa
+            try {
+                console.log(`Creating invoice record for transaction ${newTransaction._id}...`);
+                newInvoice = new Invoice({
+                    transactionId: newTransaction._id,
+                    templateName: template.name || 'İsimsiz Şablon',
+                    status: 'pending_creation', // Başlangıç durumu
+                    amount: amount || template.price || 0,
+                    currency: currency || 'TRY',
+                    billingType: billingInfo.billingType,
+                    // Fatura bilgilerini billingInfo objesinden al
+                    customerName: billingInfo.billingType === 'bireysel' ? billingInfo.name : undefined,
+                    customerTckn: billingInfo.billingType === 'bireysel' ? billingInfo.tckn : undefined,
+                    companyName: billingInfo.billingType === 'kurumsal' ? billingInfo.companyName : undefined,
+                    taxOffice: billingInfo.billingType === 'kurumsal' ? billingInfo.taxOffice : undefined,
+                    taxId: billingInfo.billingType === 'kurumsal' ? billingInfo.vkn : undefined,
+                    customerAddress: billingInfo.address,
+                    customerEmail: billingInfo.email,
+                });
+                await newInvoice.save();
+                console.log(`Invoice ${newInvoice._id} created for transaction ${newTransaction._id}.`);
+
+                // Transaction kaydını fatura ID'si ile güncelle
+                newTransaction.invoiceId = newInvoice._id;
+                await newTransaction.save();
+
+                // TODO: Burada asenkron olarak fatura oluşturma servisini (entegratör API) çağırabiliriz.
+                // Bu servis başarılı olursa Invoice status'u 'created', 'sent' vb. olarak güncellenir.
+                // Hata olursa status 'creation_failed' ve errorMessage set edilir.
+                // Şimdilik sadece kaydı oluşturuyoruz.
+
+            } catch (invoiceError) {
+                console.error(`Error creating invoice record for transaction ${newTransaction._id}:`, invoiceError);
+                // Fatura kaydı hatası olursa transaction'a not düşülebilir.
+                newTransaction.errorMessage = (newTransaction.errorMessage ? newTransaction.errorMessage + '; ' : '') + 'Fatura kaydı oluşturma hatası: ' + invoiceError.message;
+                await newTransaction.save();
+                // İşleme devam et, PDF yine de gönderilsin. Fatura manuel oluşturulabilir.
+            }
+        } else {
+             console.log(`Invoice creation skipped for transaction ${newTransaction._id} (no billing info provided).`);
+        }
+        // --- YENİ SON ---
+
+
+        // İşlem tamamlandı durumunu ayarla (eğer başka bir hata olmadıysa)
+        if (newTransaction.status !== 'failed' && !newTransaction.errorMessage) {
+             newTransaction.status = 'completed';
+             await newTransaction.save();
+        }
+
+        // PDF'i kullanıcıya gönder (Başarılıysa)
+        if (pdfBuffer) {
+            console.log(`Sending PDF response to client for transaction ${newTransaction._id}...`);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
+            res.send(pdfBuffer);
+            console.log(`PDF response sent for transaction ${newTransaction._id}.`);
         } else if (!res.headersSent) {
-             console.error(`Could not send PDF response for template: ${template.name || 'Unknown'}. Payment successful: ${paymentSuccessful}, PDF Buffer exists: ${!!pdfBuffer}.`);
-             res.status(500).json({ message: 'PDF oluşturulamadı veya ödeme başarısız oldu.' });
+             // PDF buffer yoksa ciddi bir sorun var demektir.
+             console.error(`Could not send PDF response for transaction ${newTransaction._id}. PDF Buffer does not exist.`);
+             newTransaction.status = 'failed';
+             newTransaction.errorMessage = (newTransaction.errorMessage ? newTransaction.errorMessage + '; ' : '') + 'PDF Buffer oluşturulamadı.';
+             await newTransaction.save();
+             res.status(500).json({ message: 'PDF oluşturulamadı.' });
         }
 
     } catch (error) {
-        console.error(`An error occurred during payment process/PDF generation for template: ${template?.name || 'Unknown'}:`, error);
+        console.error(`An error occurred during process for transaction ${newTransaction?._id || 'N/A'} (Template: ${template?.name || 'Unknown'}):`, error);
+        // Eğer transaction başlatıldıysa durumu 'failed' yap
+        if (newTransaction && newTransaction._id && newTransaction.status !== 'failed') {
+            try {
+                 newTransaction.status = 'failed';
+                 newTransaction.errorMessage = (newTransaction.errorMessage ? newTransaction.errorMessage + '; ' : '') + 'Genel İşlem Hatası: ' + error.message;
+                 await newTransaction.save();
+            } catch (dbError) {
+                 console.error(`Error updating transaction status to failed for ${newTransaction._id}:`, dbError);
+            }
+        }
+        // Yanıt gönderilmediyse hata gönder
         if (!res.headersSent) {
-            res.status(500).json({ message: error.message || 'PDF oluşturma veya e-posta gönderimi sırasında bir sunucu hatası oluştu.' });
+            res.status(500).json({ message: error.message || 'Belge işlenirken bir sunucu hatası oluştu.' });
         }
     }
 });
+// --- GÜNCELLENDİ SON ---
 
 
 
