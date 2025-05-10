@@ -1,26 +1,28 @@
 # Contract-Generator (Belge Hızlı)
 
-A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system dynamically creates forms (including repeatable sections and conditional fields) and previews based on the template structure stored in MongoDB, utilizes an external service for PDF generation, requires user consent for legal terms, allows optional collection of billing information, and delivers the final document via direct download and email.
+A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system dynamically creates forms, requires user consent for legal terms, allows optional collection of billing information, generates PDFs via an external service, delivers them via download/email, and **records transaction & basic invoice data on the backend.**
 
 ## ✨ Core Features
 
-*   **Dynamic Templates:** New contract/document types can be added to the system simply by adding new template documents to MongoDB, without requiring code changes.
+*   **Dynamic Templates:** Add new contract/document types to MongoDB without code changes.
 *   **Dynamic & Advanced Form Generation:**
-    *   Automatically generates UI forms based on the template's `fields` array.
-    *   **Repeatable Blocks:** Supports adding or removing multiple instances of a group of fields (e.g., multiple tenants, partners, items) using the `repeatable` fieldType.
-    *   **Conditional Fields:** Intelligently shows or hides relevant fields based on user selections in other fields.
-*   **Live Preview:** A real-time preview updates as the user fills out the form, reflecting the final document structure (using Handlebars.js with consistent **Inter font and dd.mm.yyyy date format**).
-*   **Template Search:** Users can easily search through templates by name or description.
-*   **Modern Template List UI:** Features a clean grid layout with template preview images, hover effects, and search functionality.
-*   **Form Validation:** Performs validation for required fields, including those within repeatable blocks. Field-specific errors are shown below the inputs.
-*   **Legal Consent:** Requires users to explicitly agree to the Pre-Information Form and Terms of Service (Distance Sales Contract) via a checkbox before proceeding.
-*   **Optional Billing Information:** Provides a form to collect billing details (Individual/Corporate, TCKN/VKN, Address, etc.) necessary for future invoicing. **(Currently optional during the beta phase).**
-*   **User-Friendly Error Handling:** Displays clear, non-disappearing error messages for validation or submission issues instead of alerts.
-*   **PDF Generation (External):** Leverages the Browserless.io API to generate PDF documents with embedded **Inter font and formatted dates (dd.mm.yyyy)**.
-*   **Document Delivery:** Offers direct download and automatic email delivery of the generated PDF.
-*   **Cookie Consent Banner:** Informs users about cookie usage and collects consent.
-*   **Custom Domain & SSL:** Hosted on `belgehizli.com` with automatic SSL.
-*   **Static Pages:** Provides essential informational and legal pages (Privacy Policy, Terms/DSC, Delivery/Return, Pre-Information Form).
+    *   Auto-generates UI forms from template definitions.
+    *   **Repeatable Blocks:** Supports multiple instances of field groups.
+    *   **Conditional Fields:** Shows/hides fields based on user selections.
+*   **Live Preview:** Real-time preview updates with **Inter font and dd.mm.yyyy date format**.
+*   **Template Search & Modern List UI:** Easy searching with a clean grid layout.
+*   **Form Validation:** Validates required fields, showing field-specific errors.
+*   **Legal Consent:** Requires explicit user agreement to Pre-Information Form and Terms of Service (Distance Sales Contract) before proceeding.
+*   **Optional Billing Information:** A form to collect billing details (Individual/Corporate, TCKN/VKN, Address, etc.). **(Currently optional during beta).**
+*   **User-Friendly Error Handling:** Clear, non-disappearing error messages.
+*   **PDF Generation (External):** Uses Browserless.io API for PDF creation with embedded **Inter font and dd.mm.yyyy dates**.
+*   **Document Delivery:** Direct download and automatic email delivery of the PDF.
+*   **Backend Transaction & Invoice Recording:**
+    *   Creates a `Transaction` record in MongoDB for every document generation attempt, tracking its status (e.g., PDF generated, email sent).
+    *   If billing information is provided by the user, an `Invoice` record (with basic details) is created and linked to the transaction.
+*   **Cookie Consent Banner:** Collects user consent for cookie usage.
+*   **Custom Domain & SSL:** Hosted on `belgehizli.com` with SSL.
+*   **Static Pages:** Essential informational and legal pages.
 
 ## 🛠️ Technology Stack
 
@@ -49,10 +51,10 @@ Add new templates directly to the MongoDB `templates` collection. Key fields: `n
 ## 🔮 Future Enhancements
 
 *   Real payment system integration (ParamPOS, etc.).
-*   Backend logic for storing consent logs, transaction data, and billing information.
-*   e-Invoice integration.
+*   Backend logic for storing detailed consent logs.
+*   Full e-Invoice integration using the created `Invoice` records.
 *   User accounts & document management.
-*   Admin panel for template management.
+*   Admin panel for template and transaction/invoice management.
 *   Increased test coverage.
 
 ## 🤝 Contributing
