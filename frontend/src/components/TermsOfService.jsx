@@ -8,7 +8,7 @@ function TermsOfService() {
 	const ownerName = "Abdurrahman Görkem Ünal"; 
 	const address = "Gülbahar Mah. Kurtuluş 1 Sk. No: 15 İç Kapı No:10 Şişli / İSTANBUL"; 
 	const email = "info@belgehizli.com"; 
-	const lastUpdateDate = "02.05.2025"; // Son güncelleme tarihi
+	const lastUpdateDate = "21.05.2025"; // Son güncelleme tarihi
 	const siteUrl = "https://www.belgehizli.com/"; 
 	const phone = "05530968833"; 
 
