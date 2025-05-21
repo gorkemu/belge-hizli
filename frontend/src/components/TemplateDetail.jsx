@@ -11,6 +11,16 @@ const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const validateTCKN = (tckn) => /^[1-9]{1}[0-9]{9}[02468]{1}$/.test(tckn) && tckn.length === 11;
 const validateVKN = (vkn) => /^[0-9]{10}$/.test(vkn);
 
+// --- Onaylanan Belge Versiyonları ---
+// Bu değerleri, /public/legal_versions/ altındaki dosyalarının
+// versiyon/tarih bilgileriyle eşleştir.
+const KULLANIM_SARTLARI_CURRENT_VERSION = "v_20250521"; // Örnek: kullanim_sartlari_v_20250521.html
+const ON_BILGILENDIRME_FORMU_CURRENT_VERSION = "v_20250521"; // Örnek: on_bilgilendirme_formu_v_20250521.html
+
+// Backend'e gönderilecek birleşik versiyon string'i
+const COMBINED_LEGAL_DOC_VERSION = `KSTerms:${KULLANIM_SARTLARI_CURRENT_VERSION}_OBFTerms:${ON_BILGILENDIRME_FORMU_CURRENT_VERSION}`;
+// Bu string şöyle görünecek: "KSTerms:v_20250521_OBFTerms:v_20250521"
+
 function TemplateDetail() {
 	const { slug } = useParams();
 	const navigate = useNavigate();
@@ -76,7 +86,7 @@ function TemplateDetail() {
 			});
 	}, [slug]);
 
-	// --- GÜNCELLENDİ: Belge formu değişikliklerini işle ---
+	// --- Belge formu değişikliklerini işle ---
 	const handleFormChange = (newFormData, errors) => {
 		setFormData(newFormData);
 		setFormErrors(errors); // DocumentForm'dan gelen alan bazlı hataları set et
@@ -84,7 +94,6 @@ function TemplateDetail() {
 		// Gönderim hatası ancak yeni bir gönderme denemesi başarılı olduğunda veya
 		// kullanıcı şartları kabul etme gibi başka bir eylemle hatayı geçersiz kıldığında temizlenmeli.
 	};
-	// --- GÜNCELLENDİ SON ---
 
 	const handleBillingInputChange = (e) => {
 		const { name, value } = e.target;
@@ -113,7 +122,6 @@ function TemplateDetail() {
 	};
 
 	const validateBillingForm = () => {
-		// ... (Validasyon mantığı aynı kalır, telefon kontrolü yok) ...
 		const errors = {};
 		if (billingType === 'bireysel') {
 			if (!billingInfo.name.trim()) errors.name = 'Ad Soyad zorunludur.';
@@ -133,7 +141,7 @@ function TemplateDetail() {
 		return Object.keys(errors).length === 0;
 	};
 
-	// --- GÜNCELLENDİ: Fatura Bilgilerini Kaydet ---
+	// --- Fatura Bilgilerini Kaydet ---
 	const handleSaveBillingInfo = (e) => {
 		e.preventDefault();
 		setBillingSaveSuccess(false); // Önceki başarı mesajını temizle
@@ -147,9 +155,8 @@ function TemplateDetail() {
 			// Şu an sadece validasyon hataları input altında gösteriliyor.
 		}
 	};
-	// --- GÜNCELLENDİ SON ---
-
-	// --- GÜNCELLENDİ: Ödeme/İndirme İşlemini Başlat (Render Odaklı Hata Yönetimi) ---
+	
+	// --- Ödeme/İndirme İşlemini Başlat (Render Odaklı Hata Yönetimi) ---
 	const handlePayAndDownload = async () => {
 		let detectedError = null; // Hata mesajını tutacak geçici değişken
 		setShowSuccessMessage(false); // Başarı mesajını temizle
@@ -193,14 +200,16 @@ function TemplateDetail() {
 
 		// Backend isteği ve sonrası...
 		setLoadingPayment(true);
-		try {
-			const backendPayload = {
-				formData,
-				billingInfo: isBillingInfoSaved ? billingInfo : null,
-				amount: template?.price || 0, // Şu an ücretli değil, price her zaman 0 olacak
-				currency: 'TRY', // Para birimi TRY
-				email: billingInfo.email || formData?.belge_email || '' // Fatura e-postası veya formdaki e-posta
-			};
+        try {
+            const backendPayload = {
+                formData,
+                billingInfo: isBillingInfoSaved ? billingInfo : null,
+                amount: template?.price || 0,
+                currency: 'TRY',
+                email: billingInfo.email || formData?.belge_email || '',
+                consentTimestamp: agreedToTerms ? new Date().toISOString() : null,
+                documentVersion: agreedToTerms ? COMBINED_LEGAL_DOC_VERSION : null // <-- GÜNCELLENDİ
+            };
 
 			// Backend endpoint'i process-payment olarak kalacak
 			const response = await axios.post(`${API_BASE_URL}/templates/${template._id}/process-payment`, backendPayload, {
@@ -260,9 +269,8 @@ function TemplateDetail() {
 			setLoadingPayment(false); // Yükleme durumunu kapat
 		}
 	};
-	// --- GÜNCELLENDİ SON ---
 
-	// --- YENİ: Fatura Formunu Açma/Kapama Butonu (Opsiyonel ama kullanışlı) ---
+	// --- Fatura Formunu Açma/Kapama Butonu (Opsiyonel ama kullanışlı) ---
 	const toggleBillingForm = () => {
 		setShowBillingForm(prev => !prev);
 		setBillingSaveSuccess(false); // Form açılıp kapanınca başarı mesajını temizle
@@ -273,7 +281,6 @@ function TemplateDetail() {
 			setPaymentError(null); // Form kapanınca veya zorunlu değilse hatayı temizle
 		}
 	}
-	// --- YENİ SON ---
 
 	// --- Render Logic ---
 	if (loading) return <div className={styles.statusMessage}>Şablon yükleniyor...</div>;
@@ -301,7 +308,7 @@ function TemplateDetail() {
 				</button>
 
 				{/* Şablon adı H1 olarak güncellendi */}
-				<h1 className={styles.title}>{template.name}</h1> {/* <-- GÜNCELLENDİ: H2 yerine H1 */}
+				<h1 className={styles.title}>{template.name}</h1> 
 				<p className={styles.description}>{template.description}</p>
 				<p className={styles.price}>
 					{/* Fiyat gösterimi ve beta notu doğru */}
@@ -336,7 +343,7 @@ function TemplateDetail() {
 					</div>
 				</div>
 
-				{/* --- YENİ: Fatura Bilgileri Alanı (Aç/Kapa Butonlu) --- */}
+				{/* --- Fatura Bilgileri Alanı (Aç/Kapa Butonlu) --- */}
 				<div className={styles.billingToggleSection}>
 					{/* Beta Notu doğru */}
 					<p className={styles.billingBetaNotice}>
@@ -360,7 +367,7 @@ function TemplateDetail() {
 				{showBillingForm && (
 					<div className={styles.billingFormContainer}>
 						{/* Fatura Bilgileri başlığı H2 olarak güncellendi */}
-						<h2 className={styles.billingTitle}>Fatura Bilgileri</h2> {/* <-- GÜNCELLENDİ: H3 yerine H2 */}
+						<h2 className={styles.billingTitle}>Fatura Bilgileri</h2> 
 						<p className={styles.billingDesc}>Lütfen yasal faturanızın düzenlenebilmesi için gerekli bilgileri girin.</p>
 						<form onSubmit={handleSaveBillingInfo} noValidate>
 							{/* Fatura Tipi Seçimi */}
@@ -431,7 +438,6 @@ function TemplateDetail() {
 						</form>
 					</div>
 				)}
-				{/* --- YENİ SON --- */}
 
 				{/* Onay ve İndirme/Ödeme Butonu Alanı */}
 				<div className={styles.paymentSection}>
@@ -472,7 +478,6 @@ function TemplateDetail() {
 							✅ PDF başarıyla oluşturuldu ve indiriliyor. Bir kopya da e-posta adresinize gönderiliyor...
 						</p>
 					)}
-					{/* Eski Hata Mesajı Alanı Kaldırıldı (Yukarıya taşındı) */}
 				</div>
 			</div>
 		</>
