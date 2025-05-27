@@ -1,4 +1,4 @@
-// server.js (EN ÜSTE YAKIN BİR YERE EKLEYİN)
+// server.js (EN ÜSTE YAKIN BİR YERE EKLE)
 
 process.on('uncaughtException', (error) => {
 	console.error('UNCAUGHT EXCEPTION! Shutting down...');
