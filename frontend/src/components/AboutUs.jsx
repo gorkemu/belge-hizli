@@ -42,10 +42,6 @@ function AboutUs() {
 					emin olmak için her zaman bir hukuk profesyoneline danışmanızı öneririz.
 				</p>
 
-				{/* Paragraf stilini uygula */}
-				<p className={styles.paragraph}>
-					Bize güvendiğiniz için teşekkür ederiz!
-				</p>
 			</div>
 		</>
 	);
