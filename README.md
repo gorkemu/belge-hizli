@@ -1,6 +1,6 @@
 # Contract-Generator (Belge Hızlı)
 
-A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system dynamically creates forms, requires user consent for legal terms, allows optional collection of billing information, generates PDFs via an external service, delivers them via download/email, and **records transaction & basic invoice data on the backend.**
+A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system features a **simulated payment flow**, requires user consent for legal terms, allows optional collection of billing information, generates PDFs via an external service, delivers them via email, **allows direct download from a success page**, and records transaction, consent, and basic invoice data on the backend.
 
 ## ✨ Core Features
 
@@ -12,14 +12,22 @@ A web application that allows users to generate contracts and documents in PDF f
 *   **Live Preview:** Real-time preview updates with **Inter font and dd.mm.yyyy date format**.
 *   **Template Search & Modern List UI:** Easy searching with a clean grid layout.
 *   **Form Validation:** Validates required fields, showing field-specific errors.
-*   **Legal Consent:** Requires explicit user agreement to Pre-Information Form and Terms of Service (Distance Sales Contract) before proceeding.
-*   **Optional Billing Information:** A form to collect billing details (Individual/Corporate, TCKN/VKN, Address, etc.). **(Currently optional during beta).**
+*   **Simulated Payment Flow:**
+    *   User is redirected to a simulation page after initiating a document request.
+    *   Backend callback endpoint processes simulated payment success/failure.
+*   **Legal Consent & Logging:**
+    *   Requires explicit user agreement to Pre-Information Form and Terms of Service (Distance Sales Contract) before proceeding.
+    *   **Consent details (IP, User-Agent, document version, timestamp) are logged** to the backend.
+*   **Optional Billing Information:** A form to collect billing details. **(Currently optional during beta).**
 *   **User-Friendly Error Handling:** Clear, non-disappearing error messages.
-*   **PDF Generation (External):** Uses Browserless.io API for PDF creation with embedded **Inter font and dd.mm.yyyy dates**.
-*   **Document Delivery:** Direct download and automatic email delivery of the PDF.
-*   **Backend Transaction & Invoice Recording:**
-    *   Creates a `Transaction` record in MongoDB for every document generation attempt, tracking its status (e.g., PDF generated, email sent).
-    *   If billing information is provided by the user, an `Invoice` record (with basic details) is created and linked to the transaction.
+*   **PDF Generation (External):** Uses Browserless.io API for PDF creation.
+*   **Document Delivery:**
+    *   Automatic email delivery of the generated PDF.
+    *   **Direct PDF download option from the payment success page.**
+*   **Backend Data Recording:**
+    *   Creates a `Transaction` record for every attempt, tracking status (payment pending, successful, PDF generated, email sent, completed, failed).
+    *   Creates a `ConsentLog` record for each user consent.
+    *   If billing information is provided, an `Invoice` record (with basic details) is created and linked to the transaction.
 *   **Cookie Consent Banner:** Collects user consent for cookie usage.
 *   **Custom Domain & SSL:** Hosted on `belgehizli.com` with SSL.
 *   **Static Pages:** Essential informational and legal pages.
@@ -33,7 +41,7 @@ A web application that allows users to generate contracts and documents in PDF f
 ## 🚀 Live URLs
 
 *   **Frontend:** [https://www.belgehizli.com/](https://www.belgehizli.com/)
-*   **Backend API:** [https://belgehizli-api.fly.dev/api](https://belgehizli-api.fly.dev/api)
+*   **Backend API:** [https://belgehizli-api.fly.dev/api](https://belgehizli-api.fly.dev/api) (Endpoints include `/api/sablonlar`, `/api/payment`, `/api/document`)
 
 ## 📄 Adding New Templates (IMPORTANT!)
 
@@ -51,10 +59,9 @@ Add new templates directly to the MongoDB `templates` collection. Key fields: `n
 ## 🔮 Future Enhancements
 
 *   Real payment system integration (ParamPOS, etc.).
-*   Backend logic for storing detailed consent logs.
 *   Full e-Invoice integration using the created `Invoice` records.
 *   User accounts & document management.
-*   Admin panel for template and transaction/invoice management.
+*   Admin panel for template and transaction/invoice/consent log management.
 *   Increased test coverage.
 
 ## 🤝 Contributing
