@@ -81,7 +81,6 @@ const sendPdfEmail = async (to, subject, text, html, pdfBuffer, pdfFilename) => 
 
   try {
     // E-posta adresini loglamadan gönderim başlatıldığını belirtelim
-    console.log(`Sending PDF email to user...`); 
     let info = await transporter.sendMail(mailOptions);
     console.log('Email sent successfully. Message ID: %s', info.messageId); 
 } catch (error) {

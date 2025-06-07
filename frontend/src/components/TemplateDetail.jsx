@@ -156,17 +156,18 @@ function TemplateDetail() {
 		}
 	};
 	
-	// --- Ödeme/İndirme İşlemini Başlat (Render Odaklı Hata Yönetimi) ---
+	// --- GÜNCELLENDİ: Ödeme Başlatma ve Yönlendirme ---
 	const handlePayAndDownload = async () => {
-		let detectedError = null; // Hata mesajını tutacak geçici değişken
-		setShowSuccessMessage(false); // Başarı mesajını temizle
+		let detectedError = null;
+		setShowSuccessMessage(false); // Önceki başarı mesajını temizle
+        setPaymentError(null); // Önceki genel hatayı temizle
 
 		// 1. Şartlar kabul edilmiş mi?
 		if (!agreedToTerms) {
 			detectedError = 'Devam etmek için lütfen Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi\'ni onaylayın.';
 		}
 
-		// 2. Fatura Bilgisi Gerekli mi ve Geçerli/Kaydedilmiş mi? (Sadece önceki hata yoksa kontrol et)
+		// 2. Fatura Bilgisi Gerekli mi ve Geçerli/Kaydedilmiş mi?
 		if (!detectedError && isBillingRequired) {
 			if (!showBillingForm || !isBillingInfoSaved) {
 				setShowBillingForm(true);
@@ -174,12 +175,12 @@ function TemplateDetail() {
 			}
 		}
 
-		// 3. Belge formu referansı var mı? (Sadece önceki hata yoksa kontrol et)
+		// 3. Belge formu referansı var mı?
 		if (!detectedError && !formRef.current) {
 			detectedError = "Belge formuyla ilgili bir hata oluştu, lütfen sayfayı yenileyin.";
 		}
 
-		// 4. Belge formu geçerli mi? (Sadece önceki hata yoksa kontrol et)
+		// 4. Belge formu geçerli mi?
 		let isDocumentFormValid = false;
 		if (!detectedError && formRef.current) {
 			isDocumentFormValid = await formRef.current.handleSubmit();
@@ -188,87 +189,66 @@ function TemplateDetail() {
 			}
 		}
 
-		// 5. Eğer herhangi bir frontend hatası varsa, state'i güncelle ve çık
 		if (detectedError) {
 			setPaymentError(detectedError);
-			return; // Fonksiyondan çık
+			return;
 		}
 
-		// --- Eğer buraya kadar geldiyse, tüm frontend validasyonları OK ---
-		// Önceki hatayı temizle (artık güvendeyiz)
-		setPaymentError(null);
+		// Tüm frontend validasyonları OK.
+		setLoadingPayment(true); // Yükleme durumunu başlat
 
-		// Backend isteği ve sonrası...
-		setLoadingPayment(true);
-        try {
-            const backendPayload = {
-                formData,
-                billingInfo: isBillingInfoSaved ? billingInfo : null,
-                amount: template?.price || 0,
-                currency: 'TRY',
-                email: billingInfo.email || formData?.belge_email || '',
-                consentTimestamp: agreedToTerms ? new Date().toISOString() : null,
-                documentVersion: agreedToTerms ? COMBINED_LEGAL_DOC_VERSION : null // <-- GÜNCELLENDİ
-            };
+		try {
+			// --- YENİ: Fatura bilgisi varsa, billingType'ı da ekle ---
+			let finalBillingInfo = null;
+			if (isBillingInfoSaved && billingInfo) {
+				finalBillingInfo = {
+					...billingInfo, // Mevcut name, tckn, address, email vb.
+					billingType: billingType // Ayrı state'den billingType'ı ekle
+				};
+			}
+			// --- YENİ SON ---
 
-			// Backend endpoint'i process-payment olarak kalacak
-			const response = await axios.post(`${API_BASE_URL}/templates/${template._id}/process-payment`, backendPayload, {
-				responseType: 'blob' // Yanıtı blob olarak al (PDF için)
-			});
+			const payload = { // Backend'e gönderilecek payload
+				formData,
+				billingInfo: finalBillingInfo, // <-- GÜNCELLENDİ: billingType'ı içeren obje veya null
+				amount: template?.price || 0,
+				currency: 'TRY',
+				consentTimestamp: new Date().toISOString(),
+				documentVersion: COMBINED_LEGAL_DOC_VERSION
+			};
 
-			// ... (PDF indirme kodları) ...
-			const blob = new Blob([response.data], { type: 'application/pdf' });
-			const url = window.URL.createObjectURL(blob);
-			const link = document.createElement('a');
-			link.href = url;
-			// Dosya adı temizliği - Sadece alfanümerik, alt çizgi, tire, nokta
-			const filename = template?.name ? `${template.name.replace(/[^a-zA-Z0-9._-]/g, '_')}.pdf` : 'document.pdf';
-			link.download = filename;
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-			window.URL.revokeObjectURL(url); // Belleği temizle
+			const response = await axios.post(`${API_BASE_URL}/payment/initiate/${template._id}`, payload);
 
-			setShowSuccessMessage(true); // Başarı mesajını göster
-			setPaymentError(null); // Başarı durumunda hatayı temizle
-
+			// Backend'den dönen paymentPageUrl'e yönlendir
+			if (response.data && response.data.paymentPageUrl) {
+				// Başarı mesajını göstermeden doğrudan yönlendiriyoruz,
+                // ödeme sonrası başarı/hata sayfaları bu mesajları gösterecek.
+                // setShowSuccessMessage(false); // Zaten başta false set edildi.
+				window.location.href = response.data.paymentPageUrl;
+                // Yönlendirme sonrası bu component unmount olabilir, o yüzden setLoadingPayment(false) burada gerekmeyebilir.
+                // Ancak bir hata olursa diye finally bloğu hala önemli.
+			} else {
+				console.error("Payment initiation failed: No paymentPageUrl received from backend.", response.data);
+				setPaymentError('Ödeme başlatılamadı. Lütfen daha sonra tekrar deneyin.');
+			}
 
 		} catch (error) {
-			// ... (Hata mesajı parse etme) ...
-			let errorMessage = 'Belge oluşturma veya indirme sırasında bir hata oluştu.';
-			if (error.response) {
-				// Hata yanıtı bir Blob ise ve application/json tipindeyse parse etmeye çalış
-				if (error.response.data instanceof Blob && error.response.data.type === "application/json") {
-					try {
-						// Blob'u text'e çevirip JSON parse et
-						const errJson = JSON.parse(await error.response.data.text());
-						errorMessage = errJson.message || errorMessage;
-					} catch (parseError) {
-						// Blob parse edilemezse varsayılan hata mesajı kullanılır
-						console.error("Blob hata yanıtı parse edilemedi:", parseError); // Konsola yaz
-					}
-				} else if (error.response.data && error.response.data.message) {
-					// Eğer data doğrudan JSON objesiyse ve message alanı varsa
-					errorMessage = error.response.data.message;
-				} else if (error.message) {
-					// Axios hata mesajı
-					errorMessage = error.message;
-				}
-			} else if (error.request) {
-				// İstek gönderildi ama yanıt alınamadı (ağ hatası vb.)
-				errorMessage = 'Sunucuya ulaşılamadı. Lütfen internet bağlantınızı kontrol edin.';
-			} else {
-				// İsteği ayarlarken bir şeyler ters gitti
+			console.error('Error initiating payment:', error);
+			let errorMessage = 'Ödeme başlatılırken bir hata oluştu.';
+			if (error.response && error.response.data && error.response.data.message) {
+				errorMessage = error.response.data.message;
+			} else if (error.message) {
 				errorMessage = error.message;
 			}
-			// Backend hatası durumunda HATA MESAJINI SET ET
 			setPaymentError(errorMessage);
-			setShowSuccessMessage(false);
-
+            setShowSuccessMessage(false);
 		} finally {
-			setLoadingPayment(false); // Yükleme durumunu kapat
+			// Yönlendirme olsa bile, bir hata durumunda veya component unmount olmazsa diye
+            // loading durumunu false yapalım.
+			setLoadingPayment(false);
 		}
 	};
+	// --- GÜNCELLENDİ SON ---
 
 	// --- Fatura Formunu Açma/Kapama Butonu (Opsiyonel ama kullanışlı) ---
 	const toggleBillingForm = () => {

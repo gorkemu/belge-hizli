@@ -1,0 +1,127 @@
+/* frontend/src/components/PaymentResultPage.module.css */
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px 40px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.success {
+    background-color: #e6ffed;
+    border: 2px solid #5cb85c; /* Yeşil */
+}
+
+.failure {
+    background-color: #ffebee;
+    border: 2px solid #d9534f; /* Kırmızı */
+}
+
+.title {
+    margin-bottom: 25px;
+    font-size: 2rem;
+}
+
+.success .title {
+    color: #38761d; /* Koyu Yeşil */
+}
+
+.failure .title {
+    color: #a94442; /* Koyu Kırmızı */
+}
+
+.container p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    font-size: 1.05rem;
+    color: var(--gray-700);
+}
+
+.container p strong {
+    color: var(--gray-800);
+}
+
+.link {
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.link:hover {
+    color: var(--secondary-color);
+}
+
+.button {
+    display: inline-block;
+    margin-top: 20px;
+    margin-right: 10px; /* Butonlar arası boşluk */
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.success .button {
+    background-color: #5cb85c;
+}
+.success .button:hover {
+    background-color: #4cae4c;
+}
+
+.failure .button {
+    background-color: #d9534f;
+}
+.failure .button:hover {
+    background-color: #c9302c;
+}
+
+.homeButton {
+    background-color: var(--gray-600) !important; /* !important dikkatli kullanılmalı */
+}
+.homeButton:hover {
+    background-color: var(--gray-700) !important;
+}
+
+.downloadButton {
+    background-color: var(--primary-color) !important; /* Önemini belirtmek için farklı renk */
+    color: white !important;
+    margin-top: 10px; /* Diğer p ile arasına biraz boşluk */
+    margin-bottom: 20px; /* Sonraki p ile arasına boşluk */
+}
+
+.downloadButton:hover:not(:disabled) {
+    background-color: var(--primary-dark-color) !important; /* Primary'nin koyu tonu */
+}
+
+.downloadButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.downloadError {
+    color: #721c24; /* Kırmızı */
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.downloadedMessage {
+    color: #155724; /* Yeşil */
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.infoNote { /* p tag'i için ek bir stil */
+    margin-top: 25px !important;
+    font-size: 0.95rem !important;
+}

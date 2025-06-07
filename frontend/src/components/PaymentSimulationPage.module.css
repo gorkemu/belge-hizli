@@ -1,0 +1,81 @@
+/* frontend/src/components/PaymentSimulationPage.module.css */
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    background-color: var(--gray-50);
+}
+
+.title {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.info, .note {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.container p strong {
+    color: var(--gray-700);
+}
+
+.buttonGroup {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column; /* Butonları alt alta */
+    gap: 15px; /* Butonlar arası boşluk */
+    align-items: center;
+}
+
+.button {
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    min-width: 250px; /* Buton genişliği */
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.successButton {
+    background-color: #28a745; /* Yeşil */
+    color: white;
+}
+.successButton:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.failureButton {
+    background-color: #dc3545; /* Kırmızı */
+    color: white;
+}
+.failureButton:hover:not(:disabled) {
+    background-color: #c82333;
+}
+
+.loading {
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-top: 20px;
+}
+
+.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}

@@ -5,53 +5,68 @@ const Schema = mongoose.Schema;
 const transactionSchema = new Schema({
     templateId: {
         type: Schema.Types.ObjectId,
-        ref: 'Template', // 'Template' modeline referans
+        ref: 'Template',
         required: true,
         index: true
     },
-    templateName: { // Raporlama/görüntüleme kolaylığı için
+    templateName: {
         type: String,
         required: true
     },
-    userEmail: { // İşlemi yapan kullanıcının e-postası (fatura veya belge e-postası)
+    userEmail: { // İşlemi başlatan e-posta (fatura veya belge e-postası olabilir)
         type: String,
         required: true,
         trim: true,
         lowercase: true
     },
-    status: { // İşlem durumu
+    status: {
         type: String,
         required: true,
-        enum: ['initiated', 'pdf_generated', 'email_sent', 'completed', 'failed'], // Olası durumlar
+        enum: ['initiated', 'payment_pending', 'payment_successful', 'payment_failed', 'pdf_generated', 'email_sent', 'completed', 'failed'],
         default: 'initiated'
     },
-    amount: { // İşlem tutarı (beta'da 0 olabilir)
+    amount: {
         type: Number,
         required: true,
         default: 0
     },
-    currency: { // Para birimi
+    currency: {
         type: String,
         required: true,
         default: 'TRY'
     },
-    paymentGatewayRef: { // İleride ödeme ağ geçidinden dönen referans ID
+    paymentGatewayRef: {
         type: String,
-        sparse: true, // Her zaman olmayabilir
-        index: true
-    },
-    invoiceId: { // Bu işleme bağlı fatura ID'si (varsa)
-        type: Schema.Types.ObjectId,
-        ref: 'Invoice', // 'Invoice' modeline referans
         sparse: true,
         index: true
     },
-    // İleride eklenebilir: userId, consentLogId vb.
-    errorMessage: { // Hata oluştuysa mesajı
+    invoiceId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Invoice',
+        sparse: true,
+        index: true
+    },
+    // --- YENİ: Snapshot Alanları ---
+    formDataSnapshot: { // Belge formu verilerinin JSON string'i
+        type: String,
+        required: true // Belge oluşturmak için bu veri zorunlu
+    },
+    billingInfoSnapshot: { // Fatura bilgilerinin JSON string'i (varsa)
+        type: String,
+        sparse: true // Her zaman olmayabilir
+    },
+    // --- YENİ SON ---
+    // consentLogId: { // Eğer eklenirse
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'ConsentLog',
+    //     sparse: true,
+    //     index: true
+    // },
+    errorMessage: {
         type: String
     }
 }, {
-    timestamps: true // createdAt ve updatedAt alanlarını otomatik ekler
+    timestamps: true
 });
 
 module.exports = mongoose.model('Transaction', transactionSchema);
