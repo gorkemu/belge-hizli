@@ -19,6 +19,8 @@ const dotenv = require('dotenv');
 // const paymentRoutes = require('./routes/payment'); // <-- YENİ: Bunu da bağlantı sonrası yükleyeceğiz
 const documentRoutes = require('./routes/document');
 const path = require('path');
+const adminAuthRoutes = require('./routes/adminAuth');
+const adminDataRoutes = require('./routes/adminData');
 
 dotenv.config();
 const app = express();
@@ -68,10 +70,15 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 		const templateRoutes = require('./routes/templates');
 		const paymentRoutes = require('./routes/payment'); 
 		const documentDownloadRoutes = require('./routes/document');
+		const adminAuthRoutes = require('./routes/adminAuth');
+		const adminDataRoutes = require('./routes/adminData');
 
 		app.use('/api', templateRoutes); 
 		app.use('/api/payment', paymentRoutes); 
 		app.use('/api/document', documentDownloadRoutes);
+		app.use('/api/admin', adminAuthRoutes);
+		app.use('/api/admin-data', adminDataRoutes);
+		
 		// --- Rotalar Sonu ---
 
 		// --- Port Ayarı (Bağlantı Başarılı Olduktan Sonra Sunucuyu Başlat) ---

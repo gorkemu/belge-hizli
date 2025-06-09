@@ -3,86 +3,92 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const invoiceSchema = new Schema({
-    transactionId: { // Bu faturanın ait olduğu işlem ID'si
+    // ... (diğer alanlar transactionId, templateName vb. aynı kalır) ...
+    transactionId: {
         type: Schema.Types.ObjectId,
         ref: 'Transaction',
         required: true,
         index: true,
-        unique: true // Her işlem için en fazla 1 fatura olmalı
+        unique: true
     },
-    templateName: { // Raporlama/görüntüleme kolaylığı için
+    templateName: {
         type: String,
         required: true
     },
     status: { // Fatura durumu
         type: String,
         required: true,
-        enum: ['pending_creation', 'created', 'creation_failed', 'sent', 'paid'], // Olası durumlar
+        // --- GÜNCELLENDİ: Yeni manuel statüleri ekle ---
+        enum: [
+            'pending_creation',       // Oluşturulmayı Bekliyor (Sistem tarafından)
+            'created',                // Oluşturuldu (Sistem tarafından, entegratörden yanıt geldi)
+            'creation_failed',        // Oluşturma Başarısız Oldu (Sistem tarafından)
+            'sent',                   // Müşteriye Gönderildi (Sistem tarafından)
+            'paid',                   // Ödendi
+            'created_manual',         // Manuel Olarak Oluşturuldu (Admin tarafından)
+            'sent_to_customer_manual' // Müşteriye Manuel Olarak Gönderildi (Admin tarafından)
+        ],
+        // --- GÜNCELLENDİ SON ---
         default: 'pending_creation'
     },
-    invoiceNumber: { // Entegratörden dönen fatura numarası/ID'si
+    invoiceNumber: {
         type: String,
         sparse: true,
         index: true
     },
-    invoiceUrl: { // Faturanın görüntülenebileceği URL (entegratörden gelirse)
+    invoiceUrl: {
         type: String,
         sparse: true
     },
-    amount: { // Fatura tutarı (KDV dahil)
+    amount: {
         type: Number,
         required: true
     },
-    currency: { // Para birimi
+    currency: {
         type: String,
         required: true,
         default: 'TRY'
     },
-    // --- Fatura Kesilecek Kişi/Kurum Bilgileri (Frontend'den gelen) ---
-    billingType: { // 'bireysel' veya 'kurumsal'
+    billingType: {
         type: String,
         required: true,
         enum: ['bireysel', 'kurumsal']
     },
-    // Bireysel için
-    customerName: { // Ad Soyad
-        type: String,
-        required: function() { return this.billingType === 'bireysel'; } // Sadece bireysel ise zorunlu
-    },
-    customerTckn: { // TC Kimlik No
+    customerName: {
         type: String,
         required: function() { return this.billingType === 'bireysel'; }
     },
-    // Kurumsal için
-    companyName: { // Şirket Unvanı
+    customerTckn: {
+        type: String,
+        required: function() { return this.billingType === 'bireysel'; }
+    },
+    companyName: {
         type: String,
         required: function() { return this.billingType === 'kurumsal'; }
     },
-    taxOffice: { // Vergi Dairesi
+    taxOffice: {
         type: String,
         required: function() { return this.billingType === 'kurumsal'; }
     },
-    taxId: { // Vergi Kimlik No (VKN)
+    taxId: {
         type: String,
         required: function() { return this.billingType === 'kurumsal'; }
     },
-    // Ortak Alanlar
-    customerAddress: { // Fatura Adresi
+    customerAddress: {
         type: String,
         required: true
     },
-    customerEmail: { // Fatura E-postası
+    customerEmail: {
         type: String,
         required: true,
         trim: true,
         lowercase: true
     },
-    // --- Bilgiler Sonu ---
-    errorMessage: { // Fatura oluşturma hatası oluştuysa
+    errorMessage: {
         type: String
     }
 }, {
-    timestamps: true // createdAt ve updatedAt alanlarını otomatik ekler
+    timestamps: true
 });
 
 module.exports = mongoose.model('Invoice', invoiceSchema);
