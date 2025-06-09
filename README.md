@@ -1,47 +1,48 @@
 # Contract-Generator (Belge Hızlı)
 
-A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system features a **simulated payment flow**, requires user consent for legal terms, allows optional collection of billing information, generates PDFs via an external service, delivers them via email, **allows direct download from a success page**, and records transaction, consent, and basic invoice data on the backend.
+A web application that allows users to generate contracts and documents in PDF format using predefined dynamic templates. The system features a simulated payment flow, requires user consent, allows optional billing info, generates PDFs, delivers them via email & download, and records transaction, consent, and invoice data. It also includes a **React Admin-based admin panel** for managing this data.
 
 ## ✨ Core Features
 
 *   **Dynamic Templates:** Add new contract/document types to MongoDB without code changes.
-*   **Dynamic & Advanced Form Generation:**
-    *   Auto-generates UI forms from template definitions.
-    *   **Repeatable Blocks:** Supports multiple instances of field groups.
-    *   **Conditional Fields:** Shows/hides fields based on user selections.
-*   **Live Preview:** Real-time preview updates with **Inter font and dd.mm.yyyy date format**.
-*   **Template Search & Modern List UI:** Easy searching with a clean grid layout.
-*   **Form Validation:** Validates required fields, showing field-specific errors.
+*   **Dynamic & Advanced Form Generation:** Repeatable blocks, conditional fields.
+*   **Live Preview:** Real-time preview with consistent styling.
+*   **Template Search & Modern List UI.**
+*   **Form Validation & User-Friendly Error Handling.**
 *   **Simulated Payment Flow:**
-    *   User is redirected to a simulation page after initiating a document request.
-    *   Backend callback endpoint processes simulated payment success/failure.
+    *   Frontend redirection to a simulation page.
+    *   Backend callback endpoint processes simulated payment outcomes.
 *   **Legal Consent & Logging:**
-    *   Requires explicit user agreement to Pre-Information Form and Terms of Service (Distance Sales Contract) before proceeding.
-    *   **Consent details (IP, User-Agent, document version, timestamp) are logged** to the backend.
-*   **Optional Billing Information:** A form to collect billing details. **(Currently optional during beta).**
-*   **User-Friendly Error Handling:** Clear, non-disappearing error messages.
-*   **PDF Generation (External):** Uses Browserless.io API for PDF creation.
-*   **Document Delivery:**
-    *   Automatic email delivery of the generated PDF.
-    *   **Direct PDF download option from the payment success page.**
+    *   Explicit user agreement to Pre-Information Form and Terms of Service.
+    *   Consent details (IP, User-Agent, document version, timestamp) are logged.
+*   **Optional Billing Information:** Form for billing details (optional during beta).
+*   **PDF Generation (External):** Uses Browserless.io.
+*   **Document Delivery:** Email delivery and direct PDF download from success page.
 *   **Backend Data Recording:**
-    *   Creates a `Transaction` record for every attempt, tracking status (payment pending, successful, PDF generated, email sent, completed, failed).
-    *   Creates a `ConsentLog` record for each user consent.
-    *   If billing information is provided, an `Invoice` record (with basic details) is created and linked to the transaction.
-*   **Cookie Consent Banner:** Collects user consent for cookie usage.
-*   **Custom Domain & SSL:** Hosted on `belgehizli.com` with SSL.
-*   **Static Pages:** Essential informational and legal pages.
+    *   `Transaction` records for every attempt, tracking detailed status.
+    *   `ConsentLog` records for each user consent, linked to transactions.
+    *   `Invoice` records (if billing info provided), linked to transactions.
+*   **Admin Panel (React Admin):**
+    *   Separate frontend application (`admin-panel-frontend`).
+    *   JWT-based authentication for admin users.
+    *   Lists and detailed views for Transactions, Invoices, and Consent Logs.
+    *   Backend API (`/api/admin-data`) tailored for React Admin's data provider (`ra-data-json-server`), supporting pagination, sorting, and **basic field filtering**.
+    *   Functionality to edit Invoice status and number.
+*   **Cookie Consent Banner & Static Legal Pages.**
+*   **Custom Domain & SSL.**
 
 ## 🛠️ Technology Stack
 
-*   **Frontend:** React, Vite, React Router, CSS Modules, Axios, Handlebars.js, `react-cookie-consent`, `react-helmet-async`
-*   **Backend:** Node.js, Express.js, MongoDB Atlas, Mongoose, Axios, Nodemailer, Handlebars.js, dotenv
-*   **Services & Hosting:** Browserless.io (PDF), Vercel (Frontend), Fly.io (Backend Docker), SMTP Provider
+*   **User Frontend:** React, Vite, React Router, CSS Modules, Axios, Handlebars.js, `react-cookie-consent`, `react-helmet-async`
+*   **Admin Panel Frontend:** React, Vite, **React Admin**, `ra-data-json-server`, `@mui/material`, Axios, React Router
+*   **Backend:** Node.js, Express.js, MongoDB Atlas, Mongoose, Axios, Nodemailer, Handlebars.js, dotenv, `jsonwebtoken`
+*   **Services & Hosting:** Browserless.io (PDF), Vercel (Frontends), Fly.io (Backend Docker), SMTP Provider
 
 ## 🚀 Live URLs
 
-*   **Frontend:** [https://www.belgehizli.com/](https://www.belgehizli.com/)
-*   **Backend API:** [https://belgehizli-api.fly.dev/api](https://belgehizli-api.fly.dev/api) (Endpoints include `/api/sablonlar`, `/api/payment`, `/api/document`)
+*   **User Frontend:** [https://www.belgehizli.com/](https://www.belgehizli.com/)
+*   **Admin Panel:** [YÖNLENDİRME_YAPILACAK_VEYA_AYRI_URL] (örn: `admin.belgehizli.com` veya `belgehizli.com/admin-panel`)
+*   **Backend API:** [https://belgehizli-api.fly.dev/api](https://belgehizli-api.fly.dev/api) (Endpoints include `/api/sablonlar`, `/api/payment`, `/api/document`, `/api/admin`, `/api/admin-data`)
 
 ## 📄 Adding New Templates (IMPORTANT!)
 
@@ -52,16 +53,15 @@ Add new templates directly to the MongoDB `templates` collection. Key fields: `n
 *   **Remember:** Include a `belge_email` field (type: email, required: true) for email delivery.
 
 ## 📜 Available Scripts
-
 *   **Backend:** `npm start` (prod), `npm run dev` (dev)
-*   **Frontend:** `npm run dev` (dev), `npm run build` (build), `npm run preview` (preview prod build)
+*   **User Frontend:** `npm run dev` (dev), `npm run build` (build), `npm run preview` (preview prod build)
+*   **Admin Panel Frontend:** `npm run dev`, `npm run build`
 
 ## 🔮 Future Enhancements
-
 *   Real payment system integration (ParamPOS, etc.).
-*   Full e-Invoice integration using the created `Invoice` records.
-*   User accounts & document management.
-*   Admin panel for template and transaction/invoice/consent log management.
+*   Full e-Invoice integration.
+*   User accounts & document management (for main site).
+*   **Admin Panel:** Advanced filtering, actions (e.g., resend email), dashboard stats, user management.
 *   Increased test coverage.
 
 ## 🤝 Contributing
