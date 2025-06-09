@@ -41,7 +41,7 @@ A web application that allows users to generate contracts and documents in PDF f
 ## 🚀 Live URLs
 
 *   **User Frontend:** [https://www.belgehizli.com/](https://www.belgehizli.com/)
-*   **Admin Panel:** [YÖNLENDİRME_YAPILACAK_VEYA_AYRI_URL] (örn: `admin.belgehizli.com` veya `belgehizli.com/admin-panel`)
+
 *   **Backend API:** [https://belgehizli-api.fly.dev/api](https://belgehizli-api.fly.dev/api) (Endpoints include `/api/sablonlar`, `/api/payment`, `/api/document`, `/api/admin`, `/api/admin-data`)
 
 ## 📄 Adding New Templates (IMPORTANT!)
