@@ -5,8 +5,7 @@
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
-// const authProvider: AuthProvider = { // <-- HATALI SATIRDI
-const authProvider = { // <-- DOĞRU SATIR (Tip tanımlaması kaldırıldı)
+const authProvider = { 
     // Kullanıcı giriş yaptığında çağrılır
     login: async ({ username, password }) => {
         const request = new Request(`${API_URL}/admin/login`, {

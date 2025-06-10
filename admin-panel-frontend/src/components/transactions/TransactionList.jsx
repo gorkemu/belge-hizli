@@ -1,4 +1,3 @@
-// admin-panel-frontend/src/components/transactions/TransactionList.jsx
 import * as React from "react";
 import {
     List,
@@ -7,13 +6,13 @@ import {
     DateField,
     NumberField,
     ChipField,
-    ReferenceField, // Sadece gerçekten referans olanlar için
-    Filter,       // Filtreleme için
-    TextInput,    // Filtre inputu
-    SelectInput   // Filtre select'i
+    ReferenceField,
+    Filter,
+    TextInput,
+    SelectInput,
+    DateInput 
 } from "react-admin";
 
-// Filtreleme için bir component
 const TransactionFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Kullanıcı E-postası" source="userEmail_like" alwaysOn resettable />
@@ -28,24 +27,22 @@ const TransactionFilter = (props) => (
             { id: 'completed', name: 'Tamamlandı' },
             { id: 'failed', name: 'Başarısız (Genel)' },
         ]} resettable />
+        <DateInput source="createdAt_gte" label="Başlangıç Tarihi (Oluşturma)" resettable />
+        <DateInput source="createdAt_lte" label="Bitiş Tarihi (Oluşturma)" resettable />
     </Filter>
 );
 
 export const TransactionList = (props) => (
     <List {...props} filters={<TransactionFilter />} sort={{ field: 'createdAt', order: 'DESC' }} perPage={25}>
         <Datagrid rowClick="show" bulkActionButtons={false}>
-            {/* _id yerine React Admin'in otomatik kullandığı 'id' yeterli */}
-            {/* <TextField source="id" label="ID" /> */} {/* Genellikle göstermeyiz, Show sayfasında olur */}
             <TextField source="userEmail" label="Kullanıcı E-postası" />
             <TextField source="templateName" label="Şablon Adı" />
-            {/* templateId'yi göstermek istiyorsak, ama "templates" kaynağımız yoksa ReferenceField kullanmamalıyız */}
             <TextField source="templateId" label="Şablon ID" />
             <NumberField source="amount" label="Tutar" options={{ style: 'currency', currency: 'TRY' }} />
-            <ChipField source="status" label="Durum" /> {/* Durumu ChipField ile göstermek daha şık olabilir */}
+            <ChipField source="status" label="Durum" />
             <DateField source="createdAt" label="İşlem Tarihi" showTime />
-            {/* invoiceId'yi "invoices" kaynağına bağlayalım */}
             <ReferenceField label="Fatura ID" source="invoiceId" reference="invoices" link="show" allowEmpty>
-                 <TextField source="id" /> {/* Veya faturanın başka bir alanını gösterebiliriz, örn: invoiceNumber */}
+                 <TextField source="id" />
             </ReferenceField>
         </Datagrid>
     </List>

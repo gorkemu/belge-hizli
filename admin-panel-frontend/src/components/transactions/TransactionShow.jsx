@@ -1,4 +1,3 @@
-// admin-panel-frontend/src/components/transactions/TransactionShow.jsx
 import * as React from "react";
 import {
     Show,
@@ -8,7 +7,7 @@ import {
     NumberField,
     ReferenceField,
     FunctionField,
-    ChipField // ChipField'ı import etmeyi unutmuş olabiliriz
+    ChipField 
 } from "react-admin";
 
 // JSON verisini formatlı göstermek için helper component

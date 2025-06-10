@@ -1,4 +1,3 @@
-// admin-panel-frontend/src/components/invoices/InvoiceShow.jsx
 import * as React from "react";
 import {
     Show,
@@ -7,12 +6,14 @@ import {
     DateField,
     NumberField,
     ReferenceField,
-    FunctionField, // JSON snapshot için
+    FunctionField,
     ChipField,
-    UrlField // invoiceUrl için
+    UrlField,
+    useRecordContext 
 } from "react-admin";
+import { Link as RouterLink } from 'react-router-dom'; 
 
-// TransactionShow'dan kopyalanan JSON helper
+// JSON verisini formatlı göstermek için helper component 
 const JsonDataField = ({ source, record = {} }) => {
     if (!record || typeof record[source] === 'undefined') return null;
     let data = record[source];
@@ -22,40 +23,52 @@ const JsonDataField = ({ source, record = {} }) => {
     return <pre>{JSON.stringify(data, null, 2)}</pre>;
 };
 
+// ReferenceField için özel child component 
+const LinkedTransactionField = () => {
+    const record = useRecordContext(); // Bu, ReferenceField tarafından bulunan Transaction objesi olmalı
+    if (!record) return null; // Kayıt yoksa veya yükleniyorsa bir şey gösterme (ReferenceField allowEmpty halleder)
+    
+    // Transaction ID'yi ve templateName'i göster, ID'ye tıklandığında Transaction Show sayfasına git.
+    // React Admin'in kendi linklemesi yerine React Router Link kullanabiliriz (daha fazla kontrol)
+    // veya doğrudan React Admin'in <Link to="..."> component'ini kullanabiliriz.
+    // En basiti, ReferenceField'ın link="show" prop'una güvenmektir.
+    return (
+        <>
+            ID: <TextField record={record} source="id" sx={{ display: 'inline', mr: 1 }} />
+            (<TextField record={record} source="templateName" sx={{ display: 'inline' }} />)
+        </>
+    );
+};
+
+
 export const InvoiceShow = (props) => (
     <Show {...props}>
         <SimpleShowLayout>
             <TextField source="id" label="Invoice ID" />
-            <TextField source="invoiceNumber" label="Fatura Numarası" emptyText="Yok" />
+            <TextField source="invoiceNumber" label="Fatura Numarası" emptyText="-" />
             <ChipField source="status" label="Fatura Durumu" />
 
-            <ReferenceField label="İlgili Transaction" source="transactionId" reference="transactions" link="show">
-                <>
-                    ID: <TextField source="id" /> <br />
-                    Kullanıcı: <TextField source="userEmail" /> <br />
-                    Şablon: <TextField source="templateName" />
-                </>
+            <ReferenceField
+                label="İlgili Transaction"
+                source="transactionId" // Invoice objesindeki transaction'ın ID'sini tutan alan
+                reference="transactions" // Hangi resource'a bakılacak
+                link="show" // Tıklandığında transactions resource'unun show sayfasına git
+                allowEmpty // Eğer transactionId boşsa veya bulunamazsa hata verme
+            >
+                {/* Child component, bulunan transaction kaydını alır ve onun bir alanını gösterir */}
+                {/* <TextField source="id" /> {/* Sadece ID'yi göstermek için */}
+                <LinkedTransactionField />
             </ReferenceField>
 
             <NumberField source="amount" label="Tutar" options={{ style: 'currency', currency: 'TRY' }} />
             <TextField source="currency" label="Para Birimi" />
 
-            <hr style={{ margin: '20px 0', borderTop: '1px solid #eee' }}/>
-            <h3>Fatura Bilgileri</h3>
+            <hr style={{ margin: '20px 0', borderTop: '1px solid #eee', gridColumn: 'span 2' }}/>
+            <h3>Fatura Bilgileri (Invoice Kaydından)</h3>
             <TextField source="billingType" label="Fatura Tipi" />
-            {/* 
-                billingInfo.customerName gibi doğrudan erişemeyiz, çünkü billingInfo bir snapshot'tı.
-                Transaction'daki billingInfoSnapshot'ı burada göstermek daha iyi olabilir.
-                Ya da Invoice modelinde bu alanlar ayrı ayrı tutuluyor, onları kullanacağız.
-            */}
-            {/* Bireysel Alanlar - Record'daki billingType'a göre koşullu render */}
-            <FunctionField label="Müşteri Adı" render={record => record.billingType === 'bireysel' ? record.customerName : null} />
-            <FunctionField label="TCKN" render={record => record.billingType === 'bireysel' ? record.customerTckn : null} />
-            {/* Kurumsal Alanlar */}
-            <FunctionField label="Şirket Unvanı" render={record => record.billingType === 'kurumsal' ? record.companyName : null} />
+            <FunctionField label="Müşteri/Firma Adı" render={record => record.billingType === 'bireysel' ? record.customerName : record.companyName} />
+            <FunctionField label="TCKN/VKN" render={record => record.billingType === 'bireysel' ? record.customerTckn : record.taxId} />
             <FunctionField label="Vergi Dairesi" render={record => record.billingType === 'kurumsal' ? record.taxOffice : null} />
-            <FunctionField label="VKN" render={record => record.billingType === 'kurumsal' ? record.taxId : null} />
-            {/* Ortak Alanlar */}
             <TextField source="customerAddress" label="Fatura Adresi" />
             <TextField source="customerEmail" label="Fatura E-postası" />
             

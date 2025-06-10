@@ -5,9 +5,7 @@ const mongoose = require('mongoose');
 const Template = require('../models/template');
 const Transaction = require('../models/transaction');
 const ConsentLog = require('../models/consentLog');
-// --- YENİ: Document Service'i import et ---
 const { generateAndDeliverDocument } = require('../utils/documentService');
-// --- YENİ SON ---
 
 // POST /api/payment/initiate/:templateId
 router.post('/initiate/:templateId', async (req, res) => {
@@ -116,7 +114,7 @@ router.post('/initiate/:templateId', async (req, res) => {
 });
 
 
-// --- YENİ: ÖDEME CALLBACK ENDPOINT'İ ---
+// --- YÖDEME CALLBACK ENDPOINT'İ ---
 // POST /api/payment/callback
 router.post('/callback', async (req, res) => {
     // Gerçek bir entegrasyonda, bu isteğin ParamPOS'tan geldiğini doğrulamak için
@@ -209,7 +207,7 @@ router.post('/callback', async (req, res) => {
         res.status(500).json({ message: 'Callback işlenirken sunucu hatası oluştu.' });
     }
 });
-// --- YENİ CALLBACK ENDPOINT'İ SONU ---
+// --- CALLBACK ENDPOINT'İ SONU ---
 
 
 module.exports = router;

@@ -9,7 +9,6 @@ const ConsentLog = require('../models/consentLog');
 const mapSortKey = (key) => (key === 'id' ? '_id' : key);
 
 // --- TRANSACTIONS ---
-// GET /api/admin-data/transactions 
 router.get('/transactions', async (req, res) => {
     try {
         const { 
@@ -42,36 +41,42 @@ router.get('/transactions', async (req, res) => {
                 ).filter(Boolean)
             };
         }
-        // filterObjectQuery'den gelen tekil id'yi de işleyebiliriz (eğer idFromQuery yoksa)
-        // Ancak ra-data-json-server genellikle id'leri doğrudan query param olarak gönderir.
-        // Şimdilik bu kısmı atlayabiliriz, çünkü idFromQuery öncelikli.
+        const reactAdminInternalQueryKeys = ['_sort', '_order', '_start', '_end'];
 
-        // 2. Diğer Alan Filtrelerini (potentialFilters objesinden) işle
-        // React Admin'e ait olmayan tüm query parametrelerini filtre olarak al
+        // Diğer Alan Filtreleri (potentialFilters objesinden)
         for (const key in potentialFilters) {
-            if (potentialFilters.hasOwnProperty(key)) {
-                // Bilinen React Admin kontrol parametrelerini atla
-                // (Aslında ...potentialFilters ile bunlar zaten ayrılmış olmalı, ama garanti için)
-                if (['_sort', '_order', '_start', '_end'].includes(key)) {
-                    continue;
-                }
-
+            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) {
                 const filterValue = potentialFilters[key];
                 if (typeof filterValue === 'string' && filterValue.trim() !== '') {
                     if (key.endsWith('_like')) {
                         const actualKey = key.slice(0, -5);
                         finalMongoFilters[actualKey] = { $regex: filterValue, $options: 'i' };
-                    } else if (key === 'q' && filterObjectQuery) { // Genel arama için filterObjectQuery'ye bakılabilir
-                        // Eğer filter={"q":"search"} geliyorsa:
-                        // const parsedFilterObject = JSON.parse(filterObjectQuery);
-                        // if(parsedFilterObject.q) { ... }
-                        // Ama ra-data-json-server q'yu da ?q=search şeklinde gönderir.
+                    } else if (key === 'q') {
                         const searchQuery = { $regex: filterValue, $options: 'i' };
                         finalMongoFilters.$or = [
-                            { userEmail: searchQuery },
-                            { templateName: searchQuery },
+                            { userEmail: searchQuery }, { templateName: searchQuery },
                         ];
+                    // --- Tarih Aralığı Filtrelerini İşle ---
+                    } else if (key === 'createdAt_gte') {
+                        // Gelen tarih string'ini Date objesine çevir
+                        // Gelen format "YYYY-MM-DD" olabilir. Saat bilgisini de dikkate almak için:
+                        const date = new Date(filterValue);
+                        if (!isNaN(date.getTime())) {
+                            // Başlangıç tarihi için günün başını al (00:00:00)
+                            date.setHours(0, 0, 0, 0);
+                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
+                            finalMongoFilters.createdAt.$gte = date;
+                        }
+                    } else if (key === 'createdAt_lte') {
+                        const date = new Date(filterValue);
+                        if (!isNaN(date.getTime())) {
+                            // Bitiş tarihi için günün sonunu al (23:59:59.999)
+                            date.setHours(23, 59, 59, 999);
+                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
+                            finalMongoFilters.createdAt.$lte = date;
+                        }
                     } else {
+                        // ... (ObjectId ve diğer tam eşleşme filtreleri) ...
                         if (['templateId', 'invoiceId', 'transactionId'].includes(key)) {
                             if (mongoose.Types.ObjectId.isValid(filterValue)) {
                                 finalMongoFilters[key] = new mongoose.Types.ObjectId(filterValue);
@@ -86,8 +91,7 @@ router.get('/transactions', async (req, res) => {
             }
         }
         
-        // filterObjectQuery'den gelen filtreleri de işle (eğer varsa ve otherFilters'da yoksa)
-        // Bu, filter={"status":"completed"} gibi durumlar için.
+        // filterObjectQuery'den gelen filtreleri de işle (eğer varsa)
         if (filterObjectQuery) {
             try {
                 const parsedFilter = JSON.parse(filterObjectQuery);
@@ -144,8 +148,75 @@ router.get('/transactions/:id', async (req, res) => {
     }
 });
 
+
+router.get('/transactions-pending-invoice', async (req, res) => {
+    try {
+        // React Admin'den gelen sayfalama ve sıralama parametreleri
+        const { sort: sortQuery, range: rangeQuery, filter: filterObjectQuery } = req.query;
+
+        const [sortField, sortOrderStr] = sortQuery ? JSON.parse(sortQuery) : ['createdAt', 'ASC']; // Eskiden yeniye sırala
+        const [start, end] = rangeQuery ? JSON.parse(rangeQuery) : [0, 24]; // Varsayılan olarak ilk 25
+        
+        const limit = end - start + 1;
+        const skip = start;
+        const sortOrder = sortOrderStr.toLowerCase() === 'asc' ? 1 : -1;
+        const mappedSortField = mapSortKey(sortField); // mapSortKey'in tanımlı olduğunu varsayıyoruz
+
+        // Faturalanacakları bulmak için kriterler:
+        // 1. Transaction durumu 'payment_successful' VEYA 'completed' VEYA 'email_sent' VEYA 'pdf_generated'
+        //    (yani ödeme alınmış ve işlem bir şekilde ilerlemiş)
+        // 2. Transaction'ın 'invoiceId' alanı YOK (null veya undefined) 
+        //    VEYA 'invoiceId' VAR ama ilişkili Invoice'un durumu 'pending_creation'
+        
+        const query = {
+            status: { $in: ['payment_successful', 'completed', 'email_sent', 'pdf_generated'] },
+            // invoiceId alanı olmayanları veya olanların invoice durumunu kontrol etmemiz gerekecek.
+            // Bu, MongoDB aggregation ile daha verimli yapılabilir.
+        };
+
+        // Basit Yöntem (Performans çok fazla kayıt için ideal olmayabilir):
+        // Önce potansiyel transaction'ları çek, sonra invoice durumlarını kontrol et.
+        let potentialTransactions = await Transaction.find(query)
+            .sort({ [mappedSortField]: sortOrder })
+            // Sayfalamayı tüm potansiyel sonuçlar üzerinden değil, filtrelenmiş sonuçlar üzerinden yapmak daha doğru.
+            // Bu yüzden önce tümünü çekip sonra filtreleyip sonra sayfalayacağız ya da aggregation kullanacağız.
+            .lean(); // Populate etmeden çekelim, invoice'a ayrıca bakarız.
+
+        let transactionsPendingInvoice = [];
+        for (const trans of potentialTransactions) {
+            if (!trans.invoiceId) {
+                transactionsPendingInvoice.push(trans);
+            } else {
+                const invoice = await Invoice.findById(trans.invoiceId).select('status').lean();
+                if (invoice && invoice.status === 'pending_creation') {
+                    transactionsPendingInvoice.push(trans);
+                }
+            }
+        }
+
+        const total = transactionsPendingInvoice.length;
+        // Sayfalamayı manuel yap
+        const paginatedTransactions = transactionsPendingInvoice.slice(skip, skip + limit);
+
+        const formattedTransactions = paginatedTransactions.map(t => ({ 
+            ...t, 
+            id: t._id.toString(),
+            // billingInfoSnapshot'ı da gönderelim ki fatura bilgileri listede görünsün
+            billingInfo: t.billingInfoSnapshot ? JSON.parse(t.billingInfoSnapshot) : null 
+        }));
+
+        res.setHeader('X-Total-Count', total.toString());
+        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+        res.json(formattedTransactions);
+
+    } catch (error) {
+        console.error('Error fetching transactions pending invoice:', error);
+        res.status(500).json({ message: 'Faturalanacak işlemler alınırken hata oluştu.' });
+    }
+});
+
+
 // --- INVOICES ---
-// GET /api/admin-data/invoices (GET_MANY için güncellendi)
 router.get('/invoices', async (req, res) => {
     try {
         const { 
@@ -176,11 +247,9 @@ router.get('/invoices', async (req, res) => {
             };
         }
         
-        // --- GÜNCELLENDİ: potentialFilters işlenirken React Admin anahtarlarını atla ---
-        const reactAdminInternalQueryKeys = ['_sort', '_order', '_start', '_end']; // 'sort', 'range', 'filter', 'id' zaten ayrıldı
-
+        const reactAdminInternalQueryKeys = ['_sort', '_order', '_start', '_end'];
         for (const key in potentialFilters) {
-            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) { // <-- KONTROL EKLENDİ
+            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) {
                 const filterValue = potentialFilters[key];
                 if (typeof filterValue === 'string' && filterValue.trim() !== '') {
                     if (key.endsWith('_like')) {
@@ -192,6 +261,20 @@ router.get('/invoices', async (req, res) => {
                         finalMongoFilters.$or = [
                             { customerEmail: searchQuery }, { templateName: searchQuery }, { invoiceNumber: searchQuery }
                         ];
+                    } else if (key === 'createdAt_gte') { 
+                        const date = new Date(filterValue);
+                        if (!isNaN(date.getTime())) {
+                            date.setHours(0, 0, 0, 0);
+                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
+                            finalMongoFilters.createdAt.$gte = date;
+                        }
+                    } else if (key === 'createdAt_lte') { 
+                        const date = new Date(filterValue);
+                        if (!isNaN(date.getTime())) {
+                            date.setHours(23, 59, 59, 999);
+                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
+                            finalMongoFilters.createdAt.$lte = date;
+                        }
                     } else {
                         // ... ObjectId ve diğer tam eşleşme filtreleri ...
                         if (key === 'transactionId') {
@@ -221,13 +304,11 @@ router.get('/invoices', async (req, res) => {
                 }
             } catch (e) { console.warn(`[INVOICES] Could not parse filterObjectQuery: ${filterObjectQuery}`, e); }
         }
-        // --- GÜNCELLENDİ SON ---
 
         console.log(`[INVOICES] Request Query: ${JSON.stringify(req.query)}`);
         console.log(`[INVOICES] Applying Mongo Filters: ${JSON.stringify(finalMongoFilters)}`);
 
         const total = await Invoice.countDocuments(finalMongoFilters);
-        // ... (geri kalan kod aynı)
         const invoices = await Invoice.find(finalMongoFilters)
             .sort({ [mappedSortField]: sortOrder })
             .skip(idFromQuery ? 0 : skip)
@@ -269,7 +350,6 @@ router.get('/invoices/:id', async (req, res) => {
     }
 });
 
-// --- Update Invoice (PUT /api/admin-data/invoices/:id) ---
 router.put('/invoices/:id', async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -357,11 +437,10 @@ router.get('/consent-logs', async (req, res) => {
             };
         }
         
-        // --- GÜNCELLENDİ: potentialFilters işlenirken React Admin anahtarlarını atla ---
+        // --- potentialFilters işlenirken React Admin anahtarlarını atla ---
         const reactAdminInternalQueryKeys = ['_sort', '_order', '_start', '_end'];
-
         for (const key in potentialFilters) {
-            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) { // <-- KONTROL EKLENDİ
+            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) {
                 const filterValue = potentialFilters[key];
                 if (typeof filterValue === 'string' && filterValue.trim() !== '') {
                     if (key.endsWith('_like')) {
@@ -373,6 +452,20 @@ router.get('/consent-logs', async (req, res) => {
                         finalMongoFilters.$or = [
                             { userEmail: searchQuery }, { documentVersion: searchQuery }, { ipAddress: searchQuery }
                         ];
+                    } else if (key === 'createdAt_gte') { 
+                        const date = new Date(filterValue);
+                        if (!isNaN(date.getTime())) {
+                            date.setHours(0, 0, 0, 0);
+                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
+                            finalMongoFilters.createdAt.$gte = date;
+                        }
+                    } else if (key === 'createdAt_lte') { 
+                        const date = new Date(filterValue);
+                        if (!isNaN(date.getTime())) {
+                            date.setHours(23, 59, 59, 999);
+                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
+                            finalMongoFilters.createdAt.$lte = date;
+                        }
                     } else {
                         // ... ObjectId ve diğer tam eşleşme filtreleri ...
                         if (key === 'transactionId') {

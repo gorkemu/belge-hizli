@@ -1,4 +1,3 @@
-// admin-panel-frontend/src/App.jsx
 import * as React from "react";
 import { Admin, Resource, ListGuesser, ShowGuesser, Edit } from 'react-admin';
 import jsonServerProvider from 'ra-data-json-server';
@@ -11,6 +10,7 @@ import { InvoiceShow } from './components/invoices/InvoiceShow';
 import { InvoiceEdit } from './components/invoices/InvoiceEdit';
 import { ConsentLogList } from './components/consentlogs/ConsentLogList';
 import { ConsentLogShow } from './components/consentlogs/ConsentLogShow';
+import { PendingInvoiceList } from './components/pendingInvoices/PendingInvoiceList'; 
 
 
 const ADMIN_DATA_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/admin-data`;
@@ -30,6 +30,12 @@ function App() {
         authProvider={authProvider}
         dashboard={Dashboard}
     >
+        <Resource 
+            name="transactions-pending-invoice" 
+            options={{ label: 'Faturalanacaklar' }} // Menüde görünecek isim
+            list={PendingInvoiceList} 
+            // Bu kaynağın show, edit, create view'ları olmayacak, sadece list.
+        />
         <Resource name="transactions" list={TransactionList} show={TransactionShow} />
         <Resource name="invoices" list={InvoiceList} show={InvoiceShow} edit={InvoiceEdit} />
         <Resource name="consent-logs" list={ConsentLogList} show={ConsentLogShow} />
