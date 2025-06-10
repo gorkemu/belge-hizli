@@ -23,11 +23,11 @@ A web application that allows users to generate contracts and documents in PDF f
     *   `ConsentLog` records for each user consent, linked to transactions.
     *   `Invoice` records (if billing info provided), linked to transactions.
 *   **Admin Panel (React Admin):**
-    *   Separate frontend application (`admin-panel-frontend`).
-    *   JWT-based authentication for admin users.
-    *   Lists and detailed views for Transactions, Invoices, and Consent Logs.
-    *   Backend API (`/api/admin-data`) tailored for React Admin's data provider (`ra-data-json-server`), supporting pagination, sorting, and **basic field filtering**.
-    *   Functionality to edit Invoice status and number.
+    *   Separate frontend application.
+    *   JWT-based authentication.
+    *   Lists, detailed views, and edit capabilities (for Invoices) for Transactions, Invoices, and Consent Logs.
+    *   **Dedicated "Pending Invoices" view** for streamlined manual invoicing.
+    *   Backend API (`/api/admin-data`) tailored for React Admin, supporting pagination, sorting, and **advanced field filtering (text, date range, exact match).**
 *   **Cookie Consent Banner & Static Legal Pages.**
 *   **Custom Domain & SSL.**
 
@@ -61,7 +61,7 @@ Add new templates directly to the MongoDB `templates` collection. Key fields: `n
 *   Real payment system integration (ParamPOS, etc.).
 *   Full e-Invoice integration.
 *   User accounts & document management (for main site).
-*   **Admin Panel:** Advanced filtering, actions (e.g., resend email), dashboard stats, user management.
+*   **Admin Panel:** More advanced filtering options (e.g., by related data), dashboard stats, user management, custom actions (e.g., resend email).
 *   Increased test coverage.
 
 ## 🤝 Contributing
