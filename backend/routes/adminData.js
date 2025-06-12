@@ -5,132 +5,126 @@ const mongoose = require('mongoose');
 const Transaction = require('../models/transaction');
 const Invoice = require('../models/invoice');
 const ConsentLog = require('../models/consentLog');
-
+const { buildMongoFilters } = require('../utils/filterUtils'); 
 const mapSortKey = (key) => (key === 'id' ? '_id' : key);
 
-// --- TRANSACTIONS ---
-router.get('/transactions', async (req, res) => {
+// --- Kaynaklara Özel Şema Alanı Tanımları (Filtreleme için) ---
+const transactionResourceFields = {
+    userEmail: 'string_like',
+    templateName: 'string_like',
+    status: 'exact_match',
+    createdAt: 'date_range',
+    // q için aranacak alanlar (eğer frontend q filtresi gönderirse)
+    q_fields: ['userEmail', 'templateName', 'paymentGatewayRef', 'errorMessage'] 
+};
+
+const invoiceResourceFields = {
+    customerEmail: 'string_like',
+    invoiceNumber: 'string_like',
+    status: 'exact_match',
+    createdAt: 'date_range',
+    transactionId: 'objectId',
+    billingType: 'exact_match',
+    q_fields: ['customerEmail', 'templateName', 'invoiceNumber', 'customerName', 'companyName']
+};
+
+const consentLogResourceFields = {
+    userEmail: 'string_like',
+    documentVersion: 'string_like',
+    ipAddress: 'string_like',
+    createdAt: 'date_range',
+    transactionId: 'objectId',
+    documentType: 'exact_match',
+    q_fields: ['userEmail', 'documentVersion', 'ipAddress']
+};
+// --- Şema Tanımları Sonu ---
+
+// --- GENEL LISTELEME FONKSİYONU İÇİN YARDIMCI ---
+const handleListRequest = async (req, res, Model, resourceName, resourceSchemaFields, populateOptions = null) => {
     try {
         const { 
-            sort: sortQuery, 
-            range: rangeQuery, 
-            filter: filterObjectQuery, // Bu genellikle stringified JSON {q: "search"} gibi gelir
-            id: idFromQuery, 
-            ...potentialFilters // Geri kalan tüm query parametreleri
+            sort: sortQuery, range: rangeQuery, filter: filterObjectQuery, 
+            id: idFromQuery, ...otherPotentialFilters 
         } = req.query;
 
         const [sortField, sortOrderStr] = sortQuery ? JSON.parse(sortQuery) : ['createdAt', 'DESC'];
-        // _start ve _end React Admin'in eski versiyonlarından kalma olabilir, range daha modern.
-        // ra-data-json-server range kullanır: range=[0,9]
-        const [start, end] = rangeQuery ? JSON.parse(rangeQuery) : 
+        let [start, end] = rangeQuery ? JSON.parse(rangeQuery) : 
                              (req.query._start && req.query._end ? [parseInt(req.query._start, 10), parseInt(req.query._end, 10) -1 ] : [0, 9]);
         
+        // Güvenlik: end'in start'tan küçük olmamasını sağla ve makul bir limit
+        if (end < start) end = start + 9;
+        if (end - start + 1 > 1000) end = start + 999; // Max 1000 kayıt gibi bir sınır
+
         const limit = end - start + 1;
         const skip = start;
         const sortOrder = sortOrderStr.toLowerCase() === 'asc' ? 1 : -1;
         const mappedSortField = mapSortKey(sortField);
 
         let finalMongoFilters = {};
-
-        // 1. ID Filtrelerini işle (GET_MANY için idFromQuery kullanılır)
-        if (idFromQuery) {
+        if (idFromQuery) { 
             const idsToQuery = Array.isArray(idFromQuery) ? idFromQuery : [idFromQuery];
-            finalMongoFilters._id = {
-                $in: idsToQuery.map(singleId => 
-                    mongoose.Types.ObjectId.isValid(singleId) ? new mongoose.Types.ObjectId(singleId) : null
-                ).filter(Boolean)
-            };
-        }
-        const reactAdminInternalQueryKeys = ['_sort', '_order', '_start', '_end'];
-
-        // Diğer Alan Filtreleri (potentialFilters objesinden)
-        for (const key in potentialFilters) {
-            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) {
-                const filterValue = potentialFilters[key];
-                if (typeof filterValue === 'string' && filterValue.trim() !== '') {
-                    if (key.endsWith('_like')) {
-                        const actualKey = key.slice(0, -5);
-                        finalMongoFilters[actualKey] = { $regex: filterValue, $options: 'i' };
-                    } else if (key === 'q') {
-                        const searchQuery = { $regex: filterValue, $options: 'i' };
-                        finalMongoFilters.$or = [
-                            { userEmail: searchQuery }, { templateName: searchQuery },
-                        ];
-                    // --- Tarih Aralığı Filtrelerini İşle ---
-                    } else if (key === 'createdAt_gte') {
-                        // Gelen tarih string'ini Date objesine çevir
-                        // Gelen format "YYYY-MM-DD" olabilir. Saat bilgisini de dikkate almak için:
-                        const date = new Date(filterValue);
-                        if (!isNaN(date.getTime())) {
-                            // Başlangıç tarihi için günün başını al (00:00:00)
-                            date.setHours(0, 0, 0, 0);
-                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
-                            finalMongoFilters.createdAt.$gte = date;
-                        }
-                    } else if (key === 'createdAt_lte') {
-                        const date = new Date(filterValue);
-                        if (!isNaN(date.getTime())) {
-                            // Bitiş tarihi için günün sonunu al (23:59:59.999)
-                            date.setHours(23, 59, 59, 999);
-                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
-                            finalMongoFilters.createdAt.$lte = date;
-                        }
-                    } else {
-                        // ... (ObjectId ve diğer tam eşleşme filtreleri) ...
-                        if (['templateId', 'invoiceId', 'transactionId'].includes(key)) {
-                            if (mongoose.Types.ObjectId.isValid(filterValue)) {
-                                finalMongoFilters[key] = new mongoose.Types.ObjectId(filterValue);
-                            }
-                        } else {
-                            if (filterValue === 'true') finalMongoFilters[key] = true;
-                            else if (filterValue === 'false') finalMongoFilters[key] = false;
-                            else finalMongoFilters[key] = filterValue;
-                        }
-                    }
+            finalMongoFilters._id = { $in: idsToQuery.map(id => mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : null).filter(Boolean) };
+        } else {
+            let actualFiltersToProcess = {...otherPotentialFilters};
+            if (filterObjectQuery) {
+                try { const parsedFilter = JSON.parse(filterObjectQuery); actualFiltersToProcess = {...actualFiltersToProcess, ...parsedFilter}; }
+                catch(e) { console.warn(`[${resourceName.toUpperCase()}] Could not parse filterObjectQuery`, e); }
+            }
+            const userDefinedFilters = {};
+            const reactAdminKeys = ['_sort', '_order', '_start', '_end', 'sort', 'range', 'filter', 'id'];
+            for (const key in actualFiltersToProcess) {
+                if (actualFiltersToProcess.hasOwnProperty(key) && !reactAdminKeys.includes(key)) {
+                    userDefinedFilters[key] = actualFiltersToProcess[key];
                 }
             }
+            finalMongoFilters = buildMongoFilters(userDefinedFilters, resourceSchemaFields);
         }
         
-        // filterObjectQuery'den gelen filtreleri de işle (eğer varsa)
-        if (filterObjectQuery) {
-            try {
-                const parsedFilter = JSON.parse(filterObjectQuery);
-                for (const key in parsedFilter) {
-                    if (parsedFilter.hasOwnProperty(key) && !finalMongoFilters.hasOwnProperty(key) && !key.startsWith('_')) {
-                         // _q, _id gibi özel React Admin filtrelerini veya zaten işlenmişleri atla
-                        const filterValue = parsedFilter[key];
-                        // Benzer şekilde _like, ObjectId, boolean kontrolleri yapılabilir
-                        finalMongoFilters[key] = filterValue;
-                    }
-                }
-            } catch (e) {
-                console.warn("Could not parse filterObjectQuery:", filterObjectQuery, e);
-            }
-        }
-
-
-        console.log(`[TRANSACTIONS] Request Query: ${JSON.stringify(req.query)}`);
-        console.log(`[TRANSACTIONS] Applying Mongo Filters: ${JSON.stringify(finalMongoFilters)}`);
-
-        const total = await Transaction.countDocuments(finalMongoFilters);
-        const transactions = await Transaction.find(finalMongoFilters)
+        const total = await Model.countDocuments(finalMongoFilters);
+        let query = Model.find(finalMongoFilters)
             .sort({ [mappedSortField]: sortOrder })
             .skip(idFromQuery ? 0 : skip)
-            .limit(idFromQuery ? total : limit)
-            .lean();
+            .limit(idFromQuery ? total : limit);
 
-        const formattedTransactions = transactions.map(t => ({ ...t, id: t._id.toString() }));
+        if (populateOptions && !idFromQuery) { // Sadece normal listelemede populate et, GET_MANY için değil
+            query = query.populate(populateOptions);
+        }
+        
+        const documents = await query.lean();
+        // formattedDocuments artık id alanını her zaman içerecek
+        const formattedDocuments = documents.map(doc => {
+            const formattedDoc = { ...doc, id: doc._id.toString() };
+            // Populate edilmiş alanlar için de 'id' ekle (eğer obje ise ve _id'si varsa)
+            if (populateOptions && !idFromQuery) { // Sadece populate edildiyse
+                (Array.isArray(populateOptions) ? populateOptions : [populateOptions]).forEach(pop => {
+                    const path = typeof pop === 'string' ? pop : pop.path;
+                    if (formattedDoc[path] && typeof formattedDoc[path] === 'object' && formattedDoc[path] !== null && formattedDoc[path]._id) {
+                        formattedDoc[path].id = formattedDoc[path]._id.toString();
+                    }
+                });
+            }
+            // ReferenceField'ın doğru çalışması için, referans yapılan alanın (örn: transactionId)
+            // populate edilmemiş ham ID değerini içermesi gerekir.
+            // Eğer populateOptions transactionId'yi içeriyorsa, bu frontend'de sorun yaratır.
+            // Bu yüzden, eğer ReferenceField kullanacaksak, populate etmemek en iyisi.
+            return formattedDoc;
+        });
+
         res.setHeader('X-Total-Count', total.toString());
         res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-        res.json(formattedTransactions);
+        res.json(formattedDocuments);
 
     } catch (error) {
-        console.error('Error fetching transactions for admin:', error);
-        res.status(500).json({ message: 'Transaction listesi alınırken hata oluştu.' });
+        console.error(`Error fetching ${resourceName} for admin:`, error);
+        res.status(500).json({ message: `${resourceName} listesi alınırken hata oluştu.` });
     }
+};
+
+// --- TRANSACTIONS ---
+router.get('/transactions', (req, res) => {
+    // Transactions listesi için populate gerekmiyor (kendi başına bir kaynak)
+    handleListRequest(req, res, Transaction, 'transactions', transactionResourceFields);
 });
-
-
 
 router.get('/transactions/:id', async (req, res) => { 
     try {
@@ -147,7 +141,6 @@ router.get('/transactions/:id', async (req, res) => {
         res.status(500).json({ message: 'Transaction detayı alınırken hata oluştu.' });
     }
 });
-
 
 router.get('/transactions-pending-invoice', async (req, res) => {
     try {
@@ -215,122 +208,13 @@ router.get('/transactions-pending-invoice', async (req, res) => {
     }
 });
 
-
 // --- INVOICES ---
-router.get('/invoices', async (req, res) => {
-    try {
-        const { 
-            sort: sortQuery, 
-            range: rangeQuery, 
-            filter: filterObjectQuery, // Bu, filter={key:value} string'i olabilir
-            id: idFromQuery, 
-            ...potentialFilters // Geri kalan tüm query parametreleri
-        } = req.query;
-
-        const [sortField, sortOrderStr] = sortQuery ? JSON.parse(sortQuery) : ['createdAt', 'DESC'];
-        const [start, end] = rangeQuery ? JSON.parse(rangeQuery) : 
-                             (req.query._start && req.query._end ? [parseInt(req.query._start, 10), parseInt(req.query._end, 10) -1 ] : [0, 9]); // _start, _end desteği
-        
-        const limit = end - start + 1;
-        const skip = start;
-        const sortOrder = sortOrderStr.toLowerCase() === 'asc' ? 1 : -1;
-        const mappedSortField = mapSortKey(sortField);
-
-        let finalMongoFilters = {};
-
-        if (idFromQuery) { /* ... GET_MANY id işleme ... */
-            const idsToQuery = Array.isArray(idFromQuery) ? idFromQuery : [idFromQuery];
-            finalMongoFilters._id = {
-                $in: idsToQuery.map(singleId => 
-                    mongoose.Types.ObjectId.isValid(singleId) ? new mongoose.Types.ObjectId(singleId) : null
-                ).filter(Boolean)
-            };
-        }
-        
-        const reactAdminInternalQueryKeys = ['_sort', '_order', '_start', '_end'];
-        for (const key in potentialFilters) {
-            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) {
-                const filterValue = potentialFilters[key];
-                if (typeof filterValue === 'string' && filterValue.trim() !== '') {
-                    if (key.endsWith('_like')) {
-                        const actualKey = key.slice(0, -5);
-                        finalMongoFilters[actualKey] = { $regex: filterValue, $options: 'i' };
-                    } else if (key === 'q') {
-                        // ... q filtresi ...
-                        const searchQuery = { $regex: filterValue, $options: 'i' };
-                        finalMongoFilters.$or = [
-                            { customerEmail: searchQuery }, { templateName: searchQuery }, { invoiceNumber: searchQuery }
-                        ];
-                    } else if (key === 'createdAt_gte') { 
-                        const date = new Date(filterValue);
-                        if (!isNaN(date.getTime())) {
-                            date.setHours(0, 0, 0, 0);
-                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
-                            finalMongoFilters.createdAt.$gte = date;
-                        }
-                    } else if (key === 'createdAt_lte') { 
-                        const date = new Date(filterValue);
-                        if (!isNaN(date.getTime())) {
-                            date.setHours(23, 59, 59, 999);
-                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
-                            finalMongoFilters.createdAt.$lte = date;
-                        }
-                    } else {
-                        // ... ObjectId ve diğer tam eşleşme filtreleri ...
-                        if (key === 'transactionId') {
-                            if (mongoose.Types.ObjectId.isValid(filterValue)) {
-                                finalMongoFilters[key] = new mongoose.Types.ObjectId(filterValue);
-                            }
-                        } else { 
-                            finalMongoFilters[key] = filterValue;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // filterObjectQuery'den gelen filtreleri de işle (eğer varsa)
-        if (filterObjectQuery) {
-            try {
-                const parsedFilter = JSON.parse(filterObjectQuery);
-                for (const key in parsedFilter) {
-                    // Zaten işlenmiş veya React Admin içsel anahtarı değilse ve finalMongoFilters'da yoksa ekle
-                    if (parsedFilter.hasOwnProperty(key) && 
-                        !finalMongoFilters.hasOwnProperty(key) && 
-                        !reactAdminInternalQueryKeys.includes(key) && 
-                        key !== 'id' && key !=='q' /* q yukarıda potentialFilters'dan gelebilir */) {
-                        finalMongoFilters[key] = parsedFilter[key];
-                    }
-                }
-            } catch (e) { console.warn(`[INVOICES] Could not parse filterObjectQuery: ${filterObjectQuery}`, e); }
-        }
-
-        console.log(`[INVOICES] Request Query: ${JSON.stringify(req.query)}`);
-        console.log(`[INVOICES] Applying Mongo Filters: ${JSON.stringify(finalMongoFilters)}`);
-
-        const total = await Invoice.countDocuments(finalMongoFilters);
-        const invoices = await Invoice.find(finalMongoFilters)
-            .sort({ [mappedSortField]: sortOrder })
-            .skip(idFromQuery ? 0 : skip)
-            .limit(idFromQuery ? total : limit)
-            .lean();
-        const formattedInvoices = invoices.map(inv => ({ 
-        ...inv, 
-        id: inv._id.toString(),
-        // transactionId alanı burada ObjectId olarak kalmalı, ReferenceField bunu alır.
-        // Eğer string'e çevirirseniz de ReferenceField çalışır.
-        // transactionId: inv.transactionId ? inv.transactionId.toString() : null // Bu satır opsiyonel
-    }));
-        res.setHeader('X-Total-Count', total.toString());
-        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-        res.json(formattedInvoices);
-
-    } catch (error) {
-        console.error('Error fetching invoices for admin:', error);
-        res.status(500).json({ message: 'Fatura listesi alınırken hata oluştu.' });
-    }
+router.get('/invoices', (req, res) => {
+    // InvoiceList'te transactionId için ReferenceField kullanıyorsak, burada populate ETMEMELİYİZ.
+    // ReferenceField kendi GET_MANY isteğini yapacak.
+    // Eğer populate edilmiş veriyi doğrudan göstermek isteseydik (FunctionField ile), o zaman populate ederdik.
+    handleListRequest(req, res, Invoice, 'invoices', invoiceResourceFields); 
 });
-
 
 router.get('/invoices/:id', async (req, res) => {
      try {
@@ -361,7 +245,6 @@ router.put('/invoices/:id', async (req, res) => {
         // Sadece izin verilen alanların güncellenmesini sağla
         const updateData = {};
         if (status) {
-            // Invoice modelindeki enum değerlerine uygunluğunu kontrol edebilirsiniz
             const validStatuses = Invoice.schema.path('status').enumValues;
             if (validStatuses.includes(status)) {
                 updateData.status = status;
@@ -407,120 +290,10 @@ router.put('/invoices/:id', async (req, res) => {
 });
 
 // --- CONSENT LOGS ---
-router.get('/consent-logs', async (req, res) => {
-    try {
-        const { 
-            sort: sortQuery, 
-            range: rangeQuery, 
-            filter: filterObjectQuery,
-            id: idFromQuery, 
-            ...potentialFilters 
-        } = req.query;
-
-        const [sortField, sortOrderStr] = sortQuery ? JSON.parse(sortQuery) : ['createdAt', 'DESC'];
-        const [start, end] = rangeQuery ? JSON.parse(rangeQuery) : 
-                             (req.query._start && req.query._end ? [parseInt(req.query._start, 10), parseInt(req.query._end, 10) -1 ] : [0, 9]);
-        
-        const limit = end - start + 1;
-        const skip = start;
-        const sortOrder = sortOrderStr.toLowerCase() === 'asc' ? 1 : -1;
-        const mappedSortField = mapSortKey(sortField);
-
-        let finalMongoFilters = {};
-
-        if (idFromQuery) { /* ... GET_MANY id işleme ... */
-             const idsToQuery = Array.isArray(idFromQuery) ? idFromQuery : [idFromQuery];
-            finalMongoFilters._id = {
-                $in: idsToQuery.map(singleId => 
-                    mongoose.Types.ObjectId.isValid(singleId) ? new mongoose.Types.ObjectId(singleId) : null
-                ).filter(Boolean)
-            };
-        }
-        
-        // --- potentialFilters işlenirken React Admin anahtarlarını atla ---
-        const reactAdminInternalQueryKeys = ['_sort', '_order', '_start', '_end'];
-        for (const key in potentialFilters) {
-            if (potentialFilters.hasOwnProperty(key) && !reactAdminInternalQueryKeys.includes(key)) {
-                const filterValue = potentialFilters[key];
-                if (typeof filterValue === 'string' && filterValue.trim() !== '') {
-                    if (key.endsWith('_like')) {
-                        const actualKey = key.slice(0, -5);
-                        finalMongoFilters[actualKey] = { $regex: filterValue, $options: 'i' };
-                    } else if (key === 'q') {
-                        // ... q filtresi ...
-                        const searchQuery = { $regex: filterValue, $options: 'i' };
-                        finalMongoFilters.$or = [
-                            { userEmail: searchQuery }, { documentVersion: searchQuery }, { ipAddress: searchQuery }
-                        ];
-                    } else if (key === 'createdAt_gte') { 
-                        const date = new Date(filterValue);
-                        if (!isNaN(date.getTime())) {
-                            date.setHours(0, 0, 0, 0);
-                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
-                            finalMongoFilters.createdAt.$gte = date;
-                        }
-                    } else if (key === 'createdAt_lte') { 
-                        const date = new Date(filterValue);
-                        if (!isNaN(date.getTime())) {
-                            date.setHours(23, 59, 59, 999);
-                            if (!finalMongoFilters.createdAt) finalMongoFilters.createdAt = {};
-                            finalMongoFilters.createdAt.$lte = date;
-                        }
-                    } else {
-                        // ... ObjectId ve diğer tam eşleşme filtreleri ...
-                        if (key === 'transactionId') {
-                            if (mongoose.Types.ObjectId.isValid(filterValue)) {
-                                finalMongoFilters[key] = new mongoose.Types.ObjectId(filterValue);
-                            }
-                        } else { 
-                            finalMongoFilters[key] = filterValue;
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (filterObjectQuery) {
-            try {
-                const parsedFilter = JSON.parse(filterObjectQuery);
-                for (const key in parsedFilter) {
-                    if (parsedFilter.hasOwnProperty(key) && 
-                        !finalMongoFilters.hasOwnProperty(key) && 
-                        !reactAdminInternalQueryKeys.includes(key) && 
-                        key !== 'id' && key !== 'q') {
-                        finalMongoFilters[key] = parsedFilter[key];
-                    }
-                }
-            } catch (e) { console.warn(`[CONSENTLOGS] Could not parse filterObjectQuery: ${filterObjectQuery}`, e); }
-        }
-        // --- GÜNCELLENDİ SON ---
-
-        console.log(`[CONSENTLOGS] Request Query: ${JSON.stringify(req.query)}`);
-        console.log(`[CONSENTLOGS] Applying Mongo Filters: ${JSON.stringify(finalMongoFilters)}`);
-
-        const total = await ConsentLog.countDocuments(finalMongoFilters);
-        // ... (geri kalan kod aynı)
-        const consentLogs = await ConsentLog.find(finalMongoFilters)
-            .sort({ [mappedSortField]: sortOrder })
-            .skip(idFromQuery ? 0 : skip)
-            .limit(idFromQuery ? total : limit)
-            .lean();
-        const formattedConsentLogs = consentLogs.map(log => ({ 
-        ...log, 
-        id: log._id.toString(),
-        // transactionId: log.transactionId ? log.transactionId.toString() : null // Opsiyonel
-    }));
-        res.setHeader('X-Total-Count', total.toString());
-        res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
-        res.json(formattedConsentLogs);
-
-    } catch (error) {
-        console.error('Error fetching consent logs for admin:', error);
-        res.status(500).json({ message: 'Onay log listesi alınırken hata oluştu.' });
-    }
+router.get('/consent-logs', (req, res) => {
+    // ConsentLogList'te transactionId için ReferenceField kullanıyorsak, burada populate ETMEMELİYİZ.
+    handleListRequest(req, res, ConsentLog, 'consent-logs', consentLogResourceFields); 
 });
-
-
 
 router.get('/consent-logs/:id', async (req, res) => {
     try {
