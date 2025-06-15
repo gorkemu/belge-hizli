@@ -1,5 +1,5 @@
 // admin-panel-frontend/src/components/transactions/TransactionShow.jsx
-import * as React from "react"; // useState'i import etmeyi unutmayın
+import * as React from "react";
 import {
     Show,
     SimpleShowLayout,
@@ -9,12 +9,16 @@ import {
     ReferenceField,
     FunctionField,
     ChipField,
-    useNotify,      
-    useRefresh,     
-    useRecordContext, 
-    Button          
+    useNotify,
+    useRefresh,
+    useRecordContext,
+    Button,
+    Link 
 } from "react-admin";
-import axios from 'axios'; 
+import axios from 'axios';
+import { Link as RouterLink } from 'react-router-dom'; // React Router Link'i de tutabiliriz, ama RA Link daha entegre
+import EditIcon from '@mui/icons-material/Edit'; 
+import ListIcon from '@mui/icons-material/List';   
 
 // JSON verisini formatlı göstermek için helper component
 const JsonDataField = ({ source, record = {} }) => {
@@ -84,40 +88,82 @@ const ResendEmailButton = () => {
 };
 // --- BUTON SONU ---
 
-export const TransactionShow = (props) => (
-    // Show component'ine actions prop'u ile butonu ekleyebiliriz veya SimpleShowLayout içine
-    <Show {...props} >
-        <SimpleShowLayout>
-            <ResendEmailButton />
+export const TransactionShow = (props) => {
+    // useRecordContext'i burada da alabiliriz, butonlar için props olarak geçmek yerine.
+    // Ancak ResendEmailButton kendi içinde zaten alıyor, o yüzden burada tekrar almak şart değil.
+    // const record = useRecordContext(); // Eğer aşağıdaki butonları ayrı component yapmayacaksak
 
-            <TextField source="id" label="Transaction ID" />
-            <TextField source="userEmail" label="Kullanıcı E-postası" />
-            <TextField source="templateName" label="Şablon Adı" />
-            <TextField source="templateId" label="Şablon ID (Referans Değil)" />
+    return (
+        <Show {...props} >
+            <SimpleShowLayout>
+                <ResendEmailButton /> {/* E-posta Tekrar Gönder Butonu */}
 
-            <NumberField source="amount" label="Tutar" options={{ style: 'currency', currency: 'TRY' }} />
-            <TextField source="currency" label="Para Birimi" />
-            <ChipField source="status" label="Durum" />
-            <TextField source="paymentGatewayRef" label="Ödeme Ref." emptyText="-" />
-            
-            <ReferenceField label="Fatura Detayı" source="invoiceId" reference="invoices" link="show" allowEmpty>
-                <TextField source="id" />
-            </ReferenceField>
-            
-            {/* Consent Log için placeholder veya link */}
-            {/* <TextField source="consentLogId" label="Onay Log ID" /> */}
+                <TextField source="id" label="Transaction ID" />
+                <TextField source="userEmail" label="Kullanıcı E-postası" />
+                <TextField source="templateName" label="Şablon Adı" />
+                <TextField source="templateId" label="Şablon ID (Referans Değil)" />
+
+                <NumberField source="amount" label="Tutar" options={{ style: 'currency', currency: 'TRY' }} />
+                <TextField source="currency" label="Para Birimi" />
+                <ChipField source="status" label="Durum" />
+                <TextField source="paymentGatewayRef" label="Ödeme Ref." emptyText="-" />
+                
+                {/* Fatura Alanı ve Linkleri */}
+                <ReferenceField label="Fatura ID" source="invoiceId" reference="invoices" link="show" allowEmpty>
+                    <TextField source="id" />
+                </ReferenceField>
+                
+                {/* Faturayı Düzenle Butonu (Eğer invoiceId varsa) */}
+                {/* FunctionField, record'u child component'e props olarak geçirir */}
+                <FunctionField label="Fatura Aksiyonları" render={record => 
+                    record && record.invoiceId ? (
+                        <Button
+                            component={RouterLink} // Veya React Admin'in <Link> component'i
+                            to={`/invoices/${record.invoiceId}/edit`}
+                            label="Faturayı Düzenle"
+                            variant="outlined"
+                            size="small"
+                            startIcon={<EditIcon />}
+                            sx={{ marginTop: '0px', marginLeft: '1em' }} // ReferenceField ile aynı hizada olması için
+                        >
+                            <EditIcon sx={{ marginRight: '0.5em' }} /> Faturayı Düzenle
+                        </Button>
+                    ) : (
+                        <span>Fatura oluşturulmamış.</span>
+                    )
+                } />
 
 
-            <DateField source="createdAt" label="Oluşturulma Tarihi" showTime />
-            <DateField source="updatedAt" label="Güncellenme Tarihi" showTime />
-            
-            <FunctionField label="Form Verileri" render={record => <JsonDataField source="formDataSnapshot" record={record} />} />
-            <FunctionField 
-                label="Fatura Bilgileri" 
-                render={record => record.billingInfoSnapshot ? <JsonDataField source="billingInfoSnapshot" record={record} /> : "Girilmemiş"} 
-            />
-
-            <TextField source="errorMessage" label="Hata Mesajı" emptyText="-" />
-        </SimpleShowLayout>
-    </Show>
-);
+                {/* Onay Loglarına Filtreli Link */}
+                {/* FunctionField kullanarak butonu record bazlı render edelim */}
+                <FunctionField label="Onay Logları" render={record =>
+                    record && record.id ? (
+                        <Button
+                            component={Link} // React Admin'in Link component'i
+                            to={{
+                                pathname: '/consent-logs',
+                                search: `filter=${JSON.stringify({ transactionId: record.id })}&displayedFilters=${JSON.stringify({ transactionId: true })}`,
+                            }}
+                            label="Bu İşleme Ait Onay Loglarını Gör"
+                            variant="outlined"
+                            size="small"
+                            startIcon={<ListIcon />}
+                        >
+                             <ListIcon sx={{ marginRight: '0.5em' }} /> Onay Logları
+                        </Button>
+                    ) : null
+                }/>
+                
+                <DateField source="createdAt" label="Oluşturulma Tarihi" showTime />
+                <DateField source="updatedAt" label="Güncellenme Tarihi" showTime />
+                
+                <FunctionField label="Form Verileri" render={record => <JsonDataField source="formDataSnapshot" record={record} />} />
+                <FunctionField 
+                    label="Fatura Bilgileri" 
+                    render={record => record.billingInfoSnapshot ? <JsonDataField source="billingInfoSnapshot" record={record} /> : "Girilmemiş"} 
+                />
+                <TextField source="errorMessage" label="Hata Mesajı" emptyText="-" />
+            </SimpleShowLayout>
+        </Show>
+    );
+};
