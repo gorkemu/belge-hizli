@@ -15,7 +15,8 @@ import {
 
 const TransactionFilter = (props) => (
     <Filter {...props}>
-        <TextInput label="Kullanıcı E-postası" source="userEmail_like" alwaysOn resettable />
+        <TextInput label="Genel Ara" source="q" resettable />
+        <TextInput label="Kullanıcı E-postası" source="userEmail_like" resettable />
         <TextInput label="Şablon Adı" source="templateName_like" resettable />
         <SelectInput source="status" label="Durum" choices={[
             { id: 'initiated', name: 'Başlatıldı' },

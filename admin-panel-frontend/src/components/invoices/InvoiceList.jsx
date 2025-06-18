@@ -18,7 +18,8 @@ import {
 
 const InvoiceFilter = (props) => (
     <Filter {...props}>
-        <TextInput label="Müşteri E-postası" source="customerEmail_like" alwaysOn resettable />
+        <TextInput label="Genel Ara" source="q" resettable />
+        <TextInput label="Müşteri E-postası" source="customerEmail_like" resettable />
         <SelectInput source="status" label="Fatura Durumu" choices={[
             { id: 'pending_creation', name: 'Oluşturulmayı Bekliyor' },
             { id: 'created_manual', name: 'Manuel Oluşturuldu' },

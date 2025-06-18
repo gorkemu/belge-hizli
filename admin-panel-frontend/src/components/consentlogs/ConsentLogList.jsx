@@ -16,7 +16,8 @@ import {
 
 const ConsentLogFilter = (props) => (
     <Filter {...props}>
-        <TextInput label="Kullanıcı E-postası" source="userEmail_like" alwaysOn resettable />
+        <TextInput label="Genel Ara" source="q" resettable />
+        <TextInput label="Kullanıcı E-postası" source="userEmail_like" resettable />
         <TextInput label="Belge Versiyonu" source="documentVersion_like" resettable />
         
         <ReferenceInput
