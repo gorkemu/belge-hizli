@@ -1,21 +1,22 @@
-import * as React from "react";
+// admin-panel-frontend/src/components/invoices/InvoiceShow.jsx
+import React from 'react';
 import {
     Show,
     SimpleShowLayout,
     TextField,
     DateField,
     NumberField,
-    ReferenceField,
     FunctionField,
     ChipField,
     UrlField,
-    useRecordContext 
+    useGetOne,
+    Loading,
+    Link // React Admin'in Link'i
 } from "react-admin";
-import { Link as RouterLink } from 'react-router-dom'; 
 
-// JSON verisini formatlı göstermek için helper component 
+// JSON verisini formatlı göstermek için helper component
 const JsonDataField = ({ source, record = {} }) => {
-    if (!record || typeof record[source] === 'undefined') return null;
+    if (!record || typeof record[source] === 'undefined') return <ChipField record={{v:'-'}} source="v" size="small"/>;
     let data = record[source];
     if (typeof data === 'string') {
         try { data = JSON.parse(data); } catch (e) { return <pre>{data}</pre>; }
@@ -23,20 +24,44 @@ const JsonDataField = ({ source, record = {} }) => {
     return <pre>{JSON.stringify(data, null, 2)}</pre>;
 };
 
-// ReferenceField için özel child component 
-const LinkedTransactionField = () => {
-    const record = useRecordContext(); // Bu, ReferenceField tarafından bulunan Transaction objesi olmalı
-    if (!record) return null; // Kayıt yoksa veya yükleniyorsa bir şey gösterme (ReferenceField allowEmpty halleder)
+// İlgili Transaction'ı göstermek için özel bir alan component'i
+const RelatedTransactionForInvoiceField = (props) => {
+    const { record: invoiceRecord } = props; // Ana Invoice kaydını props'tan al
+
+    if (!invoiceRecord || !invoiceRecord.transactionId) {
+        return <TextField record={invoiceRecord} source="transactionId" label="Transaction ID (Ham)" emptyText="-" />;
+    }
     
-    // Transaction ID'yi ve templateName'i göster, ID'ye tıklandığında Transaction Show sayfasına git.
-    // React Admin'in kendi linklemesi yerine React Router Link kullanabiliriz (daha fazla kontrol)
-    // veya doğrudan React Admin'in <Link to="..."> component'ini kullanabiliriz.
-    // En basiti, ReferenceField'ın link="show" prop'una güvenmektir.
+    const transactionIdToFetch = typeof invoiceRecord.transactionId === 'string' 
+        ? invoiceRecord.transactionId 
+        : (invoiceRecord.transactionId._id ? invoiceRecord.transactionId._id.toString() : invoiceRecord.transactionId.toString());
+
+    const { data: transaction, isLoading, error } = useGetOne(
+        'transactions',
+        { id: transactionIdToFetch }
+    );
+
+    if (isLoading) return <Loading />;
+    if (error) {
+        console.error("Error fetching related transaction for InvoiceShow:", error, "for ID:", transactionIdToFetch);
+        return (
+            <ChipField 
+                record={{ statusMessage: `Transaction Yüklenemedi (ID: ${transactionIdToFetch.slice(-6)}...)` }} 
+                source="statusMessage" 
+                sx={{ backgroundColor: 'error.light', color: 'error.contrastText' }}
+            />
+        );
+    }
+    if (!transaction) {
+        return <TextField record={{ idVal: transactionIdToFetch }} source="idVal" label="Transaction Bulunamadı" />;
+    }
+
     return (
-        <>
-            ID: <TextField record={record} source="id" sx={{ display: 'inline', mr: 1 }} />
-            (<TextField record={record} source="templateName" sx={{ display: 'inline' }} />)
-        </>
+        <Link to={`/transactions/${transaction.id}/show`} sx={{ textDecoration: 'none', color: 'inherit' }}>
+            <TextField record={transaction} source="templateName" component="span" sx={{ fontWeight: 'bold', mr: 1 }} emptyText="İsimsiz Şablon" />
+            (ID: <TextField record={transaction} source="id" component="span" sx={{ fontStyle: 'italic', mr: 1 }}/>
+            Durum: <ChipField record={transaction} source="status" size="small" component="span" />)
+        </Link>
     );
 };
 
@@ -48,27 +73,17 @@ export const InvoiceShow = (props) => (
             <TextField source="invoiceNumber" label="Fatura Numarası" emptyText="-" />
             <ChipField source="status" label="Fatura Durumu" />
 
-            <ReferenceField
-                label="İlgili Transaction"
-                source="transactionId" // Invoice objesindeki transaction'ın ID'sini tutan alan
-                reference="transactions" // Hangi resource'a bakılacak
-                link="show" // Tıklandığında transactions resource'unun show sayfasına git
-                allowEmpty // Eğer transactionId boşsa veya bulunamazsa hata verme
-            >
-                {/* Child component, bulunan transaction kaydını alır ve onun bir alanını gösterir */}
-                {/* <TextField source="id" /> {/* Sadece ID'yi göstermek için */}
-                <LinkedTransactionField />
-            </ReferenceField>
-
+            <FunctionField label="İlgili Transaction" render={record => <RelatedTransactionForInvoiceField record={record} />} />
+            
             <NumberField source="amount" label="Tutar" options={{ style: 'currency', currency: 'TRY' }} />
             <TextField source="currency" label="Para Birimi" />
 
             <hr style={{ margin: '20px 0', borderTop: '1px solid #eee', gridColumn: 'span 2' }}/>
             <h3>Fatura Bilgileri (Invoice Kaydından)</h3>
             <TextField source="billingType" label="Fatura Tipi" />
-            <FunctionField label="Müşteri/Firma Adı" render={record => record.billingType === 'bireysel' ? record.customerName : record.companyName} />
-            <FunctionField label="TCKN/VKN" render={record => record.billingType === 'bireysel' ? record.customerTckn : record.taxId} />
-            <FunctionField label="Vergi Dairesi" render={record => record.billingType === 'kurumsal' ? record.taxOffice : null} />
+            <FunctionField label="Müşteri/Firma Adı" render={record => record.billingType === 'bireysel' ? record.customerName : record.companyName} emptyText="-"/>
+            <FunctionField label="TCKN/VKN" render={record => record.billingType === 'bireysel' ? record.customerTckn : record.taxId} emptyText="-"/>
+            <FunctionField label="Vergi Dairesi" render={record => record.billingType === 'kurumsal' ? record.taxOffice : null} emptyText="-"/>
             <TextField source="customerAddress" label="Fatura Adresi" />
             <TextField source="customerEmail" label="Fatura E-postası" />
             

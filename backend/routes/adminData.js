@@ -222,11 +222,11 @@ router.get('/invoices/:id', async (req, res) => {
             return res.status(400).json({ message: 'Geçersiz Invoice ID formatı.' });
         }
         const invoice = await Invoice.findById(req.params.id)
-            .populate('transactionId', 'userEmail amount status createdAt') // İlişkili transaction'dan daha fazla bilgi
             .lean();
         if (!invoice) {
             return res.status(404).json({ message: 'Fatura bulunamadı.' });
         }
+        // transactionId artık sadece ID olarak dönecek
         res.json({ ...invoice, id: invoice._id.toString() });
     } catch (error) {
         console.error('Error fetching single invoice for admin:', error);
@@ -301,11 +301,11 @@ router.get('/consent-logs/:id', async (req, res) => {
             return res.status(400).json({ message: 'Geçersiz ConsentLog ID formatı.' });
         }
         const consentLog = await ConsentLog.findById(req.params.id)
-            .populate('transactionId', 'templateName status userEmail createdAt')
             .lean();
         if (!consentLog) {
             return res.status(404).json({ message: 'Onay logu bulunamadı.' });
         }
+        // transactionId artık sadece ID olarak dönecek
         res.json({ ...consentLog, id: consentLog._id.toString() });
     } catch (error) {
         console.error('Error fetching single consent log for admin:', error);

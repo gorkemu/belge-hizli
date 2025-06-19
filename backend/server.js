@@ -21,6 +21,8 @@ const documentRoutes = require('./routes/document');
 const path = require('path');
 const adminAuthRoutes = require('./routes/adminAuth');
 const adminDataRoutes = require('./routes/adminData');
+const AdminUser = require('./models/adminUser'); 
+const bcrypt = require('bcryptjs');  
 
 dotenv.config();
 const app = express();
@@ -63,21 +65,46 @@ if (!uri) {
 }
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-	.then(() => {
-		console.log('MongoDB Atlas bağlantısı başarılı!');
+	.then(async () => { 
+        console.log('MongoDB Atlas bağlantısı başarılı!');
 
-		// --- Rotaları Bağlantı Başarılı Olduktan Sonra Yükle/Kullan ---
-		const templateRoutes = require('./routes/templates');
-		const paymentRoutes = require('./routes/payment'); 
-		const documentDownloadRoutes = require('./routes/document');
-		const adminAuthRoutes = require('./routes/adminAuth');
-		const adminDataRoutes = require('./routes/adminData');
+        // --- İlk Admin Kullanıcısını Kontrol Et/Oluştur ---
+        try {
+            const adminCount = await AdminUser.countDocuments();
+            if (adminCount === 0) {
+                const adminUsernameEnv = process.env.ADMIN_USERNAME;
+                const adminPasswordEnv = process.env.ADMIN_PASSWORD; // Bu ham şifre olacak
 
-		app.use('/api', templateRoutes); 
-		app.use('/api/payment', paymentRoutes); 
-		app.use('/api/document', documentDownloadRoutes);
-		app.use('/api/admin', adminAuthRoutes);
-		app.use('/api/admin-data', adminDataRoutes);
+                if (adminUsernameEnv && adminPasswordEnv) {
+                    const salt = await bcrypt.genSalt(10);
+                    const hashedPassword = await bcrypt.hash(adminPasswordEnv, salt);
+                    
+                    await AdminUser.create({
+                        username: adminUsernameEnv.toLowerCase(),
+                        passwordHash: hashedPassword
+                    });
+                    console.log('Varsayılan admin kullanıcısı başarıyla oluşturuldu.');
+                } else {
+                    console.warn('Varsayılan admin kullanıcısı oluşturulamadı: ADMIN_USERNAME veya ADMIN_PASSWORD .env dosyasında eksik.');
+                }
+            }
+        } catch (error) {
+            console.error('İlk admin kullanıcısı kontrol edilirken/oluşturulurken hata:', error);
+        }
+		// --- İlk Admin Kullanıcısını Kontrol Et/Oluştur Sonu ---
+
+        // Rotaları Yükle
+        const templateRoutes = require('./routes/templates');
+        const paymentRoutes = require('./routes/payment');
+        const documentRoutes = require('./routes/document');
+        const adminAuthRoutes = require('./routes/adminAuth');
+        const adminDataRoutes = require('./routes/adminData');
+
+        app.use('/api', templateRoutes);
+        app.use('/api/payment', paymentRoutes);
+        app.use('/api/document', documentRoutes);
+        app.use('/api/admin', adminAuthRoutes); // Bu /login ve /change-password'u içerecek
+        app.use('/api/admin-data', adminDataRoutes);
 		
 		// --- Rotalar Sonu ---
 
