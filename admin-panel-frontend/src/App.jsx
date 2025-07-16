@@ -1,9 +1,9 @@
-import * as React from "react";
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes as DomRoutes, Link as RouterDomLink } from 'react-router-dom'; // Eğer ana sitenizde de Router varsa, burada tekrar Router sarmalamaya gerek yok.
 import { 
     Admin, Resource, ListGuesser, ShowGuesser, Edit, 
     Layout, Menu, MenuItemLink, CustomRoutes, 
-    Link 
+    Link, Title, Loading, Error 
 } from 'react-admin';
 import jsonServerProvider from 'ra-data-json-server';
 import authProvider from './authProvider';
@@ -27,15 +27,98 @@ import { InvoiceEdit } from './components/invoices/InvoiceEdit';
 import { ConsentLogList } from './components/consentlogs/ConsentLogList';
 import { ConsentLogShow } from './components/consentlogs/ConsentLogShow';
 
+import { Card, CardContent, Typography, Grid, Paper } from '@mui/material'; // MUI componentleri
+import axios from 'axios'; // API isteği için
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 const ADMIN_DATA_API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'}/admin-data`;
 const dataProvider = jsonServerProvider(ADMIN_DATA_API_URL);
 
-const Dashboard = () => (
-    <div>
-        <h1>Admin Paneline Hoş Geldiniz</h1>
-        <p>Buradan kayıtları yönetebilirsiniz.</p>
-    </div>
-);
+const Dashboard = () => {
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await axios.get(`${API_BASE_URL}/admin-data/dashboard-stats`);
+                setStats(response.data);
+            } catch (err) {
+                console.error("Error fetching dashboard stats:", err);
+                setError(err.response?.data?.message || "İstatistikler yüklenirken bir hata oluştu.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []); // Boş bağımlılık dizisi, sadece component mount olduğunda çalışır
+
+    if (loading) return <Loading />;
+    if (error) return <Error title="Hata" message={error} />; // React Admin'in Error component'i veya özel bir hata gösterimi
+    if (!stats) return <Typography>İstatistik verisi bulunamadı.</Typography>;
+
+    // Basit stil objeleri (isteğe bağlı, CSS Modules ile de yapılabilir)
+    const statCardStyle = {
+        padding: '20px',
+        textAlign: 'center',
+        minHeight: '120px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    };
+
+    return (
+        <Card sx={{ margin: 2 }}>
+            <Title title="Admin Paneli - Genel Bakış" />
+            <CardContent>
+                <Typography variant="h5" component="h1" gutterBottom>
+                    Hoş Geldiniz!
+                </Typography>
+                <Typography paragraph>
+                    Sistemin genel durumu aşağıdadır:
+                </Typography>
+                <Grid container spacing={3} sx={{ marginTop: 2 }}>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Paper sx={{...statCardStyle, backgroundColor: '#e3f2fd' }}> {/* Açık Mavi */}
+                            <Typography variant="h6">Toplam İşlem</Typography>
+                            <Typography variant="h3">{stats.totalTransactions}</Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Paper sx={{...statCardStyle, backgroundColor: '#e8f5e9' }}> {/* Açık Yeşil */}
+                            <Typography variant="h6">Bugünkü İşlemler</Typography>
+                            <Typography variant="h3">{stats.todayTransactions}</Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Paper sx={{...statCardStyle, backgroundColor: '#fff3e0' }}> {/* Açık Turuncu */}
+                            <Typography variant="h6">Toplam Fatura</Typography>
+                            <Typography variant="h3">{stats.totalInvoices}</Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Paper sx={{...statCardStyle, backgroundColor: '#ffebee' }}> {/* Açık Kırmızı/Pembe */}
+                            <Typography variant="h6">Bekleyen Fatura</Typography>
+                            <Typography variant="h3">{stats.pendingInvoices}</Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Paper sx={{...statCardStyle, backgroundColor: '#f3e5f5' }}> {/* Açık Mor */}
+                            <Typography variant="h6">Toplam Onay Logu</Typography>
+                            <Typography variant="h3">{stats.totalConsentLogs}</Typography>
+                        </Paper>
+                    </Grid>
+                     {/* Başka istatistikler veya hızlı linkler buraya eklenebilir */}
+                </Grid>
+            </CardContent>
+        </Card>
+    );
+};
 
 
 const MyMenu = () => (

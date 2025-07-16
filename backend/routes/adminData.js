@@ -313,4 +313,55 @@ router.get('/consent-logs/:id', async (req, res) => {
     }
 });
 
+// --- DASHBOARD İSTATİSTİKLERİ ENDPOINT'İ ---
+// GET /api/admin-data/dashboard-stats
+router.get('/dashboard-stats', async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Günün başlangıcı
+
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1); // Yarının başlangıcı
+
+        // 1. Toplam Transaction Sayısı
+        const totalTransactions = await Transaction.countDocuments();
+
+        // 2. Bugün Oluşturulan Transaction Sayısı
+        const todayTransactions = await Transaction.countDocuments({
+            createdAt: {
+                $gte: today,
+                $lt: tomorrow,
+            },
+        });
+
+        // 3. Toplam Fatura Kaydı Sayısı
+        const totalInvoices = await Invoice.countDocuments();
+
+        // 4. Durumu 'pending_creation' Olan Fatura Sayısı
+        const pendingInvoices = await Invoice.countDocuments({
+            status: 'pending_creation',
+        });
+        // Alternatif: "Faturalanacak İşlem Sayısı" (biraz daha karmaşık, önceki logic'e benzer)
+        // Bu, status: payment_successful olup da invoiceId'si olmayan veya invoice.status: pending_creation olan Transaction'ları sayar.
+        // Şimdilik sadece pending_creation Invoice sayısını alalım.
+
+        // 5. Toplam Onay Logu Sayısı
+        const totalConsentLogs = await ConsentLog.countDocuments();
+
+        res.json({
+            totalTransactions,
+            todayTransactions,
+            totalInvoices,
+            pendingInvoices,
+            totalConsentLogs,
+        });
+
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        res.status(500).json({ message: 'Dashboard istatistikleri alınırken bir hata oluştu.' });
+    }
+});
+// --- DASHBOARD ENDPOINT'İ SONU ---
+
+
 module.exports = router;
